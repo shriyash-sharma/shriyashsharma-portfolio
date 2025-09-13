@@ -1,0 +1,24 @@
+# Environment Variables Example
+# Copy this file to .env and update with your actual values
+
+# Contact Form Configuration
+# For Formspree (https://formspree.io/)
+VITE_FORMSPREE_ENDPOINT=https://formspree.io/f/YOUR_FORM_ID
+
+# For Netlify Forms (no configuration needed, just add netlify attribute to form)
+# VITE_NETLIFY_FORM=true
+
+# Email Configuration
+VITE_CONTACT_EMAIL=shriyash@shriyashsharma.com
+
+# Social Media Links
+VITE_GITHUB_URL=https://github.com/shriyashsharma
+VITE_LINKEDIN_URL=https://linkedin.com/in/shriyashsharma
+VITE_TWITTER_URL=https://twitter.com/shriyashsharma
+
+# Analytics (Optional)
+VITE_GA_TRACKING_ID=G-XXXXXXXXXX
+
+# Site Configuration
+VITE_SITE_URL=https://shriyashsharma.com
+VITE_SITE_TITLE="Shriyash Sharma - Software Developer"
