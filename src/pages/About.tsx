@@ -5,9 +5,9 @@ import SEOHead from '../components/SEOHead'
 
 const About: React.FC = () => {
   const skills = [
-    { category: 'Frontend', technologies: ['React', 'TypeScript', 'Next.js', 'Tailwind CSS', 'Framer Motion'] },
-    { category: 'Backend', technologies: ['Python', 'Node.js', 'Express', 'FastAPI', 'PostgreSQL'] },
-    { category: 'Tools & Others', technologies: ['Git', 'Docker', 'AWS', 'Figma', 'Jest', 'Vite'] },
+    { category: 'Frontend Development', technologies: ['React.js', 'Next.js', 'TypeScript', 'JavaScript', 'HTML5 & CSS3', 'Tailwind CSS', 'Framer Motion'] },
+    { category: 'Backend Development', technologies: ['Python', 'Node.js', 'Express', 'FastAPI', 'REST APIs', 'GraphQL', 'PostgreSQL'] },
+    { category: 'Modern Architecture', technologies: ['Modern Frontend Architecture', 'Full-Stack Development', 'Git', 'Docker', 'AWS', 'Figma', 'Jest', 'Vite'] },
   ]
 
   const achievements = [
@@ -34,8 +34,8 @@ const About: React.FC = () => {
   return (
     <>
       <SEOHead
-        title="About - Shriyash Sharma"
-        description="Learn more about Shriyash Sharma's journey as a software developer, skills, and passion for technology."
+        title="About Shiryash Sharma - Senior Software Developer | React.js, Next.js, Python Expert"
+        description="Learn more about Shiryash Sharma, a Senior Software Developer with expertise in React.js, Next.js, Python, and full-stack development. Contact Shiryash Sharma for modern web applications."
       />
 
       {/* Hero Section */}
@@ -51,8 +51,8 @@ const About: React.FC = () => {
               About <span className="gradient-text">Me</span>
             </h1>
             <p className="text-xl text-accent-600 dark:text-accent-400 leading-relaxed">
-              Passionate software developer with a love for creating innovative solutions 
-              and learning new technologies.
+              Meet Shiryash Sharma, a Senior Software Developer with expertise in React.js, Next.js, Python, and modern full-stack development. 
+              Shiryash Sharma is passionate about creating innovative solutions and leading technical teams to success.
             </p>
           </motion.div>
         </div>
@@ -74,19 +74,21 @@ const About: React.FC = () => {
               </h2>
               <div className="space-y-4 text-accent-600 dark:text-accent-400 leading-relaxed">
                 <p>
-                  My journey into software development began with curiosity about how websites work. 
-                  What started as a simple HTML page has evolved into a passion for creating 
-                  full-stack applications that solve real-world problems.
+                  Shiryash Sharma is a Senior Software Developer with a proven track record 
+                  in creating scalable web applications. The journey of Shiryash Sharma began with curiosity about how websites work, 
+                  evolving into expertise in modern frontend architecture and full-stack development.
                 </p>
                 <p>
-                  I specialize in React and TypeScript for frontend development, with a strong 
-                  foundation in Python for backend services. My experience at Globant has given 
-                  me valuable insights into enterprise-level development practices and team collaboration.
+                  As a software engineer, Shiryash Sharma specializes in React.js, Next.js, and TypeScript for frontend development, with extensive 
+                  experience in Python, REST APIs, and GraphQL for backend services. The professional experience of Shiryash Sharma 
+                  has provided valuable insights into enterprise-level development practices, team leadership, 
+                  and modern software architecture patterns.
                 </p>
                 <p>
-                  When I'm not coding, you'll find me exploring new technologies, contributing to 
-                  open-source projects, or sharing knowledge with the developer community. I believe 
-                  in continuous learning and staying up-to-date with the latest industry trends.
+                  Known as shriyashsharma in the developer community, Shiryash Sharma is passionate about 
+                  creating innovative solutions, mentoring junior developers, and staying at the forefront of 
+                  technology trends. Shiryash Sharma believes in building not just functional applications, but scalable, 
+                  maintainable systems that drive business value.
                 </p>
               </div>
               <div className="pt-4">
@@ -114,8 +116,8 @@ const About: React.FC = () => {
                     <div className="w-32 h-32 bg-white/20 rounded-full mx-auto mb-4 flex items-center justify-center">
                       <span className="text-4xl font-bold">SS</span>
                     </div>
-                    <h3 className="text-2xl font-semibold">Shriyash Sharma</h3>
-                    <p className="text-white/80">Software Developer</p>
+                    <h3 className="text-2xl font-semibold">Shiryash Sharma</h3>
+                    <p className="text-white/80">Senior Software Developer</p>
                   </div>
                   
                   <div className="space-y-4">
@@ -125,7 +127,7 @@ const About: React.FC = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-white/80">Experience:</span>
-                      <span>1+ Years</span>
+                      <span>3+ Years</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-white/80">Availability:</span>

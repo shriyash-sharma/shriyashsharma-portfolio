@@ -9,10 +9,10 @@ const Projects: React.FC = () => {
     {
       id: '1',
       title: 'E-Commerce Platform',
-      description: 'A full-stack e-commerce solution with React frontend and Python backend, featuring user authentication, payment integration, and admin dashboard.',
-      longDescription: 'Built a complete e-commerce platform from scratch using React for the frontend and Python with FastAPI for the backend. Implemented user authentication, product management, shopping cart functionality, and integrated Stripe for payments. The admin dashboard allows for inventory management and order tracking.',
+      description: 'A full-stack e-commerce solution built with React.js frontend and Python FastAPI backend, featuring modern architecture, user authentication, payment integration, and admin dashboard.',
+      longDescription: 'Built a complete e-commerce platform showcasing modern full-stack development with React.js, Next.js, and Python FastAPI. Implemented user authentication, product management, shopping cart functionality, REST APIs, and integrated Stripe for payments. Features modern frontend architecture with Tailwind CSS and responsive design.',
       image: '/placeholder-project-1.jpg', // TODO: Replace with actual project images
-      technologies: ['React', 'TypeScript', 'Python', 'FastAPI', 'PostgreSQL', 'Stripe', 'Tailwind CSS'],
+      technologies: ['React.js', 'Next.js', 'TypeScript', 'Python', 'FastAPI', 'REST APIs', 'PostgreSQL', 'Stripe', 'Tailwind CSS'],
       githubUrl: 'https://github.com/shriyashsharma/ecommerce-platform', // TODO: Replace with actual URLs
       demoUrl: 'https://ecommerce-demo.shriyashsharma.com', // TODO: Replace with actual URLs
       featured: true,
@@ -20,10 +20,10 @@ const Projects: React.FC = () => {
     {
       id: '2',
       title: 'Task Management App',
-      description: 'A collaborative task management application with real-time updates, team collaboration features, and drag-and-drop functionality.',
-      longDescription: 'Developed a comprehensive task management application using React and Node.js with Socket.io for real-time collaboration. Features include drag-and-drop task boards, team member assignment, deadline tracking, and progress visualization.',
+      description: 'A collaborative task management application built with React.js and modern architecture, featuring real-time updates, team collaboration, and drag-and-drop functionality.',
+      longDescription: 'Developed a comprehensive task management application using React.js, Next.js, and modern frontend architecture with real-time collaboration. Features include drag-and-drop task boards, team member assignment, deadline tracking, REST APIs, and progress visualization with responsive design.',
       image: '/placeholder-project-2.jpg', // TODO: Replace with actual project images
-      technologies: ['React', 'Node.js', 'Socket.io', 'MongoDB', 'Express', 'Framer Motion'],
+      technologies: ['React.js', 'Next.js', 'TypeScript', 'Node.js', 'Socket.io', 'MongoDB', 'Express', 'REST APIs', 'Framer Motion'],
       githubUrl: 'https://github.com/shriyashsharma/task-manager', // TODO: Replace with actual URLs
       demoUrl: 'https://taskmanager-demo.shriyashsharma.com', // TODO: Replace with actual URLs
       featured: true,
@@ -31,10 +31,10 @@ const Projects: React.FC = () => {
     {
       id: '3',
       title: 'Weather Dashboard',
-      description: 'A responsive weather dashboard with location-based forecasts, interactive maps, and weather data visualization.',
-      longDescription: 'Created a weather dashboard using React and TypeScript that provides detailed weather information with interactive maps. Integrated with multiple weather APIs to provide accurate forecasts, historical data, and severe weather alerts.',
+      description: 'A responsive weather dashboard built with React.js and TypeScript, featuring location-based forecasts, interactive maps, and modern data visualization.',
+      longDescription: 'Created a weather dashboard using React.js, Next.js, and TypeScript with modern frontend architecture. Integrated with multiple REST APIs to provide accurate forecasts, historical data, and severe weather alerts with responsive design and interactive maps.',
       image: '/placeholder-project-3.jpg', // TODO: Replace with actual project images
-      technologies: ['React', 'TypeScript', 'Chart.js', 'Leaflet', 'Weather API', 'CSS Modules'],
+      technologies: ['React.js', 'Next.js', 'TypeScript', 'Chart.js', 'Leaflet', 'REST APIs', 'Tailwind CSS', 'HTML5 & CSS3'],
       githubUrl: 'https://github.com/shriyashsharma/weather-dashboard', // TODO: Replace with actual URLs
       demoUrl: 'https://weather-demo.shriyashsharma.com', // TODO: Replace with actual URLs
       featured: false,
@@ -44,8 +44,8 @@ const Projects: React.FC = () => {
   return (
     <>
       <SEOHead
-        title="Projects - Shriyash Sharma"
-        description="Explore my portfolio of software development projects including web applications, full-stack solutions, and innovative tools."
+        title="Projects by Shiryash Sharma - Senior Software Developer | React.js, Next.js, Python Portfolio"
+        description="Explore the portfolio of Shiryash Sharma, featuring React.js, Next.js, Python full-stack projects and innovative web applications. Contact Shiryash Sharma for custom development."
       />
 
       {/* Hero Section */}
@@ -61,8 +61,9 @@ const Projects: React.FC = () => {
               My <span className="gradient-text">Projects</span>
             </h1>
             <p className="text-xl text-accent-600 dark:text-accent-400 leading-relaxed">
-              A collection of projects that showcase my skills in full-stack development, 
-              problem-solving, and creating user-focused solutions.
+              A collection of projects by Shiryash Sharma, a Senior Software Developer 
+              showcasing expertise in React.js, Next.js, Python full-stack development, and modern web architecture. 
+              Discover innovative solutions created by Shiryash Sharma.
             </p>
           </motion.div>
         </div>
@@ -82,8 +83,8 @@ const Projects: React.FC = () => {
               Featured Projects
             </h2>
             <p className="text-lg text-accent-600 dark:text-accent-400 max-w-2xl mx-auto">
-              Here are some of my most recent and impactful projects that demonstrate 
-              my capabilities as a full-stack developer.
+              Here are some of the most recent and impactful projects by Shiryash Sharma that demonstrate 
+              capabilities as a Senior Software Developer specializing in React.js, Next.js, and Python.
             </p>
           </motion.div>
 

@@ -41,11 +41,11 @@ const Footer: React.FC = () => {
               to="/"
               className="text-xl font-bold gradient-text hover:scale-105 transition-transform duration-200"
             >
-              Shriyash Sharma
+              Shiryash Sharma
             </Link>
             <p className="text-accent-600 dark:text-accent-400 text-sm leading-relaxed">
-              Software Developer specializing in React, TypeScript, and Python. 
-              Passionate about creating innovative solutions and learning new technologies.
+              Shiryash Sharma is a Senior Software Developer specializing in React.js, Next.js, Python, 
+              and modern full-stack development. Contact Shiryash Sharma for scalable web applications and innovative solutions.
             </p>
             <div className="flex space-x-4">
               {socialLinks.map((link) => {
@@ -112,7 +112,7 @@ const Footer: React.FC = () => {
         <div className="mt-12 pt-8 border-t border-accent-200 dark:border-accent-700">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-accent-600 dark:text-accent-400 text-sm">
-              © {currentYear} Shriyash Sharma. All rights reserved.
+              © {currentYear} Shiryash Sharma. All rights reserved.
             </p>
             <div className="flex items-center space-x-6 text-sm">
               <Link
