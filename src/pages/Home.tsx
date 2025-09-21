@@ -6,16 +6,16 @@ import SEOHead from '../components/SEOHead'
 
 const Home: React.FC = () => {
   const skills = [
-    { name: 'Frontend Development', icon: Globe, description: 'React, TypeScript, Next.js' },
-    { name: 'Backend Development', icon: Database, description: 'Python, Node.js, Express' },
-    { name: 'Full-Stack Solutions', icon: Code, description: 'End-to-end web applications' },
+    { name: 'Frontend Development', icon: Globe, description: 'React.js, Next.js, TypeScript, Tailwind CSS' },
+    { name: 'Backend Development', icon: Database, description: 'Python, JavaScript, REST APIs, GraphQL' },
+    { name: 'Full-Stack Solutions', icon: Code, description: 'Modern frontend architecture & full-stack development' },
   ]
 
   return (
     <>
       <SEOHead
-        title="Shriyash Sharma - Software Developer"
-        description="Software Developer specializing in React, TypeScript, and Python. Looking for full-time roles."
+        title="Shiryash Sharma - Senior Software Developer | React.js, Next.js, Python Expert"
+        description="Shiryash Sharma is a Senior Software Developer specializing in React.js, Next.js, Python, TypeScript, and full-stack development. Contact Shiryash Sharma for modern web applications and innovative solutions."
       />
       
       {/* Hero Section */}
@@ -36,7 +36,7 @@ const Home: React.FC = () => {
                   className="text-4xl md:text-6xl font-bold text-accent-900 dark:text-white leading-tight"
                 >
                   Hi — I'm{' '}
-                  <span className="gradient-text">Shriyash Sharma</span>
+                  <span className="gradient-text">Shiryash Sharma</span>
                 </motion.h1>
                 
                 <motion.p
@@ -45,7 +45,7 @@ const Home: React.FC = () => {
                   transition={{ duration: 0.6, delay: 0.4 }}
                   className="text-xl md:text-2xl text-accent-700 dark:text-accent-300"
                 >
-                  Software Developer | React & Python
+                  Senior Software Developer | React.js, Next.js & Python Expert
                 </motion.p>
                 
                 <motion.p
@@ -54,8 +54,9 @@ const Home: React.FC = () => {
                   transition={{ duration: 0.6, delay: 0.6 }}
                   className="text-lg text-accent-600 dark:text-accent-400 leading-relaxed"
                 >
-                  Passionate about creating innovative solutions and learning new technologies. 
-                  Currently looking for full-time opportunities to make an impact.
+                  Welcome to the portfolio of Shiryash Sharma, a passionate Senior Software Developer with expertise in React.js, Next.js, Python, TypeScript, 
+                  and modern full-stack development. As a software engineer, Shiryash Sharma specializes in creating 
+                  scalable web applications and innovative solutions for businesses worldwide.
                 </motion.p>
               </div>
 
@@ -134,7 +135,9 @@ const Home: React.FC = () => {
               What I Do
             </h2>
             <p className="text-lg text-accent-600 dark:text-accent-400 max-w-2xl mx-auto">
-              I specialize in creating modern, scalable web applications with a focus on user experience and performance.
+              Shiryash Sharma is a Senior Software Developer who specializes in creating modern, scalable web applications with React.js, 
+              Next.js, Python, and TypeScript. With expertise in full-stack development, Shiryash Sharma focuses on delivering 
+              exceptional user experience, performance, and innovative solutions.
             </p>
           </motion.div>
 
