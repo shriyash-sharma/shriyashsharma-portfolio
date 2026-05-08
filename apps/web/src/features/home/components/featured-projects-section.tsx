@@ -409,20 +409,32 @@ export function FeaturedProjectsSection() {
                 className={cn(
                   "group flex h-full flex-col overflow-hidden rounded-xl",
                   "border border-[var(--color-border)] bg-[var(--color-surface)]",
-                  "transition-[border-color,background-color] duration-[200ms] ease-out",
+                  // Lift + color — physical, snappy
+                  "transition-[transform,border-color,background-color] duration-[150ms] ease-out",
+                  "hover:-translate-y-[3px]",
                   "hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-2)]"
                 )}
               >
                 {/* Architecture visual */}
                 <div
                   className={cn(
-                    "h-[112px] border-b border-[var(--color-border)]",
+                    "relative h-[112px] overflow-hidden border-b border-[var(--color-border)]",
                     "bg-[var(--color-surface-2)] p-4",
                     "transition-colors duration-[200ms] group-hover:bg-[var(--color-surface-3)]"
                   )}
                 >
                   <span className="sr-only">{project.visualLabel}</span>
                   <Visual />
+                  {/* Signature interaction — scan shimmer sweeps across the diagram on hover */}
+                  <div
+                    aria-hidden="true"
+                    className={cn(
+                      "pointer-events-none absolute inset-y-0 left-0 w-[55%]",
+                      "-translate-x-full transition-[transform] duration-[650ms] ease-in-out",
+                      "group-hover:translate-x-[200%]",
+                      "bg-gradient-to-r from-transparent via-white/[0.05] to-transparent"
+                    )}
+                  />
                 </div>
 
                 {/* Card body */}
@@ -484,7 +496,7 @@ export function FeaturedProjectsSection() {
                     <ArrowRight
                       size={13}
                       strokeWidth={1.75}
-                      className="shrink-0 text-[var(--color-muted-2)] transition-all duration-[140ms] group-hover:translate-x-0.5 group-hover:text-[var(--color-muted)]"
+                      className="shrink-0 text-[var(--color-muted-2)] transition-[transform,color] duration-[120ms] ease-out group-hover:translate-x-1 group-hover:text-[var(--color-secondary)]"
                     />
                   </div>
                 </div>

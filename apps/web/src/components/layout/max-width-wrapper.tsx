@@ -6,13 +6,13 @@ type MaxWidthWrapperProps = {
 };
 
 /**
- * Wide editorial column for hero, project grids, and full-bleed zones.
- * Max-width 1280px (7xl) with viewport-proportional gutters at xl+.
- * Navbar, hero, and project grid all share this frame — they stay aligned.
+ * Full-width editorial wrapper for hero, project grids, and wide zones.
+ * No max-width cap — fills the viewport at every screen size.
+ * Padding matches the navbar so all zones share the same left/right anchors.
  */
 export function MaxWidthWrapper({ children, className }: MaxWidthWrapperProps) {
   return (
-    <div className={cn("mx-auto w-full max-w-7xl px-6 lg:px-8 xl:px-12", className)}>
+    <div className={cn("w-full px-5 sm:px-6 lg:px-10 xl:px-16", className)}>
       {children}
     </div>
   );

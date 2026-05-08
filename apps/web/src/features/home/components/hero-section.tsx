@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowRight } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Stagger, StaggerItem } from "@/components/shared/motion/stagger";
 import { HeroSystemPanel } from "./hero-system-panel";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { getPathLocale, localizePath } from "@/lib/i18n/config";
+import { slideInRight } from "@/styles/motion";
 import { cn } from "@/lib/utils/cn";
 
 /**
@@ -20,14 +22,15 @@ export function HeroSection() {
   const locale = getPathLocale(pathname);
   const dictionary = getDictionary(locale);
   const home = dictionary.home;
+  const reduced = useReducedMotion();
 
   return (
     <section
       aria-labelledby="hero-heading"
       className={cn(
         "relative",
-        // Full-width section with same horizontal padding as navbar
-        "px-6 lg:px-8 xl:px-12",
+        // Full-width section — padding matches navbar and project grid
+        "px-5 sm:px-6 lg:px-10 xl:px-16",
         // Mobile: full-height feel, content sits in the upper-middle third
         "flex min-h-[86dvh] flex-col justify-center",
         "pt-12 pb-10",
@@ -43,9 +46,9 @@ export function HeroSection() {
         <div className="absolute bottom-[5%] right-[-10%] h-[280px] w-[280px] rounded-full bg-white/[0.008] blur-[90px]" />
       </div>
 
-      {/* Inner grid — bounded to max-w-7xl, same anchor as navbar content */}
+      {/* Inner grid — fills section, anchored by section padding */}
       <div className={cn(
-        "relative z-10 mx-auto w-full max-w-7xl",
+        "relative z-10 w-full",
         "grid grid-cols-1 items-center gap-12",
         "lg:grid-cols-[1fr_300px] lg:gap-16",
         "xl:grid-cols-[1fr_320px] xl:gap-20"
@@ -140,8 +143,14 @@ export function HeroSection() {
           </Stagger>
         </div>
 
-        {/* Right — system panel (desktop only) */}
-        <HeroSystemPanel />
+        {/* Right — system panel, enters after hero text begins */}
+        <motion.div
+          variants={slideInRight}
+          initial={reduced ? false : "hidden"}
+          animate={reduced ? false : "visible"}
+        >
+          <HeroSystemPanel />
+        </motion.div>
       </div>
     </section>
   );

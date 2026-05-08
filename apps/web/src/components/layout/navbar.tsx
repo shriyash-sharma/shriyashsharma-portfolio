@@ -53,7 +53,7 @@ export function Navbar() {
           : "border-b border-transparent bg-transparent"
       )}
     >
-      <div className="mx-auto flex h-[52px] max-w-7xl items-center justify-between gap-4 px-6 lg:px-8 xl:px-12">
+      <div className="flex h-[52px] w-full items-center justify-between gap-4 px-5 sm:px-6 lg:px-10 xl:px-16">
 
         {/* Wordmark */}
         <Link

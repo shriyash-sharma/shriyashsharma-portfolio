@@ -26,6 +26,10 @@ export function ContactCtaSection() {
           className={cn(
             "relative overflow-hidden rounded-xl sm:rounded-2xl",
             "border border-[var(--color-border)] bg-[var(--color-surface)]",
+            // Subtle elevation on hover — border tightens, ambient glow intensifies
+            "transition-[border-color,box-shadow] duration-[220ms] ease-out",
+            "hover:border-[var(--color-border-strong)]",
+            "hover:shadow-[0_0_48px_0_rgba(255,255,255,0.025)]",
             // Mobile: compact padding, Desktop: generous
             "px-6 py-8 sm:px-10 sm:py-10 lg:px-12 lg:py-12",
             "flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between lg:gap-12"
