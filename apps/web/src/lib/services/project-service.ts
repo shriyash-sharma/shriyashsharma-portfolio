@@ -12,9 +12,17 @@ export type Project = {
   slug: string;
   title: string;
   description: string;
+  body: string;
   tags: string[];
+  categories: string[];
+  publishedAt: string;
+  updatedAt: string;
   status: "production" | "open-source" | "in-progress" | "archived";
   featured: boolean;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  canonicalUrl?: string | null;
+  metadata: ApiContentItem["metadata"];
   links: {
     github?: string;
     live?: string;
@@ -32,7 +40,11 @@ function mapProject(item: ApiContentItem): Project {
     slug: item.slug,
     title: item.title,
     description: item.description,
+    body: item.body ?? "",
     tags: item.tags,
+    categories: item.categories,
+    publishedAt: item.published_at ?? item.updated_at,
+    updatedAt: item.updated_at,
     status:
       item.status === "published"
         ? "production"
@@ -40,6 +52,10 @@ function mapProject(item: ApiContentItem): Project {
           ? "archived"
           : "in-progress",
     featured: Boolean(item.metadata.featured),
+    seoTitle: item.seo_title,
+    seoDescription: item.seo_description,
+    canonicalUrl: item.canonical_url,
+    metadata: item.metadata,
     links: {
       github:
         typeof item.metadata.github === "string"

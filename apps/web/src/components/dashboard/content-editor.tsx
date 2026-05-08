@@ -167,6 +167,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
   const [view, setView] = useState<"edit" | "preview">("edit");
   const [slugTouched, setSlugTouched] = useState(mode === "edit");
   const [localDraftAt, setLocalDraftAt] = useState<string | null>(null);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
   const storageKey = useMemo(() => {
     return itemId ? `dashboard:draft:${itemId}` : `dashboard:draft:new:${form.type}`;
@@ -262,32 +263,49 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
       published_at: form.publishedAt || null,
     };
 
-    startTransition(async () => {
-      const response = await fetch(
-        mode === "create"
-          ? `/api/dashboard/content/${form.type}`
-          : `/api/dashboard/content/items/${itemId}`,
-        {
-          method: mode === "create" ? "POST" : "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+    startTransition(() => {
+      void (async () => {
+        try {
+          const response = await fetch(
+            mode === "create"
+              ? `/api/dashboard/content/${form.type}`
+              : `/api/dashboard/content/items/${itemId}`,
+            {
+              method: mode === "create" ? "POST" : "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            }
+          );
+
+          if (!response.ok) {
+            const result = (await response.json().catch(() => null)) as
+              | ApiErrorPayload
+              | null;
+            setError(getApiErrorMessage(result));
+            return;
+          }
+
+          const item = (await response.json()) as ApiContentItem;
+          localStorage.removeItem(storageKey);
+          setLastSavedAt(new Date().toISOString());
+
+          if (mode === "create") {
+            router.replace(`/dashboard/content/${item.id}`);
+            return;
+          }
+
+          setForm(mapItemToForm(item));
+          setSlugTouched(true);
+        } catch (saveError) {
+          setError(
+            saveError instanceof Error
+              ? saveError.message
+              : "Save failed unexpectedly."
+          );
+        } finally {
+          setIsSaving(false);
         }
-      );
-
-      if (!response.ok) {
-        const result = (await response.json().catch(() => null)) as
-          | ApiErrorPayload
-          | null;
-        setError(getApiErrorMessage(result));
-        setIsSaving(false);
-        return;
-      }
-
-      const item = (await response.json()) as ApiContentItem;
-      localStorage.removeItem(storageKey);
-      setIsSaving(false);
-      router.replace(`/dashboard/content/${item.id}`);
-      router.refresh();
+      })();
     });
   }
 
@@ -325,6 +343,12 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
       {localDraftAt ? (
         <p className="text-[12px] text-[var(--color-muted)]">
           Local draft updated {new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short" }).format(new Date(localDraftAt))}
+        </p>
+      ) : null}
+
+      {lastSavedAt ? (
+        <p className="text-[12px] text-[var(--color-muted)]">
+          Saved {new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short" }).format(new Date(lastSavedAt))}
         </p>
       ) : null}
 

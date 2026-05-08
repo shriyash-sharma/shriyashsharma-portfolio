@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
-import { SectionHeading } from "@/components/ui/section-heading";
+import { PublicContentList } from "@/components/content/public-content-list";
+import { getBlogPosts } from "@/lib/services/content-service";
 
 export const metadata: Metadata = buildMetadata({
   title: "Blog",
@@ -10,14 +11,19 @@ export const metadata: Metadata = buildMetadata({
   path: "/blog",
 });
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const posts = await getBlogPosts();
+
   return (
     <PageShell>
       <Section>
-        <SectionHeading
+        <PublicContentList
           eyebrow="Writing"
           heading="Blog"
-          subheading="Engineering notes, deep dives, and system design perspectives. Coming soon."
+          subheading="Published engineering notes, implementation essays, and system design writing from the content platform."
+          entries={posts}
+          hrefBase="/blog"
+          emptyLabel="No published blog posts yet. Publish an article from the dashboard to make it appear here."
         />
       </Section>
     </PageShell>

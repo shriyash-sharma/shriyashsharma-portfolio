@@ -5,28 +5,37 @@
  * touching feature components.
  */
 
-import type { ContentIndexRecord } from "@/lib/api/contracts/content";
-import type { ApiContentItem } from "@/lib/api/contracts/content";
+import type {
+  ContentIndexRecord,
+  ApiContentItem,
+  ContentType,
+} from "@/lib/api/contracts/content";
 import { getContentItem, listContent } from "@/lib/api/endpoints/content-api";
 import { contentCollections } from "@/lib/content/registry";
 
-export type BlogPost = {
+export type PublicContentEntry = {
+  id: string;
   slug: string;
+  type: ContentType;
   title: string;
   description: string;
+  body: string;
   publishedAt: string;
+  updatedAt: string;
   tags: string[];
+  categories: string[];
   readTime: string;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  canonicalUrl?: string | null;
+  metadata: ApiContentItem["metadata"];
 };
 
-export type CaseStudy = {
-  slug: string;
-  title: string;
-  description: string;
-  publishedAt: string;
-  tags: string[];
-  readTime: string;
-};
+export type BlogPost = PublicContentEntry;
+
+export type CaseStudy = PublicContentEntry;
+
+export type ArchitectureNote = PublicContentEntry;
 
 function hasBackendUrl() {
   return Boolean(process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL);
@@ -38,25 +47,23 @@ function readTimeFrom(item: ApiContentItem) {
     : "5 min";
 }
 
-function mapBlogPost(item: ApiContentItem): BlogPost {
+function mapPublicContentEntry(item: ApiContentItem): PublicContentEntry {
   return {
+    id: item.id,
     slug: item.slug,
+    type: item.type,
     title: item.title,
     description: item.description,
+    body: item.body ?? "",
     publishedAt: item.published_at ?? item.updated_at,
+    updatedAt: item.updated_at,
     tags: item.tags,
+    categories: item.categories,
     readTime: readTimeFrom(item),
-  };
-}
-
-function mapCaseStudy(item: ApiContentItem): CaseStudy {
-  return {
-    slug: item.slug,
-    title: item.title,
-    description: item.description,
-    publishedAt: item.published_at ?? item.updated_at,
-    tags: item.tags,
-    readTime: readTimeFrom(item),
+    seoTitle: item.seo_title,
+    seoDescription: item.seo_description,
+    canonicalUrl: item.canonical_url,
+    metadata: item.metadata,
   };
 }
 
@@ -68,7 +75,7 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
 
   try {
     const response = await listContent({ type: "article", limit: 50 });
-    return response.items.map(mapBlogPost);
+    return response.items.map(mapPublicContentEntry);
   } catch {
     return [];
   }
@@ -81,7 +88,7 @@ export async function getBlogPost(slug: string): Promise<BlogPost | null> {
 
   try {
     const item = await getContentItem({ type: "article", slug });
-    return mapBlogPost(item);
+    return mapPublicContentEntry(item);
   } catch {
     return null;
   }
@@ -94,7 +101,7 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
 
   try {
     const response = await listContent({ type: "case-study", limit: 50 });
-    return response.items.map(mapCaseStudy);
+    return response.items.map(mapPublicContentEntry);
   } catch {
     return [];
   }
@@ -107,7 +114,35 @@ export async function getCaseStudy(slug: string): Promise<CaseStudy | null> {
 
   try {
     const item = await getContentItem({ type: "case-study", slug });
-    return mapCaseStudy(item);
+    return mapPublicContentEntry(item);
+  } catch {
+    return null;
+  }
+}
+
+export async function getArchitectureNotes(): Promise<ArchitectureNote[]> {
+  if (!hasBackendUrl()) {
+    return [];
+  }
+
+  try {
+    const response = await listContent({ type: "architecture-note", limit: 50 });
+    return response.items.map(mapPublicContentEntry);
+  } catch {
+    return [];
+  }
+}
+
+export async function getArchitectureNote(
+  slug: string
+): Promise<ArchitectureNote | null> {
+  if (!hasBackendUrl()) {
+    return null;
+  }
+
+  try {
+    const item = await getContentItem({ type: "architecture-note", slug });
+    return mapPublicContentEntry(item);
   } catch {
     return null;
   }
