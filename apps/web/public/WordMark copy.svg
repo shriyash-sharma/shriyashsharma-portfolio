@@ -1,0 +1,20 @@
+<!-- SYMBOL / ICON -->
+<svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .mark {
+      font-family: "Cursive", "Brush Script MT", cursive;
+      font-size: 120px;
+      font-weight: 400;
+      fill: currentColor;
+    }
+
+    .dot {
+      fill: currentColor;
+    }
+  </style>
+
+  <g color="#F5F5F5">
+    <text x="32" y="138" class="mark">Sh</text>
+    <circle cx="175" cy="145" r="6" class="dot" />
+  </g>
+</svg>

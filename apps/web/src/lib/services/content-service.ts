@@ -5,6 +5,9 @@
  * touching feature components.
  */
 
+import type { ContentIndexRecord } from "@/lib/api/contracts/content";
+import { contentCollections } from "@/lib/content/registry";
+
 export type BlogPost = {
   slug: string;
   title: string;
@@ -43,4 +46,10 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
 export async function getCaseStudy(slug: string): Promise<CaseStudy | null> {
   void slug;
   return null;
+}
+
+export async function getContentIndex(): Promise<ContentIndexRecord[]> {
+  // TODO: aggregate from filesystem collections, CMS, or FastAPI /content/index
+  void contentCollections;
+  return [];
 }

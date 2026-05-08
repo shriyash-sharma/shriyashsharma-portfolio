@@ -1,0 +1,24 @@
+<!-- PRIMARY WORDMARK -->
+<svg width="720" height="180" viewBox="0 0 720 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .script {
+      font-family: "Cursive", "Brush Script MT", cursive;
+      font-size: 96px;
+      font-weight: 400;
+      fill: currentColor;
+    }
+
+    .surname {
+      font-family: "Inter", "Helvetica Neue", sans-serif;
+      font-size: 34px;
+      font-weight: 500;
+      letter-spacing: 0.42em;
+      fill: currentColor;
+    }
+  </style>
+
+  <g color="#F5F5F5">
+    <text x="20" y="105" class="script">Shriyash</text>
+    <text x="400" y="105" class="surname">SHARMA</text>
+  </g>
+</svg>
