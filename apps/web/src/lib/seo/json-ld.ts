@@ -1,4 +1,5 @@
 import { siteConfig } from "@/lib/constants/site";
+import { localeLanguageTags, locales } from "@/lib/i18n/config";
 
 /** JSON-LD Person schema for the portfolio owner. */
 export function personJsonLd() {
@@ -27,7 +28,7 @@ export function websiteJsonLd() {
     "@type": "WebSite",
     name: siteConfig.name,
     url: siteConfig.url,
-    inLanguage: ["en", "hi-IN"],
+    inLanguage: locales.map((locale) => localeLanguageTags[locale]),
     description: siteConfig.description,
     publisher: {
       "@type": "Person",

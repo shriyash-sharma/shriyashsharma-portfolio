@@ -1,12 +1,21 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { Section } from "@/components/layout/section";
 import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/shared/motion/fade-in";
 import { cn } from "@/lib/utils/cn";
 import { siteConfig } from "@/lib/constants/site";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { getPathLocale, localizePath } from "@/lib/i18n/config";
 
 export function ContactCtaSection() {
+  const pathname = usePathname();
+  const locale = getPathLocale(pathname);
+  const home = getDictionary(locale).home;
+
   return (
     <Section
       aria-labelledby="contact-cta-heading"
@@ -29,18 +38,30 @@ export function ContactCtaSection() {
           />
 
           {/* Text */}
-          <div className="relative z-10 flex flex-col gap-2.5 lg:max-w-[420px]">
+          <div className="relative z-10 flex flex-col gap-3 lg:max-w-[460px]">
             <h2
               id="contact-cta-heading"
               className="text-lg font-semibold tracking-[-0.02em] text-[var(--color-foreground)] sm:text-xl lg:text-2xl"
             >
-              Open to the right opportunity
+              {home.contactHeading}
             </h2>
             <p className="text-[13px] leading-[1.7] text-[var(--color-secondary)] sm:text-[14px]">
-              Looking for senior engineering roles, architecture consulting, or
-              contract work. If you are building something technically
-              ambitious, let&apos;s talk.
+              {home.contactCopy}
             </p>
+            <div className="flex flex-wrap gap-2 pt-1">
+              {[
+                "Frontend architecture",
+                "AI product systems",
+                "Platform UX",
+              ].map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-[var(--color-border)] px-2.5 py-1 text-[10px] uppercase tracking-[0.07em] text-[var(--color-muted)]"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
           </div>
 
           {/* Actions — stacked full-width on mobile, inline on lg */}
@@ -50,8 +71,8 @@ export function ContactCtaSection() {
             "lg:w-auto lg:shrink-0"
           )}>
             <Button asChild size="lg" className="w-full justify-center sm:w-auto">
-              <Link href="/contact">
-                Get in touch
+              <Link href={localizePath("/contact", locale)}>
+                {home.contactPrimary}
                 <ArrowRight size={14} strokeWidth={2} />
               </Link>
             </Button>

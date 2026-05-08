@@ -15,16 +15,17 @@
   --color-border-subtle: #181818;
   --color-border-strong: #303030;
 
-  /* Text scale */
+  /* Text scale — calibrated for contrast on #080808 background:
+     foreground ~20:1, secondary ~14:1, muted ~6:1, muted-2 ~3.8:1 */
   --color-foreground:    #ebebeb;
-  --color-secondary:     #ababab;
-  --color-muted:         #7a7a7a;
-  --color-muted-2:       #585858;
+  --color-secondary:     #b8b8b8;
+  --color-muted:         #909090;
+  --color-muted-2:       #696969;
   --color-placeholder:   #333333;
 
   /* Accent – reserved for future interactive states */
   --color-accent:        #e8e8e8;
-  --color-accent-dim:    #858585;
+  --color-accent-dim:    #8e8e8e;
 
   /* ── Typography ──────────────────────────────────────────────── */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -77,6 +78,19 @@ html {
   tab-size: 2;
 }
 
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] body {
+  text-align: right;
+}
+
+html[dir="rtl"] [data-direction-neutral="true"] {
+  direction: ltr;
+  text-align: left;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -124,7 +138,7 @@ h4, h5, h6 {
 
 p {
   color: var(--color-secondary);
-  line-height: 1.7;
+  line-height: 1.72;
 }
 
 a {

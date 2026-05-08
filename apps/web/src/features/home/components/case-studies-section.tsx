@@ -8,6 +8,8 @@ type CaseStudy = {
   id: string;
   title: string;
   challenge: string;
+  decision: string;
+  operations: string;
   outcome: string;
   tags: string[];
   href: string;
@@ -20,7 +22,12 @@ const CASE_STUDIES: CaseStudy[] = [
     title: "Scaling a frontend monorepo to 20+ engineers",
     challenge:
       "A shared-everything SPA where any PR could silently break unrelated teams. 4-minute CI runs, no module ownership, and implicit coupling through global state.",
-    outcome: "60% build time reduction · team-scoped ownership · zero cross-boundary regressions",
+    decision:
+      "Moved to feature-owned package boundaries, kept shared UI intentionally small, and used dependency constraints to make ownership visible in CI.",
+    operations:
+      "Affected graph builds · module boundary checks · PR previews per package",
+    outcome:
+      "60% build time reduction · team-scoped ownership · fewer cross-boundary regressions",
     tags: ["Architecture", "Monorepo", "DX"],
     href: "/case-studies/monorepo-scaling",
     readTime: "8 min",
@@ -30,10 +37,45 @@ const CASE_STUDIES: CaseStudy[] = [
     title: "Building a production RAG pipeline for document search",
     challenge:
       "Keyword search with poor recall on 400k+ enterprise documents. Users couldn't find information phrased differently from how it was written.",
-    outcome: "Hybrid BM25 + vector retrieval · p95 latency 800ms · streaming with source citations",
+    decision:
+      "Used hybrid retrieval with RRF instead of pure vector search, then streamed answers only after source chunks passed a relevance threshold.",
+    operations:
+      "Embedding cache TTL 7d · p95 under 900ms · citation coverage tracked",
+    outcome:
+      "Higher recall for semantic queries · preserved exact-match behavior for SKUs and policy codes",
     tags: ["AI/ML", "FastAPI", "pgvector"],
     href: "/case-studies/rag-pipeline",
     readTime: "12 min",
+  },
+  {
+    id: "3",
+    title: "Designing preview-safe content publishing",
+    challenge:
+      "Marketing and engineering content needed draft previews without exposing unpublished URLs or letting malformed MDX break production builds.",
+    decision:
+      "Added signed preview tokens, typed frontmatter validation, and a narrow publishing contract between content collections and route metadata.",
+    operations:
+      "Preview TTL 30m · schema checks in CI · sitemap updates on publish",
+    outcome:
+      "Safer editorial workflow · predictable SEO output · fewer production-only content failures",
+    tags: ["CMS", "SEO", "Next.js"],
+    href: "/case-studies/preview-safe-publishing",
+    readTime: "7 min",
+  },
+  {
+    id: "4",
+    title: "Reducing alert fatigue in an internal ops dashboard",
+    challenge:
+      "Engineers were receiving noisy latency alerts from queue workers where short spikes were expected during batch windows.",
+    decision:
+      "Grouped alerts around service ownership and SLO burn rate instead of raw threshold breaches, with trace samples linked to each incident window.",
+    operations:
+      "15m burn windows · p95 trace samples · owner-based routing",
+    outcome:
+      "Fewer duplicate alerts · faster triage · clearer runtime ownership across services",
+    tags: ["Observability", "SLO", "Platform"],
+    href: "/case-studies/alert-fatigue",
+    readTime: "9 min",
   },
 ];
 
@@ -57,6 +99,11 @@ export function CaseStudiesSection() {
             >
               Case Studies
             </h2>
+            <p className="max-w-[58ch] text-[14px] leading-[1.72] text-[var(--color-muted)] sm:text-[15px]">
+              Short previews of the kind of engineering decisions that matter
+              after launch: boundaries, latency, ownership, reliability, and
+              publishing safety.
+            </p>
           </div>
           <Link
             href="/case-studies"
@@ -77,7 +124,7 @@ export function CaseStudiesSection() {
             <Link
               href={study.href}
               className={cn(
-                "group py-7 sm:py-8",
+                "group py-8 sm:py-9",
                 // Mobile: stack everything
                 "flex flex-col gap-4",
                 // Desktop: grid with right col
@@ -85,40 +132,64 @@ export function CaseStudiesSection() {
               )}
             >
               {/* Main content */}
-              <div className="flex flex-col gap-3 sm:gap-4">
+              <div className="flex flex-col gap-3.5 sm:gap-4">
                 {/* Title with index */}
                 <div className="flex items-baseline gap-3">
-                  <span className="shrink-0 font-mono text-[10px] text-[var(--color-muted-2)]">
+                  <span className="shrink-0 font-mono text-[11px] text-[var(--color-muted-2)]">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <h3 className={cn(
-                    "text-[14px] font-medium leading-snug tracking-[-0.015em]",
+                    "text-[15px] font-medium leading-snug tracking-[-0.015em]",
                     "text-[var(--color-foreground)]",
                     "transition-colors duration-[140ms] group-hover:text-white",
-                    "sm:text-[15px]"
+                    "sm:text-[16px]"
                   )}>
                     {study.title}
                   </h3>
                 </div>
 
-                {/* Challenge — full on sm+, abbreviated on mobile via line clamp */}
-                <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-[var(--color-muted-2)]">
-                    Challenge
-                  </span>
-                  <p className="text-[13px] leading-[1.65] text-[var(--color-muted)] line-clamp-3 sm:line-clamp-none">
-                    {study.challenge}
-                  </p>
+                <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-5">
+                  {/* Challenge — abbreviated on mobile via line clamp */}
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[10.5px] font-medium uppercase tracking-[0.1em] text-[var(--color-muted-2)]">
+                      Problem
+                    </span>
+                    <p className="line-clamp-3 text-[14px] leading-[1.68] text-[var(--color-muted)] sm:line-clamp-none">
+                      {study.challenge}
+                    </p>
+                  </div>
+
+                  {/* Decision */}
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[10.5px] font-medium uppercase tracking-[0.1em] text-[var(--color-muted-2)]">
+                      Decision
+                    </span>
+                    <p className="line-clamp-3 text-[14px] leading-[1.68] text-[var(--color-muted)] sm:line-clamp-none">
+                      {study.decision}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Outcome */}
-                <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-medium uppercase tracking-[0.1em] text-[var(--color-muted-2)]">
-                    Outcome
-                  </span>
-                  <p className="font-mono text-[12px] leading-relaxed text-[var(--color-secondary)]">
-                    {study.outcome}
-                  </p>
+                <div className="grid gap-3 sm:grid-cols-[0.9fr_1.1fr] sm:gap-5">
+                  {/* Operations */}
+                  <div className="rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-surface)] px-3 py-2.5">
+                    <span className="mb-1 block font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--color-muted-2)]">
+                      ops note
+                    </span>
+                    <p className="font-mono text-[12px] leading-relaxed text-[var(--color-muted)]">
+                      {study.operations}
+                    </p>
+                  </div>
+
+                  {/* Outcome */}
+                  <div className="rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-surface-2)] px-3 py-2.5">
+                    <span className="mb-1 block font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--color-muted-2)]">
+                      outcome
+                    </span>
+                    <p className="font-mono text-[12px] leading-relaxed text-[var(--color-secondary)]">
+                      {study.outcome}
+                    </p>
+                  </div>
                 </div>
 
                 {/* Tags — visible on mobile too */}
@@ -128,7 +199,7 @@ export function CaseStudiesSection() {
                       key={tag}
                       className={cn(
                         "rounded-full border border-[var(--color-border)] px-2.5 py-0.5",
-                        "text-[10px] font-medium uppercase tracking-[0.06em] text-[var(--color-muted-2)]"
+                        "text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--color-muted-2)]"
                       )}
                     >
                       {tag}
@@ -142,7 +213,7 @@ export function CaseStudiesSection() {
                 "flex items-center gap-4",
                 "lg:flex-col lg:items-end lg:justify-between lg:pt-0.5 lg:gap-6"
               )}>
-                <span className="text-[11px] tracking-wide text-[var(--color-muted-2)]">
+                <span className="text-[12px] tracking-wide text-[var(--color-muted-2)]">
                   {study.readTime} read
                 </span>
                 <ArrowRight

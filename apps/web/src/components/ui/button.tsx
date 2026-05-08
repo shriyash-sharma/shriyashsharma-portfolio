@@ -17,7 +17,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: [
-          "bg-[var(--color-foreground)] text-[var(--color-background)]",
+          "bg-[var(--color-foreground)] !text-[#0a0a0a]",
           "hover:bg-[var(--color-accent)]",
           "active:scale-[0.97] active:opacity-90",
         ],
@@ -37,7 +37,7 @@ const buttonVariants = cva(
       size: {
         sm:   "h-7 px-3 text-[12px] rounded",
         md:   "h-9 px-4",
-        lg:   "h-11 px-5 text-[14px]",
+        lg:   "h-11 px-5 text-[14.5px]",
         icon: "h-11 w-11 p-0",
       },
     },

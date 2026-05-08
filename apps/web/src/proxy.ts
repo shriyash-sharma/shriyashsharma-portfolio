@@ -3,6 +3,7 @@ import {
   defaultLocale,
   getPathLocale,
   isLocale,
+  localizePath,
   stripLocaleFromPath,
 } from "@/lib/i18n/config";
 import { getPreferredLocale, localeCookieName } from "@/lib/i18n/routing";
@@ -27,6 +28,7 @@ export function proxy(request: NextRequest) {
   const preferredLocale = getPreferredLocale(
     request.headers.get("accept-language")
   );
+  const cookieLocale = request.cookies.get(localeCookieName)?.value;
 
   // Default locale remains unprefixed. Non-default locale paths are rewritten
   // to the existing route tree so localized content can be added incrementally.
@@ -45,8 +47,22 @@ export function proxy(request: NextRequest) {
     return response;
   }
 
-  const cookieLocale = request.cookies.get(localeCookieName)?.value;
   const detectedLocale = isLocale(cookieLocale) ? cookieLocale : preferredLocale;
+
+  if (!cookieLocale && pathname === "/" && detectedLocale !== defaultLocale) {
+    const url = request.nextUrl.clone();
+    url.pathname = localizePath(pathname, detectedLocale);
+
+    const response = NextResponse.redirect(url);
+    response.cookies.set(localeCookieName, detectedLocale, {
+      path: "/",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 365,
+    });
+
+    return response;
+  }
+
   const response = NextResponse.next();
 
   response.cookies.set(localeCookieName, detectedLocale, {

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { navItems } from "@/lib/constants/nav";
 import { siteConfig } from "@/lib/constants/site";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -52,7 +53,7 @@ export function Navbar() {
           : "border-b border-transparent bg-transparent"
       )}
     >
-      <div className="mx-auto flex h-[52px] max-w-5xl items-center justify-between px-6 lg:px-8">
+      <div className="mx-auto flex h-[52px] max-w-7xl items-center justify-between gap-4 px-6 lg:px-8 xl:px-12">
 
         {/* Wordmark */}
         <Link
@@ -100,35 +101,39 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Mobile toggle */}
-        <button
-          type="button"
-          aria-label={
-            mobileOpen
-              ? dictionary.a11y.closeNavigation
-              : dictionary.a11y.openNavigation
-          }
-          aria-expanded={mobileOpen}
-          aria-controls="mobile-nav"
-          onClick={() => setMobileOpen((v) => !v)}
-          className={cn(
-            "flex h-11 w-11 items-center justify-center rounded-md md:hidden",
-            "text-[var(--color-muted)] transition-colors duration-[140ms]",
-            "hover:bg-[var(--color-surface-2)] hover:text-[var(--color-secondary)]"
-          )}
-        >
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.span
-              key={mobileOpen ? "close" : "open"}
-              initial={{ opacity: 0, rotate: -10 }}
-              animate={{ opacity: 1, rotate: 0 }}
-              exit={{ opacity: 0, rotate: 10 }}
-              transition={transitions.micro}
-            >
-              {mobileOpen ? <X size={16} /> : <Menu size={16} />}
-            </motion.span>
-          </AnimatePresence>
-        </button>
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+
+          {/* Mobile toggle */}
+          <button
+            type="button"
+            aria-label={
+              mobileOpen
+                ? dictionary.a11y.closeNavigation
+                : dictionary.a11y.openNavigation
+            }
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav"
+            onClick={() => setMobileOpen((v) => !v)}
+            className={cn(
+              "flex h-11 w-11 items-center justify-center rounded-md md:hidden",
+              "text-[var(--color-muted)] transition-colors duration-[140ms]",
+              "hover:bg-[var(--color-surface-2)] hover:text-[var(--color-secondary)]"
+            )}
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={mobileOpen ? "close" : "open"}
+                initial={{ opacity: 0, rotate: -10 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, rotate: 10 }}
+                transition={transitions.micro}
+              >
+                {mobileOpen ? <X size={16} /> : <Menu size={16} />}
+              </motion.span>
+            </AnimatePresence>
+          </button>
+        </div>
       </div>
 
       {/* Mobile drawer */}

@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Section } from "@/components/layout/section";
+import { MaxWidthWrapper } from "@/components/layout/max-width-wrapper";
 import { FadeIn } from "@/components/shared/motion/fade-in";
 import { Stagger, StaggerItem } from "@/components/shared/motion/stagger";
 import { cn } from "@/lib/utils/cn";
@@ -11,9 +12,9 @@ const C = {
   surface3:     "#1c1c1c",
   border:       "#232323",
   borderSubtle: "#181818",
-  muted:        "#6b6b6b",
-  muted2:       "#444444",
-  secondary:    "#a1a1a1",
+  muted:        "#909090",
+  muted2:       "#696969",
+  secondary:    "#b8b8b8",
 } as const;
 
 // ─── Architecture SVG fragments ────────────────────────────────────
@@ -145,10 +146,105 @@ function RetrievalPipelineSvg() {
   );
 }
 
+/** Observability surface: services → traces → alert budget */
+function ObservabilityPanelSvg() {
+  return (
+    <svg viewBox="0 0 280 108" xmlns="http://www.w3.org/2000/svg" className="h-full w-full" aria-hidden="true">
+      <rect x="8" y="12" width="264" height="84" rx="6" fill={C.surface2} stroke={C.border} strokeWidth="0.75" />
+
+      {/* Service list */}
+      <rect x="18" y="24" width="66" height="60" rx="4" fill={C.surface3} stroke={C.borderSubtle} strokeWidth="0.75" />
+      {["api-gateway", "worker", "billing"].map((label, index) => (
+        <g key={label}>
+          <circle cx="28" cy={36 + index * 16} r="2.5" fill={index === 1 ? C.secondary : C.muted2} />
+          <text x="36" y={39 + index * 16} fontSize="6.8" fill={C.muted} fontFamily="monospace">{label}</text>
+        </g>
+      ))}
+
+      {/* Trace bars */}
+      <rect x="100" y="24" width="92" height="60" rx="4" fill={C.surface3} stroke={C.borderSubtle} strokeWidth="0.75" />
+      {[24, 44, 32, 58, 38].map((width, index) => (
+        <rect
+          key={index}
+          x="112"
+          y={34 + index * 9}
+          width={width}
+          height="3"
+          rx="1.5"
+          fill={index === 3 ? C.secondary : C.muted2}
+        />
+      ))}
+      <text x="146" y="77" textAnchor="middle" fontSize="7" fill={C.muted2} fontFamily="monospace">p95 trace latency</text>
+
+      {/* SLO budget */}
+      <rect x="208" y="24" width="46" height="60" rx="4" fill={C.surface3} stroke={C.borderSubtle} strokeWidth="0.75" />
+      <text x="231" y="38" textAnchor="middle" fontSize="7" fill={C.muted2} fontFamily="monospace">SLO</text>
+      <text x="231" y="55" textAnchor="middle" fontSize="13" fill={C.secondary} fontFamily="monospace">99.9</text>
+      <text x="231" y="70" textAnchor="middle" fontSize="6.5" fill={C.muted2} fontFamily="monospace">error budget</text>
+    </svg>
+  );
+}
+
+/** CMS workflow: authoring → review → edge cache */
+function CmsWorkflowSvg() {
+  return (
+    <svg viewBox="0 0 280 108" xmlns="http://www.w3.org/2000/svg" className="h-full w-full" aria-hidden="true">
+      {[
+        ["Draft", 16, 22],
+        ["Review", 106, 22],
+        ["Publish", 196, 22],
+      ].map(([label, x, y], index) => (
+        <g key={label}>
+          <rect x={Number(x)} y={Number(y)} width="68" height="28" rx="5" fill={C.surface3} stroke={C.border} strokeWidth="0.75" />
+          <text x={Number(x) + 34} y={Number(y) + 17} textAnchor="middle" fontSize="8" fill={index === 2 ? C.secondary : C.muted} fontFamily="monospace">{label}</text>
+          {index < 2 && (
+            <>
+              <line x1={Number(x) + 69} y1="36" x2={Number(x) + 88} y2="36" stroke={C.border} strokeWidth="0.75" />
+              <polygon points={`${Number(x) + 88},33 ${Number(x) + 94},36 ${Number(x) + 88},39`} fill={C.muted2} />
+            </>
+          )}
+        </g>
+      ))}
+
+      <rect x="36" y="72" width="208" height="16" rx="3" fill={C.surface2} stroke={C.borderSubtle} strokeWidth="0.75" strokeDasharray="2,2" />
+      <text x="140" y="83" textAnchor="middle" fontSize="7" fill={C.muted2} fontFamily="monospace">schema validation · preview token · edge revalidate</text>
+    </svg>
+  );
+}
+
+/** Deployment topology: queue → deploy workers → regions */
+function DeploymentTopologySvg() {
+  return (
+    <svg viewBox="0 0 280 108" xmlns="http://www.w3.org/2000/svg" className="h-full w-full" aria-hidden="true">
+      <rect x="12" y="42" width="48" height="24" rx="4" fill={C.surface3} stroke={C.border} strokeWidth="0.75" />
+      <text x="36" y="57" textAnchor="middle" fontSize="8" fill={C.muted} fontFamily="monospace">Queue</text>
+
+      <line x1="61" y1="54" x2="88" y2="54" stroke={C.border} strokeWidth="0.75" />
+      <polygon points="88,51 94,54 88,57" fill={C.muted2} />
+
+      <rect x="95" y="29" width="74" height="50" rx="5" fill={C.surface3} stroke={C.border} strokeWidth="0.75" />
+      <text x="132" y="47" textAnchor="middle" fontSize="8.5" fill={C.secondary} fontFamily="monospace">Deploy</text>
+      <text x="132" y="59" textAnchor="middle" fontSize="7" fill={C.muted2} fontFamily="monospace">worker pool</text>
+      <text x="132" y="70" textAnchor="middle" fontSize="6.5" fill={C.muted2} fontFamily="monospace">canary 5%</text>
+
+      {[["iad1", 212, 24], ["fra1", 212, 52], ["sin1", 212, 80]].map(([label, x, y]) => (
+        <g key={label}>
+          <line x1="170" y1="54" x2={Number(x) - 8} y2={Number(y)} stroke={C.border} strokeWidth="0.75" strokeDasharray="2,2" />
+          <rect x={Number(x)} y={Number(y) - 11} width="42" height="20" rx="4" fill={C.surface2} stroke={C.border} strokeWidth="0.75" />
+          <text x={Number(x) + 21} y={Number(y) + 2} textAnchor="middle" fontSize="7.5" fill={C.muted} fontFamily="monospace">{label}</text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
 const VISUALS = {
   "rendering-pipeline": RenderingPipelineSvg,
   "collab-topology":    CollabTopologySvg,
   "retrieval-pipeline": RetrievalPipelineSvg,
+  "observability-panel": ObservabilityPanelSvg,
+  "cms-workflow":        CmsWorkflowSvg,
+  "deployment-topology": DeploymentTopologySvg,
 } as const;
 
 // ─── Project data ──────────────────────────────────────────────────
@@ -161,10 +257,12 @@ type Project = {
   /** The single most important architectural tradeoff */
   keyDecision: string;
   architecture: string;
+  systemDetail: string;
   stack: string[];
   href: string;
   label: string;
   visual: ProjectVisualKey;
+  visualLabel: string;
 };
 
 const PROJECTS: Project[] = [
@@ -176,10 +274,12 @@ const PROJECTS: Project[] = [
     keyDecision:
       "ISR for content pages, SSR only for authenticated routes — a blanket SSR approach would have tripled egress costs and eliminated 94% cache efficiency.",
     architecture: "Next.js App Router · ISR + SSR hybrid · Turborepo · Vercel Edge",
+    systemDetail: "p75 LCP 0.81s · 12 edge regions · Redis cache warming",
     stack: ["Next.js", "TypeScript", "Turborepo", "Redis"],
     href: "/projects/platform-rewrite",
     label: "Production",
     visual: "rendering-pipeline",
+    visualLabel: "Architecture diagram showing client traffic routed through an edge layer into ISR and SSR rendering paths.",
   },
   {
     id: "2",
@@ -189,10 +289,12 @@ const PROJECTS: Project[] = [
     keyDecision:
       "Operational transforms over CRDTs — server infrastructure already implemented OT and the product had no offline requirement to justify CRDT complexity.",
     architecture: "WebSockets · Redis pub/sub · OT · Optimistic UI + rollback",
+    systemDetail: "8s presence TTL · reconnect backoff · Redis fanout per document",
     stack: ["React", "Node.js", "Redis", "WebSockets"],
     href: "/projects/collab-engine",
     label: "Open Source",
     visual: "collab-topology",
+    visualLabel: "Topology diagram showing multiple clients connected to a WebSocket server and Redis pub/sub broker.",
   },
   {
     id: "3",
@@ -202,10 +304,57 @@ const PROJECTS: Project[] = [
     keyDecision:
       "Hybrid BM25 + vector retrieval fused with RRF over pure embeddings — keyword matching outperforms vectors for product codes and proper nouns in this domain.",
     architecture: "FastAPI · pgvector · BM25 hybrid · RRF reranking · SSE",
+    systemDetail: "400k docs · p95 under 900ms · 7d embedding cache",
     stack: ["Python", "FastAPI", "pgvector", "OpenAI"],
     href: "/projects/semantic-search",
     label: "In Progress",
     visual: "retrieval-pipeline",
+    visualLabel: "Retrieval pipeline diagram showing BM25 and pgvector results fused before streaming through an LLM.",
+  },
+  {
+    id: "4",
+    title: "Observability workspace",
+    description:
+      "Internal reliability surface for tracing latency regressions across API, queue, and worker systems.",
+    keyDecision:
+      "Sampled traces instead of full retention — kept investigation detail for slow paths without turning the dashboard into an expensive log warehouse.",
+    architecture: "OpenTelemetry · ClickHouse · SLO budgets · anomaly windows",
+    systemDetail: "15m rollups · p95 traces · alert noise grouped by service owner",
+    stack: ["Next.js", "OTel", "ClickHouse", "Postgres"],
+    href: "/projects/observability-workspace",
+    label: "Internal Tool",
+    visual: "observability-panel",
+    visualLabel: "Observability panel fragment with service status, trace latency bars, and an SLO budget card.",
+  },
+  {
+    id: "5",
+    title: "Editorial CMS architecture",
+    description:
+      "Composable content workflow for technical case studies, project pages, and previewable documentation.",
+    keyDecision:
+      "Schema-first content contracts over freeform rich text — authors keep flexibility while the frontend preserves predictable rendering and SEO.",
+    architecture: "Content collections · preview tokens · edge revalidation · MDX",
+    systemDetail: "draft previews · typed frontmatter · sitemap-safe publishing",
+    stack: ["Next.js", "MDX", "Zod", "Vercel"],
+    href: "/projects/editorial-cms",
+    label: "Design System",
+    visual: "cms-workflow",
+    visualLabel: "CMS workflow diagram showing draft, review, and publish states with schema validation and edge revalidation.",
+  },
+  {
+    id: "6",
+    title: "Deployment orchestration tooling",
+    description:
+      "Release coordination utility for small teams shipping web services across multiple regions.",
+    keyDecision:
+      "Canary promotion with explicit rollback checkpoints over fully automatic rollout — safer for low-volume services where signals can lag.",
+    architecture: "Queue workers · canary deploys · region locks · rollback checkpoints",
+    systemDetail: "5% canary · region locks · deploy notes stored with SHA",
+    stack: ["Node.js", "BullMQ", "Redis", "GitHub API"],
+    href: "/projects/deploy-orchestration",
+    label: "Prototype",
+    visual: "deployment-topology",
+    visualLabel: "Deployment topology diagram showing a queue, deploy worker pool, canary rollout, and regional deployment targets.",
   },
 ];
 
@@ -215,7 +364,9 @@ export function FeaturedProjectsSection() {
     <Section
       aria-labelledby="projects-heading"
       className="border-t border-[var(--color-border)]"
+      fullWidth
     >
+      <MaxWidthWrapper>
       <FadeIn>
         <div className="mb-8 flex items-end justify-between gap-4 sm:mb-12">
           <div className="flex flex-col gap-1.5 sm:gap-2">
@@ -229,6 +380,11 @@ export function FeaturedProjectsSection() {
             >
               Projects
             </h2>
+            <p className="max-w-[58ch] text-[14px] leading-[1.72] text-[var(--color-muted)] sm:text-[15px]">
+              Representative systems work, written as real engineering
+              briefs: constraints, decisions, runtime behavior, and the
+              tradeoffs that shaped each build.
+            </p>
           </div>
           <Link
             href="/projects"
@@ -265,6 +421,7 @@ export function FeaturedProjectsSection() {
                     "transition-colors duration-[200ms] group-hover:bg-[var(--color-surface-3)]"
                   )}
                 >
+                  <span className="sr-only">{project.visualLabel}</span>
                   <Visual />
                 </div>
 
@@ -272,32 +429,42 @@ export function FeaturedProjectsSection() {
                 <div className="flex flex-1 flex-col gap-4 p-5">
                   {/* Title + status */}
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-[13px] font-medium leading-snug tracking-[-0.01em] text-[var(--color-foreground)]">
+                    <h3 className="text-[14px] font-medium leading-snug tracking-[-0.01em] text-[var(--color-foreground)]">
                       {project.title}
                     </h3>
                     <span className={cn(
                       "shrink-0 rounded-full border border-[var(--color-border)] px-2 py-0.5",
-                      "text-[10px] font-medium uppercase tracking-[0.07em] text-[var(--color-muted)]"
+                      "text-[10.5px] font-medium uppercase tracking-[0.07em] text-[var(--color-muted)]"
                     )}>
                       {project.label}
                     </span>
                   </div>
 
                   {/* Short description */}
-                  <p className="text-[13px] leading-[1.65] text-[var(--color-muted)]">
+                  <p className="text-[14px] leading-[1.68] text-[var(--color-muted)]">
                     {project.description}
                   </p>
 
                   {/* Key decision — left-border callout */}
                   <div className="border-l-2 border-[var(--color-border-strong)] pl-3">
-                    <p className="text-[12px] leading-[1.6] text-[var(--color-secondary)]">
+                    <p className="text-[13px] leading-[1.62] text-[var(--color-secondary)]">
                       {project.keyDecision}
                     </p>
                   </div>
 
+                  {/* Operational detail */}
+                  <div className="rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-surface)] px-3 py-2.5">
+                    <span className="mb-1 block font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--color-muted-2)]">
+                      runtime note
+                    </span>
+                    <p className="font-mono text-[12px] leading-relaxed text-[var(--color-muted)]">
+                      {project.systemDetail}
+                    </p>
+                  </div>
+
                   {/* Architecture annotation */}
-                  <div className="rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-surface-2)] px-3 py-2">
-                    <p className="font-mono text-[10.5px] leading-relaxed text-[var(--color-muted-2)] transition-colors duration-[140ms] group-hover:text-[var(--color-muted)]">
+                  <div className="rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-surface-2)] px-3 py-2.5">
+                    <p className="font-mono text-[12px] leading-relaxed text-[var(--color-muted-2)] transition-colors duration-[140ms] group-hover:text-[var(--color-muted)]">
                       {project.architecture}
                     </p>
                   </div>
@@ -308,7 +475,7 @@ export function FeaturedProjectsSection() {
                       {project.stack.map((tech) => (
                         <span
                           key={tech}
-                          className="text-[11px] tracking-wide text-[var(--color-muted-2)]"
+                          className="text-[12px] tracking-wide text-[var(--color-muted-2)]"
                         >
                           {tech}
                         </span>
@@ -338,6 +505,7 @@ export function FeaturedProjectsSection() {
           </Link>
         </div>
       </FadeIn>
+      </MaxWidthWrapper>
     </Section>
   );
 }

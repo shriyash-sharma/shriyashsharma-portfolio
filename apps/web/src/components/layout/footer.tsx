@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { siteConfig } from "@/lib/constants/site";
-import { Container } from "./container";
+import { MaxWidthWrapper } from "./max-width-wrapper";
 import { cn } from "@/lib/utils/cn";
 
 export function Footer() {
@@ -8,7 +8,7 @@ export function Footer() {
 
   return (
     <footer className="border-t border-[var(--color-border)] py-8">
-      <Container>
+      <MaxWidthWrapper>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[12px] text-[var(--color-muted)] max-w-none">
             &copy; {year} {siteConfig.author.name}
@@ -51,7 +51,7 @@ export function Footer() {
             </a>
           </div>
         </div>
-      </Container>
+      </MaxWidthWrapper>
     </footer>
   );
 }

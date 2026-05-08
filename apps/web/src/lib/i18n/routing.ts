@@ -25,6 +25,10 @@ export function getPreferredLocale(acceptLanguage: string | null): Locale {
     if (isLocale(language)) {
       return language;
     }
+
+    if (language === "pt") {
+      return "pt";
+    }
   }
 
   return defaultLocale;

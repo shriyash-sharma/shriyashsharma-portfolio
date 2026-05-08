@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { PageShell } from "@/components/layout/page-shell";
-import { Container } from "@/components/layout/container";
 import { HeroSection } from "@/features/home/components/hero-section";
 import { FeaturedProjectsSection } from "@/features/home/components/featured-projects-section";
 import { CaseStudiesSection } from "@/features/home/components/case-studies-section";
@@ -22,10 +21,8 @@ export default function HomePage() {
       />
 
       <PageShell>
-        {/* Hero – full viewport height, inside a container for alignment */}
-        <Container>
-          <HeroSection />
-        </Container>
+        {/* Hero spans full viewport width — controls its own padding to match the navbar. */}
+        <HeroSection />
 
         {/* Sections */}
         <FeaturedProjectsSection />

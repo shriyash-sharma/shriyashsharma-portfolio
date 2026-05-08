@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/constants/site";
-import { localizePath, type Locale } from "@/lib/i18n/config";
+import {
+  defaultLocale,
+  localeLanguageTags,
+  locales,
+  localizePath,
+  type Locale,
+} from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
 
 type MetadataOverrides = {
   title?: string;
@@ -19,17 +26,23 @@ type MetadataOverrides = {
  *   export const metadata = buildMetadata({ title: "Projects", path: "/projects" });
  */
 export function buildMetadata(overrides: MetadataOverrides = {}): Metadata {
+  const locale = overrides.locale ?? defaultLocale;
+  const dictionary = getDictionary(locale);
   const title = overrides.title
     ? `${overrides.title} — ${siteConfig.name}`
-    : siteConfig.title;
-
-  const description = overrides.description ?? siteConfig.description;
+    : dictionary.meta.title;
+  const description = overrides.description ?? dictionary.meta.description;
   const image = overrides.image ?? siteConfig.ogImage;
   const url = overrides.path
     ? `${siteConfig.url}${overrides.path}`
     : siteConfig.url;
   const path = overrides.path ?? "/";
-  const locale = overrides.locale ?? "en";
+  const languageAlternates = Object.fromEntries(
+    locales.map((item) => [
+      localeLanguageTags[item],
+      `${siteConfig.url}${localizePath(path, item)}`,
+    ])
+  );
 
   return {
     title: {
@@ -45,13 +58,13 @@ export function buildMetadata(overrides: MetadataOverrides = {}): Metadata {
     alternates: {
       canonical: url,
       languages: {
-        en: `${siteConfig.url}${localizePath(path, "en")}`,
-        "hi-IN": `${siteConfig.url}${localizePath(path, "hi")}`,
+        ...languageAlternates,
+        "x-default": `${siteConfig.url}${localizePath(path, defaultLocale)}`,
       },
     },
     openGraph: {
       type: "website",
-      locale: locale === "hi" ? "hi_IN" : "en_US",
+      locale: localeLanguageTags[locale].replace("-", "_"),
       url,
       title,
       description,

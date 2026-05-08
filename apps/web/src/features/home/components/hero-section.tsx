@@ -1,8 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Stagger, StaggerItem } from "@/components/shared/motion/stagger";
 import { HeroSystemPanel } from "./hero-system-panel";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { getPathLocale, localizePath } from "@/lib/i18n/config";
 import { cn } from "@/lib/utils/cn";
 
 /**
@@ -11,32 +16,39 @@ import { cn } from "@/lib/utils/cn";
  * Mobile: single column, panel hidden, tight vertical rhythm.
  */
 export function HeroSection() {
+  const pathname = usePathname();
+  const locale = getPathLocale(pathname);
+  const dictionary = getDictionary(locale);
+  const home = dictionary.home;
+
   return (
     <section
       aria-labelledby="hero-heading"
       className={cn(
         "relative",
-        // Mobile: full-height feel with generous but not excessive padding
-        "flex min-h-[88dvh] flex-col justify-center",
-        "pt-16 pb-12",
+        // Full-width section with same horizontal padding as navbar
+        "px-6 lg:px-8 xl:px-12",
+        // Mobile: full-height feel, content sits in the upper-middle third
+        "flex min-h-[86dvh] flex-col justify-center",
+        "pt-12 pb-10",
         // Tablet+
-        "sm:min-h-[84dvh] sm:pt-20 sm:pb-16",
+        "sm:min-h-[80dvh] sm:pt-16 sm:pb-14",
         // Desktop+
-        "lg:min-h-[90dvh] lg:pt-24 lg:pb-20"
+        "lg:min-h-[88dvh] lg:pt-20 lg:pb-16"
       )}
     >
-      {/* Ambient — barely perceptible */}
+      {/* Ambient — barely perceptible, spans full section width */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute left-[-15%] top-[-10%] h-[480px] w-[480px] rounded-full bg-white/[0.012] blur-[140px]" />
         <div className="absolute bottom-[5%] right-[-10%] h-[280px] w-[280px] rounded-full bg-white/[0.008] blur-[90px]" />
       </div>
 
-      {/* Two-column grid on desktop */}
+      {/* Inner grid — bounded to max-w-7xl, same anchor as navbar content */}
       <div className={cn(
-        "relative z-10",
+        "relative z-10 mx-auto w-full max-w-7xl",
         "grid grid-cols-1 items-center gap-12",
         "lg:grid-cols-[1fr_300px] lg:gap-16",
-        "xl:grid-cols-[1fr_320px]"
+        "xl:grid-cols-[1fr_320px] xl:gap-20"
       )}>
 
         {/* Left — primary content */}
@@ -49,8 +61,8 @@ export function HeroSection() {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/60" />
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
                 </span>
-                <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--color-muted)]">
-                  Available for new roles
+                <span className="text-[11.5px] font-medium uppercase tracking-[0.1em] text-[var(--color-muted)]">
+                  {home.status}
                 </span>
               </div>
             </StaggerItem>
@@ -67,10 +79,10 @@ export function HeroSection() {
                   "xl:text-[3.6rem]"
                 )}
               >
-                Senior software engineer
+                {home.heading}
                 <br />
                 <span className="text-[var(--color-muted)]">
-                  building things that last
+                  {home.headingAccent}
                 </span>
               </h1>
             </StaggerItem>
@@ -78,15 +90,12 @@ export function HeroSection() {
             {/* Sub-copy — warmer, more personal */}
             <StaggerItem>
               <p className={cn(
-                "mt-5 text-[14px] leading-[1.75] text-[var(--color-secondary)]",
-                "max-w-[40ch]",
-                "sm:mt-6 sm:text-[15px]",
-                "lg:max-w-[44ch]"
+                "mt-5 text-[15px] leading-[1.75] text-[var(--color-secondary)]",
+                "max-w-[42ch]",
+                "sm:mt-6 sm:text-[16px]",
+                "lg:max-w-[46ch]"
               )}>
-                I build production software with care — API design, frontend
-                systems, and the architecture decisions that compound over time.
-                I prefer boring, reliable choices and get the structure right
-                before worrying about anything else.
+                {home.intro}
               </p>
             </StaggerItem>
 
@@ -97,13 +106,13 @@ export function HeroSection() {
                 "sm:mt-9 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3"
               )}>
                 <Button asChild size="lg" className="w-full justify-center sm:w-auto">
-                  <Link href="/projects">
-                    View work
+                  <Link href={localizePath("/projects", locale)}>
+                    {home.primaryCta}
                     <ArrowRight size={14} strokeWidth={2} />
                   </Link>
                 </Button>
                 <Button asChild variant="secondary" size="lg" className="w-full justify-center sm:w-auto">
-                  <Link href="/about">About me</Link>
+                  <Link href={localizePath("/about", locale)}>{home.secondaryCta}</Link>
                 </Button>
               </div>
             </StaggerItem>
@@ -111,11 +120,7 @@ export function HeroSection() {
             {/* Meta line */}
             <StaggerItem>
               <div className={cn("mt-8 flex flex-wrap items-center sm:mt-10")}>
-                {[
-                  "5+ yrs production software",
-                  "Frontend · Fullstack · Systems",
-                  "India · Remote-first",
-                ].map((item, i) => (
+                {home.meta.map((item, i) => (
                   <span key={item} className="flex items-center">
                     {i > 0 && (
                       <span
@@ -125,7 +130,7 @@ export function HeroSection() {
                         /
                       </span>
                     )}
-                    <span className="text-[11px] tracking-wide text-[var(--color-muted)]">
+                    <span className="text-[12px] tracking-wide text-[var(--color-muted)]">
                       {item}
                     </span>
                   </span>

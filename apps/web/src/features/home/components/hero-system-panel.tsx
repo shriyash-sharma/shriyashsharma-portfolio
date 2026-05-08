@@ -52,7 +52,7 @@ export function HeroSystemPanel() {
           className={cn(
             "rounded-md border border-[var(--color-border-subtle)]",
             "bg-[var(--color-surface-2)] px-3 py-2.5",
-            "flex flex-col gap-1"
+            "mb-3 flex flex-col gap-1"
           )}
         >
           <span className="text-[9px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
@@ -65,6 +65,28 @@ export function HeroSystemPanel() {
             <span>App Router</span>
             <span>Edge Runtime</span>
           </div>
+        </div>
+
+        {/* Release checks */}
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            ["a11y", "pass"],
+            ["i18n", "en / hi"],
+            ["bundle", "188kb"],
+            ["routes", "static"],
+          ].map(([label, value]) => (
+            <div
+              key={label}
+              className="rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-surface-2)] px-2.5 py-2"
+            >
+              <span className="block text-[9px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
+                {label}
+              </span>
+              <span className="text-[10px] text-[var(--color-muted)]">
+                {value}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </aside>
