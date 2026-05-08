@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { dashboardAuthCookieName } from "@/lib/auth/constants";
 import {
   defaultLocale,
   getPathLocale,
@@ -22,6 +23,23 @@ export function proxy(request: NextRequest) {
     PUBLIC_FILE.test(pathname)
   ) {
     return NextResponse.next();
+  }
+
+  const normalizedPath = stripLocaleFromPath(pathname);
+  const hasDashboardSession = request.cookies.has(dashboardAuthCookieName);
+
+  if (normalizedPath.startsWith("/dashboard") && !hasDashboardSession) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    url.searchParams.set("next", normalizedPath);
+    return NextResponse.redirect(url);
+  }
+
+  if (normalizedPath === "/login" && hasDashboardSession) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
+    url.search = "";
+    return NextResponse.redirect(url);
   }
 
   const pathLocale = getPathLocale(pathname);

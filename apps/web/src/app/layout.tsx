@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
+import { AppChrome } from "@/components/layout/app-chrome";
 import { DocumentLocaleSync } from "@/components/layout/document-locale-sync";
 import { SkipLink } from "@/components/layout/skip-link";
 import { localeConfigs } from "@/lib/i18n/config";
@@ -50,11 +49,7 @@ export default function RootLayout({
         />
         <DocumentLocaleSync />
         <SkipLink />
-        <div className="flex min-h-dvh flex-col">
-          <Navbar />
-          <div className="flex-1 pt-[58px]">{children}</div>
-          <Footer />
-        </div>
+        <AppChrome>{children}</AppChrome>
       </body>
     </html>
   );

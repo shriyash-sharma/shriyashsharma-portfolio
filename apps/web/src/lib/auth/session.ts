@@ -1,24 +1,45 @@
-export type DashboardRole = "owner" | "editor" | "viewer";
+import "server-only";
 
-export type DashboardSession = {
-  userId: string;
-  email: string;
-  roles: DashboardRole[];
-};
+import { cache } from "react";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import type { DashboardSession } from "@/lib/api/contracts/admin";
+import { isUnauthorizedApiError, getAdminSession } from "@/lib/api/endpoints/admin-api";
+import {
+  dashboardAuthCookieName,
+  dashboardHomePath,
+  dashboardLoginPath,
+} from "@/lib/auth/constants";
 
-/**
- * Server-side auth boundary for future dashboard routes.
- * Replace this with cookie/JWT validation once the FastAPI auth service exists.
- */
-export async function getDashboardSession(): Promise<DashboardSession | null> {
-  return null;
+export const getDashboardSession = cache(async (): Promise<DashboardSession | null> => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(dashboardAuthCookieName)?.value;
+
+  if (!token) {
+    return null;
+  }
+
+  try {
+    return await getAdminSession(token);
+  } catch (error) {
+    if (isUnauthorizedApiError(error)) {
+      return null;
+    }
+
+    throw error;
+  }
+});
+
+export async function getDashboardAccessToken() {
+  const cookieStore = await cookies();
+  return cookieStore.get(dashboardAuthCookieName)?.value ?? null;
 }
 
-export async function requireDashboardSession(): Promise<DashboardSession> {
+export async function requireDashboardSession() {
   const session = await getDashboardSession();
 
   if (!session) {
-    throw new Error("Dashboard authentication is not configured yet.");
+    redirect(`${dashboardLoginPath}?next=${encodeURIComponent(dashboardHomePath)}`);
   }
 
   return session;

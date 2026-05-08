@@ -38,3 +38,17 @@ def test_assistant_boundary() -> None:
 
     assert response.status_code == 200
     assert response.json()["implemented"] is False
+
+
+def test_admin_content_requires_authentication() -> None:
+    response = client.get("/admin/content/project")
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Authentication required"
+
+
+def test_admin_media_requires_authentication() -> None:
+    response = client.get("/admin/media")
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Authentication required"

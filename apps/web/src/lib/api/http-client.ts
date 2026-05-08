@@ -55,7 +55,18 @@ async function request<T>(
     });
 
     if (!response.ok) {
-      throw new ApiError(response.status, response.statusText);
+      let message: string | undefined;
+
+      try {
+        const payload = (await response.json()) as
+          | { detail?: string; message?: string }
+          | null;
+        message = payload?.detail ?? payload?.message;
+      } catch {
+        message = undefined;
+      }
+
+      throw new ApiError(response.status, response.statusText, message);
     }
 
     if (response.status === 204) {

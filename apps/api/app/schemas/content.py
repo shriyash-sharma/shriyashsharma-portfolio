@@ -87,3 +87,13 @@ class ContentItemRead(ContentItemBase):
 class ContentListResponse(BaseModel):
     items: list[ContentItemRead]
     total: int
+
+
+class ContentStatusCount(BaseModel):
+    status: PublishingStatus
+    total: int
+
+
+class AdminContentOverviewResponse(BaseModel):
+    counts: list[ContentStatusCount]
+    total: int

@@ -1,82 +1,108 @@
-import { aiCapabilities } from "@/lib/ai/capabilities";
+import { getAdminContentOverview } from "@/lib/api/endpoints/admin-api";
+import { getDashboardAccessToken } from "@/lib/auth/session";
 import { contentCollections } from "@/lib/content/registry";
 
-const platformModules = [
-  {
-    label: "Content system",
-    status: "Foundation",
-    description:
-      "Typed collections for projects, case studies, writing, architecture notes, experiments, and research logs.",
-  },
-  {
-    label: "FastAPI integration",
-    status: "Boundary",
-    description:
-      "Typed HTTP client, API envelopes, endpoint wrappers, auth token slot, and timeout strategy.",
-  },
-  {
-    label: "AI readiness",
-    status: "Contracts",
-    description:
-      "Semantic search, streaming assistant, ingestion, and observability contracts without UI coupling.",
-  },
-  {
-    label: "Protected tooling",
-    status: "Prepared",
-    description:
-      "Dashboard shell and auth boundary are ready for real session validation once backend auth exists.",
-  },
-];
+export default async function DashboardPage() {
+  const token = await getDashboardAccessToken();
+  const overviewItems = token
+    ? await Promise.all(
+        contentCollections.map(async (collection) => {
+          const overview = await getAdminContentOverview({
+            token,
+            type: collection.type,
+            locale: "en",
+          });
+          const published =
+            overview.counts.find((item) => item.status === "published")?.total ?? 0;
+          return {
+            collection,
+            total: overview.total,
+            published,
+          };
+        })
+      )
+    : [];
 
-export default function DashboardPage() {
   return (
     <div className="grid gap-8">
-      <section className="grid gap-4">
-        <p className="max-w-3xl text-[15px] leading-[1.75] text-[var(--color-secondary)]">
-          This route is a platform foundation, not a fake dashboard. It defines
-          where authenticated engineering tools will live once FastAPI, auth,
-          ingestion, and analytics services are connected.
-        </p>
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          {platformModules.map((module) => (
-            <article
-              key={module.label}
-              className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5"
-            >
-              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
-                {module.status}
-              </span>
-              <h2 className="mt-3 text-[15px] font-medium text-[var(--color-foreground)]">
-                {module.label}
-              </h2>
-              <p className="mt-2 text-[13px] leading-[1.65] text-[var(--color-muted)]">
-                {module.description}
+      <section className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_320px]">
+        <div>
+          <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--color-muted-2)]">
+            Operational surface
+          </p>
+          <h1 className="mt-2 text-[30px] font-semibold tracking-[-0.05em] text-[var(--color-foreground)]">
+            Publishing control, not placeholder chrome.
+          </h1>
+          <p className="mt-4 max-w-3xl text-[15px] leading-8 text-[var(--color-secondary)]">
+            The dashboard now operates as a protected authoring system: session-aware routes, authenticated admin APIs, live content CRUD, markdown editing, and media upload boundaries ready for future platform expansion.
+          </p>
+        </div>
+
+        <div className="rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
+            Current focus
+          </p>
+          <div className="mt-4 grid gap-3">
+            <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)] p-4">
+              <p className="text-[13px] text-[var(--color-secondary)]">Auth boundary</p>
+              <p className="mt-2 text-[14px] text-[var(--color-foreground)]">
+                JWT-backed admin session with protected dashboard routes.
               </p>
-            </article>
-          ))}
+            </div>
+            <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)] p-4">
+              <p className="text-[13px] text-[var(--color-secondary)]">Content ops</p>
+              <p className="mt-2 text-[14px] text-[var(--color-foreground)]">
+                Search, locale filtering, publish workflows, and metadata editing.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
+      <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {overviewItems.map(({ collection, total, published }) => (
+          <article
+            key={collection.type}
+            className="rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
+                {collection.type}
+              </span>
+              <span className="text-[12px] text-[var(--color-muted)]">
+                {published} published
+              </span>
+            </div>
+            <p className="mt-3 text-[24px] font-semibold tracking-[-0.04em] text-[var(--color-foreground)]">
+              {total}
+            </p>
+            <p className="mt-2 text-[13px] leading-7 text-[var(--color-secondary)]">
+              {collection.description}
+            </p>
+          </article>
+        ))}
+      </section>
+
       <section className="grid gap-3 lg:grid-cols-[1fr_1fr]">
-        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-          <h2 className="text-[15px] font-medium text-[var(--color-foreground)]">
-            Content collections
+        <div className="rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+          <h2 className="text-[18px] font-medium text-[var(--color-foreground)]">
+            Managed collections
           </h2>
           <div className="mt-4 grid gap-3">
             {contentCollections.map((collection) => (
               <div
                 key={collection.type}
-                className="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface-2)] p-3"
+                className="rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-2)] p-4"
               >
                 <div className="flex items-center justify-between gap-3">
                   <span className="font-mono text-[12px] text-[var(--color-secondary)]">
                     {collection.type}
                   </span>
                   <span className="text-[11px] text-[var(--color-muted-2)]">
-                    {collection.aiIndexable ? "indexable" : "local only"}
+                    {collection.aiIndexable ? "AI-ready metadata" : "internal only"}
                   </span>
                 </div>
-                <p className="mt-1 text-[12px] leading-relaxed text-[var(--color-muted)]">
+                <p className="mt-2 text-[13px] leading-7 text-[var(--color-muted)]">
                   {collection.description}
                 </p>
               </div>
@@ -84,27 +110,22 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-          <h2 className="text-[15px] font-medium text-[var(--color-foreground)]">
-            AI capability boundaries
+        <div className="rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+          <h2 className="text-[18px] font-medium text-[var(--color-foreground)]">
+            Workflow posture
           </h2>
           <div className="mt-4 grid gap-3">
-            {aiCapabilities.map((capability) => (
+            {[
+              "Protected admin boundaries on both Next.js and FastAPI",
+              "Markdown-first editor with local draft persistence",
+              "Draft, review, published, and archived states with timestamps",
+              "Media upload architecture prepared for cloud storage swap",
+            ].map((item) => (
               <div
-                key={capability.id}
-                className="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface-2)] p-3"
+                key={item}
+                className="rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-2)] px-4 py-3 text-[14px] text-[var(--color-secondary)]"
               >
-                <div className="flex items-center justify-between gap-3">
-                  <span className="font-mono text-[12px] text-[var(--color-secondary)]">
-                    {capability.label}
-                  </span>
-                  <span className="text-[11px] text-[var(--color-muted-2)]">
-                    {capability.boundary}
-                  </span>
-                </div>
-                <p className="mt-1 text-[12px] leading-relaxed text-[var(--color-muted)]">
-                  {capability.description}
-                </p>
+                {item}
               </div>
             ))}
           </div>

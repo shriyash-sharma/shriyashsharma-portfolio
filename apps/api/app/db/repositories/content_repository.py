@@ -1,6 +1,9 @@
 from uuid import UUID
 
-from sqlalchemy import Select, func, select
+import re
+from datetime import UTC, datetime
+
+from sqlalchemy import Select, String, cast, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models.content import (
@@ -55,6 +58,7 @@ class ContentRepository:
         content_type: ContentType | None = None,
         status: PublishingStatus | None = None,
         locale: str | None = None,
+        query: str | None = None,
         limit: int = 50,
         offset: int = 0,
     ) -> tuple[list[ContentItem], int]:
@@ -63,6 +67,7 @@ class ContentRepository:
                 content_type=content_type,
                 status=status,
                 locale=locale,
+                query=query,
             )
             .order_by(ContentItem.updated_at.desc())
             .limit(limit)
@@ -73,6 +78,7 @@ class ContentRepository:
                 content_type=content_type,
                 status=status,
                 locale=locale,
+                query=query,
             ).subquery()
         )
 
@@ -100,11 +106,12 @@ class ContentRepository:
         return result.scalar_one_or_none()
 
     async def create(self, payload: ContentItemCreate) -> ContentItem:
+        normalized_status = ModelPublishingStatus(payload.status)
         item = ContentItem(
             type=ModelContentType(payload.type),
-            status=ModelPublishingStatus(payload.status),
+            status=normalized_status,
             locale=payload.locale,
-            slug=payload.slug,
+            slug=_normalize_slug(payload.slug),
             title=payload.title,
             description=payload.description,
             body=payload.body,
@@ -115,7 +122,11 @@ class ContentRepository:
             categories=payload.categories,
             extra=payload.metadata,
             ai_indexable=payload.ai_indexable,
-            published_at=payload.published_at,
+            published_at=_resolve_published_at(
+                status=normalized_status,
+                provided=payload.published_at,
+                current=None,
+            ),
         )
         self.session.add(item)
         await self.session.commit()
@@ -132,6 +143,13 @@ class ContentRepository:
             item.extra = values.pop("metadata")
         if "status" in values and values["status"] is not None:
             item.status = ModelPublishingStatus(values.pop("status"))
+        if "slug" in values and values["slug"] is not None:
+            values["slug"] = _normalize_slug(str(values["slug"]))
+        item.published_at = _resolve_published_at(
+            status=item.status,
+            provided=values.pop("published_at", None),
+            current=item.published_at,
+        )
 
         for key, value in values.items():
             setattr(item, key, value)
@@ -144,12 +162,36 @@ class ContentRepository:
         await self.session.delete(item)
         await self.session.commit()
 
+    async def count_by_status(
+        self,
+        *,
+        content_type: ContentType | None = None,
+        locale: str | None = None,
+        query: str | None = None,
+    ) -> dict[PublishingStatus, int]:
+        statement = (
+            self._filtered_select(
+                content_type=content_type,
+                status=None,
+                locale=locale,
+                query=query,
+            )
+            .with_only_columns(ContentItem.status, func.count())
+            .group_by(ContentItem.status)
+        )
+        result = await self.session.execute(statement)
+        return {
+            row[0].value: int(row[1])
+            for row in result.all()
+        }
+
     def _filtered_select(
         self,
         *,
         content_type: ContentType | None,
         status: PublishingStatus | None,
         locale: str | None,
+        query: str | None,
     ) -> Select[tuple[ContentItem]]:
         statement = select(ContentItem)
         if content_type:
@@ -162,4 +204,34 @@ class ContentRepository:
             )
         if locale:
             statement = statement.where(ContentItem.locale == locale)
+        if query:
+            pattern = f"%{query.strip()}%"
+            statement = statement.where(
+                or_(
+                    ContentItem.title.ilike(pattern),
+                    ContentItem.description.ilike(pattern),
+                    ContentItem.slug.ilike(pattern),
+                    cast(ContentItem.tags, String).ilike(pattern),
+                    cast(ContentItem.categories, String).ilike(pattern),
+                )
+            )
         return statement
+
+
+def _normalize_slug(value: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", value.strip().lower())
+    slug = re.sub(r"-{2,}", "-", slug).strip("-")
+    return slug or "untitled"
+
+
+def _resolve_published_at(
+    *,
+    status: ModelPublishingStatus,
+    provided: str | None,
+    current: str | None,
+) -> str | None:
+    if provided is not None:
+        return provided
+    if status == ModelPublishingStatus.PUBLISHED:
+        return current or datetime.now(UTC).isoformat()
+    return current if status == ModelPublishingStatus.ARCHIVED else None
