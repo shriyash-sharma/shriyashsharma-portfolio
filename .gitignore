@@ -19,3 +19,6 @@ __pycache__/
 
 # Build/cache
 .turbo/
+
+# Editor local history (keep on disk, never commit)
+.history/
