@@ -11,7 +11,9 @@ class Settings(BaseSettings):
     api_version: str = "v1"
     frontend_origin: AnyUrl | str = "http://localhost:3000"
 
-    database_url: str | None = None
+    database_url: str = (
+        "postgresql+asyncpg://portfolio:portfolio@localhost:5433/portfolio"
+    )
     redis_url: str | None = None
     ai_provider_api_key: SecretStr | None = None
 

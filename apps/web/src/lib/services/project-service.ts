@@ -4,6 +4,9 @@
  * Swap implementation for API-backed data without changing callers.
  */
 
+import { listContent, getContentItem } from "@/lib/api/endpoints/content-api";
+import type { ApiContentItem } from "@/lib/api/contracts/content";
+
 export type Project = {
   id: string;
   slug: string;
@@ -19,10 +22,50 @@ export type Project = {
   };
 };
 
+function hasBackendUrl() {
+  return Boolean(process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL);
+}
+
+function mapProject(item: ApiContentItem): Project {
+  return {
+    id: item.id,
+    slug: item.slug,
+    title: item.title,
+    description: item.description,
+    tags: item.tags,
+    status:
+      item.status === "published"
+        ? "production"
+        : item.status === "archived"
+          ? "archived"
+          : "in-progress",
+    featured: Boolean(item.metadata.featured),
+    links: {
+      github:
+        typeof item.metadata.github === "string"
+          ? item.metadata.github
+          : undefined,
+      live: typeof item.metadata.live === "string" ? item.metadata.live : undefined,
+      caseStudy:
+        typeof item.metadata.caseStudy === "string"
+          ? item.metadata.caseStudy
+          : undefined,
+    },
+  };
+}
+
 /** Returns all projects, sorted by featured first. */
 export async function getProjects(): Promise<Project[]> {
-  // TODO: replace with real data from content/projects/ or future API
-  return [];
+  if (!hasBackendUrl()) {
+    return [];
+  }
+
+  try {
+    const response = await listContent({ type: "project", limit: 50 });
+    return response.items.map(mapProject);
+  } catch {
+    return [];
+  }
 }
 
 export async function getFeaturedProjects(): Promise<Project[]> {
@@ -31,6 +74,14 @@ export async function getFeaturedProjects(): Promise<Project[]> {
 }
 
 export async function getProject(slug: string): Promise<Project | null> {
-  const projects = await getProjects();
-  return projects.find((p) => p.slug === slug) ?? null;
+  if (!hasBackendUrl()) {
+    return null;
+  }
+
+  try {
+    const item = await getContentItem({ type: "project", slug });
+    return mapProject(item);
+  } catch {
+    return null;
+  }
 }

@@ -11,6 +11,6 @@ class DatabaseReadiness:
 def get_database_readiness(database_url: str | None) -> DatabaseReadiness:
     return DatabaseReadiness(
         configured=bool(database_url),
-        migration_ready=False,
+        migration_ready=True,
         pgvector_ready=False,
     )

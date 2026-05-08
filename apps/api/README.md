@@ -45,6 +45,20 @@ uv run mypy app tests
 uv run pytest
 ```
 
+## Database
+
+Run migrations:
+
+```bash
+uv run alembic upgrade head
+```
+
+Seed development content:
+
+```bash
+uv run python scripts/seed_content.py
+```
+
 ## Route Boundaries
 
 - `GET /health` — health and environment response
@@ -53,10 +67,17 @@ uv run pytest
 - `POST /search` — future semantic search contract
 - `POST /assistant` — future assistant response contract
 - `POST /assistant/stream` — SSE-ready assistant streaming boundary
+- `GET /content/{type}` — public published content list
+- `GET /content/{type}/{slug}` — public published content detail
+- `GET /admin/content/{type}` — dashboard-ready content list
+- `POST /admin/content/{type}` — dashboard-ready content create
+- `GET /admin/content/items/{id}` — dashboard-ready content detail
+- `PUT /admin/content/items/{id}` — dashboard-ready content update
+- `DELETE /admin/content/items/{id}` — dashboard-ready content delete
 
 ## Future Integration Points
 
-- PostgreSQL and migration layer
+- dashboard authentication on admin routes
 - pgvector-backed retrieval
 - Redis-backed caching and session state
 - authenticated dashboard tooling

@@ -11,7 +11,9 @@ class AuthBoundary:
 AUTH_BOUNDARIES = [
     AuthBoundary(
         name="dashboard-session",
-        description="Validate dashboard sessions and role claims for protected tooling.",
+        description=(
+            "Validate dashboard sessions and role claims for protected tooling."
+        ),
     ),
     AuthBoundary(
         name="service-token",

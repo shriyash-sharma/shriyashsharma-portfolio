@@ -5,9 +5,13 @@ description = "FastAPI backend foundation for the AI-ready engineering portfolio
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+  "alembic>=1.14.0",
+  "asyncpg>=0.30.0",
   "fastapi>=0.116.0",
+  "greenlet>=3.5.0",
   "httpx>=0.28.0",
   "pydantic-settings>=2.7.0",
+  "sqlalchemy>=2.0.36",
   "uvicorn[standard]>=0.32.0",
 ]
 

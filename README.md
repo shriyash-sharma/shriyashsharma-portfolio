@@ -89,15 +89,27 @@ uv run pytest
 - `GET /health` — service health and environment metadata
 - `GET /platform` — product/platform capability metadata
 - `GET /content` — structured content collection registry
+- `GET /content/{type}` — public published content list
+- `GET /content/{type}/{slug}` — public published content detail
+- `POST /admin/content/{type}` — dashboard-ready content create
+- `PUT /admin/content/items/{id}` — dashboard-ready content update
+- `DELETE /admin/content/items/{id}` — dashboard-ready content delete
 - `POST /search` — semantic search contract, not yet implemented
 - `POST /assistant` — assistant response contract, not yet implemented
 - `POST /assistant/stream` — SSE-ready assistant stream boundary
+
+## Database Workflow
+
+```bash
+cd apps/api
+uv run alembic upgrade head
+uv run python scripts/seed_content.py
+```
 
 ## Roadmap Readiness
 
 Prepared but intentionally not implemented yet:
 
-- PostgreSQL persistence and migration layer
 - pgvector semantic retrieval
 - Redis caching/session coordination
 - authenticated dashboard tooling

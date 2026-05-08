@@ -11,7 +11,9 @@ class AiBoundary:
 AI_BOUNDARIES = [
     AiBoundary(
         name="retrieval",
-        responsibility="Fetch and rank source chunks for semantic search and assistant answers.",
+        responsibility=(
+            "Fetch and rank source chunks for semantic search and assistant answers."
+        ),
     ),
     AiBoundary(
         name="generation",

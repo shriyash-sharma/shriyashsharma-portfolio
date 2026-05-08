@@ -11,13 +11,19 @@ def get_platform_metadata(settings: Settings) -> PlatformResponse:
                 module="content",
                 status="ready",
                 boundary="service",
-                description="Structured content boundaries for projects, writing, and architecture notes.",
+                description=(
+                    "Structured content boundaries for projects, writing, "
+                    "and architecture notes."
+                ),
             ),
             PlatformCapability(
                 module="search",
                 status="planned",
                 boundary="api",
-                description="Semantic and keyword search contract prepared for future pgvector integration.",
+                description=(
+                    "Semantic and keyword search contract prepared for "
+                    "future pgvector integration."
+                ),
             ),
             PlatformCapability(
                 module="assistant",
@@ -29,7 +35,9 @@ def get_platform_metadata(settings: Settings) -> PlatformResponse:
                 module="observability",
                 status="planned",
                 boundary="external",
-                description="Future request, retrieval, and assistant quality telemetry.",
+                description=(
+                    "Future request, retrieval, and assistant quality telemetry."
+                ),
             ),
         ],
     )

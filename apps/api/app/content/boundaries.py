@@ -16,7 +16,9 @@ CONTENT_SOURCES = [
     ),
     ContentSource(
         name="cms",
-        description="Future editorial backend for drafts, previews, and publishing workflow.",
+        description=(
+            "Future editorial backend for drafts, previews, and publishing workflow."
+        ),
     ),
     ContentSource(
         name="ingestion-api",

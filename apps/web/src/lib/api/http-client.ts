@@ -25,7 +25,7 @@ function createUrl(path: string): string {
     return path;
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const baseUrl = process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL;
   if (!baseUrl) {
     return path;
   }

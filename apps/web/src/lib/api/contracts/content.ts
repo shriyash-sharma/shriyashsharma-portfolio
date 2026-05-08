@@ -29,3 +29,30 @@ export type ContentIngestionJob = {
   createdAt: string;
   completedAt?: string;
 };
+
+export type ApiContentItem = {
+  id: string;
+  slug: string;
+  type: ContentType;
+  status: ContentStatus;
+  locale: Locale;
+  title: string;
+  description: string;
+  body?: string | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  canonical_url?: string | null;
+  tags: string[];
+  categories: string[];
+  metadata: Record<string, string | number | boolean | null>;
+  ai_indexable: boolean;
+  indexed_at?: string | null;
+  published_at?: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ApiContentListResponse = {
+  items: ApiContentItem[];
+  total: number;
+};
