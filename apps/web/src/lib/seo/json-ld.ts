@@ -8,17 +8,32 @@ export function personJsonLd() {
     name: siteConfig.author.name,
     url: siteConfig.url,
     sameAs: [siteConfig.links.github, siteConfig.links.linkedin],
-    jobTitle: "Software Engineer",
+    jobTitle: "Senior Software Engineer",
+    email: siteConfig.author.email,
+    knowsAbout: [
+      "Frontend architecture",
+      "Next.js",
+      "TypeScript",
+      "AI application engineering",
+      "System design",
+    ],
   };
 }
 
-/** JSON-LD WebSite schema with SearchAction stub. */
+/** JSON-LD WebSite schema for the portfolio. */
 export function websiteJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: siteConfig.name,
     url: siteConfig.url,
+    inLanguage: ["en", "hi-IN"],
+    description: siteConfig.description,
+    publisher: {
+      "@type": "Person",
+      name: siteConfig.author.name,
+      url: siteConfig.url,
+    },
   };
 }
 

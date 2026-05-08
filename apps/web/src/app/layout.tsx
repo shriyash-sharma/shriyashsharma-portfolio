@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { SkipLink } from "@/components/layout/skip-link";
 import { buildMetadata } from "@/lib/seo/metadata";
 import "@/styles/globals.css";
 
@@ -31,9 +32,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
       <body className="bg-[var(--color-background)] text-[var(--color-foreground)] antialiased">
+        <SkipLink />
         <div className="flex min-h-dvh flex-col">
           <Navbar />
-          <div className="flex-1 pt-14">{children}</div>
+          <div className="flex-1 pt-[52px]">{children}</div>
           <Footer />
         </div>
       </body>

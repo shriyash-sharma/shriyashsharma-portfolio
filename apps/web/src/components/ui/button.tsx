@@ -4,47 +4,41 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils/cn";
 
 const buttonVariants = cva(
-  // Base styles shared across all variants
   [
-    "inline-flex items-center justify-center gap-2 whitespace-nowrap",
-    "text-sm font-medium",
-    "rounded-md",
-    "border border-transparent",
-    "transition-all duration-150 ease-in-out",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-black",
-    "disabled:pointer-events-none disabled:opacity-40",
+    "inline-flex items-center justify-center gap-1.5 whitespace-nowrap",
+    "text-[13px] font-medium tracking-[-0.005em]",
+    "rounded-md border border-transparent",
+    "transition-[background-color,border-color,color,opacity,box-shadow] duration-[140ms] ease-out",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background)]",
+    "disabled:pointer-events-none disabled:opacity-35",
     "select-none cursor-pointer",
   ],
   {
     variants: {
       variant: {
-        /** Solid foreground – primary action */
         primary: [
           "bg-[var(--color-foreground)] text-[var(--color-background)]",
           "hover:bg-[var(--color-accent)]",
-          "active:scale-[0.98]",
+          "active:scale-[0.97] active:opacity-90",
         ],
-        /** Outlined – secondary action */
         secondary: [
-          "border-[var(--color-border)] text-[var(--color-foreground)]",
-          "hover:border-[var(--color-muted-2)] hover:bg-[var(--color-surface)]",
+          "border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-secondary)]",
+          "hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-3)] hover:text-[var(--color-foreground)]",
         ],
-        /** Ghost – low-emphasis action */
         ghost: [
           "text-[var(--color-muted)]",
-          "hover:bg-[var(--color-surface)] hover:text-[var(--color-foreground)]",
+          "hover:bg-[var(--color-surface-2)] hover:text-[var(--color-secondary)]",
         ],
-        /** Subtle link-style */
         link: [
-          "text-[var(--color-foreground)] underline-offset-4 hover:underline",
-          "p-0 h-auto",
+          "text-[var(--color-secondary)] underline-offset-4 hover:underline hover:text-[var(--color-foreground)]",
+          "p-0 h-auto rounded-none",
         ],
       },
       size: {
-        sm: "h-8 px-3 text-xs",
-        md: "h-9 px-4",
-        lg: "h-11 px-6 text-base",
-        icon: "h-9 w-9 p-0",
+        sm:   "h-7 px-3 text-[12px] rounded",
+        md:   "h-9 px-4",
+        lg:   "h-11 px-5 text-[14px]",
+        icon: "h-11 w-11 p-0",
       },
     },
     defaultVariants: {
@@ -56,7 +50,6 @@ const buttonVariants = cva(
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof buttonVariants> & {
-    /** When true, renders the button as its child (Radix Slot pattern) */
     asChild?: boolean;
   };
 

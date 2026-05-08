@@ -15,7 +15,7 @@ export default function ContactPage() {
     <PageShell>
       <Section>
         <SectionHeading
-          eyebrow="Let&apos;s talk"
+          eyebrow="Let's talk"
           heading="Contact"
           subheading="Open to senior engineering roles, consulting, and interesting projects."
         />

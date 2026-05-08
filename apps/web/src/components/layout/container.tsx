@@ -7,8 +7,12 @@ type ContainerProps = {
 };
 
 /**
- * Constrains content to the max-width layout column with consistent
- * horizontal padding. Use as the outermost wrapper in every section.
+ * Constrains content to the layout column.
+ * - Mobile: 24px horizontal padding
+ * - Desktop: 32px
+ * - Max-width: 1024px (5xl) — keeps line lengths readable, prevents
+ *   content from going uncomfortably wide on large monitors
+ * - Ultra-wide: centered with visible gutters (no full-bleed)
  */
 export function Container({
   children,

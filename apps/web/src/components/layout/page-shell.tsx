@@ -11,7 +11,7 @@ type PageShellProps = {
  */
 export function PageShell({ children, className }: PageShellProps) {
   return (
-    <main className={cn("min-h-dvh w-full flex-1", className)}>
+    <main id="main-content" className={cn("min-h-dvh w-full flex-1", className)}>
       {children}
     </main>
   );

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/constants/site";
+import { localizePath, type Locale } from "@/lib/i18n/config";
 
 type MetadataOverrides = {
   title?: string;
@@ -7,6 +8,7 @@ type MetadataOverrides = {
   image?: string;
   path?: string;
   noIndex?: boolean;
+  locale?: Locale;
 };
 
 /**
@@ -26,16 +28,30 @@ export function buildMetadata(overrides: MetadataOverrides = {}): Metadata {
   const url = overrides.path
     ? `${siteConfig.url}${overrides.path}`
     : siteConfig.url;
+  const path = overrides.path ?? "/";
+  const locale = overrides.locale ?? "en";
 
   return {
-    title,
+    title: {
+      default: title,
+      template: `%s — ${siteConfig.name}`,
+    },
     description,
+    applicationName: siteConfig.name,
+    category: "technology",
+    creator: siteConfig.author.name,
+    publisher: siteConfig.author.name,
     metadataBase: new URL(siteConfig.url),
     alternates: {
       canonical: url,
+      languages: {
+        en: `${siteConfig.url}${localizePath(path, "en")}`,
+        "hi-IN": `${siteConfig.url}${localizePath(path, "hi")}`,
+      },
     },
     openGraph: {
       type: "website",
+      locale: locale === "hi" ? "hi_IN" : "en_US",
       url,
       title,
       description,
