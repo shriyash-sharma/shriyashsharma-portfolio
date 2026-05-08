@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import { BrandMark } from "@/components/brand/brand-mark";
 import { cn } from "@/lib/utils/cn";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { navItems } from "@/lib/constants/nav";
@@ -53,18 +54,17 @@ export function Navbar() {
           : "border-b border-transparent bg-transparent"
       )}
     >
-      <div className="flex h-[52px] w-full items-center justify-between gap-4 px-5 sm:px-6 lg:px-10 xl:px-16">
-
-        {/* Wordmark */}
+      <div className="flex h-[58px] w-full items-center justify-between gap-4 px-5 sm:px-6 lg:px-10 xl:px-16">
+        {/* Brand */}
         <Link
           href={localizePath("/", locale)}
           aria-label={`${siteConfig.name} ${dictionary.a11y.home}`}
           className={cn(
-            "text-[13px] font-medium tracking-[-0.01em] text-[var(--color-foreground)]",
-            "rounded-sm transition-opacity duration-150 hover:opacity-60"
+            "inline-flex min-h-11 items-center rounded-sm",
+            "transition-opacity duration-150 hover:opacity-70"
           )}
         >
-          {siteConfig.author.name}
+          <BrandMark priority />
         </Link>
 
         {/* Desktop nav */}

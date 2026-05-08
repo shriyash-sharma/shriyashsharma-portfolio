@@ -19,6 +19,29 @@ type MetadataOverrides = {
 };
 
 /**
+ * Resolves origins for resolving relative OG/icon URLs (`metadataBase`) without
+ * breaking local dev — `siteConfig.url` alone would point `/favicon.ico` at production while on localhost.
+ */
+function resolveMetadataBaseOrigin(): URL {
+  const trimmed = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (trimmed) {
+    try {
+      return new URL(trimmed.endsWith("/") ? trimmed.slice(0, -1) : trimmed);
+    } catch {
+      // fall through
+    }
+  }
+  const vercelHost = process.env.VERCEL_URL?.trim();
+  if (vercelHost) {
+    return new URL(`https://${vercelHost.replace(/^https?:\/\//, "").replace(/\/$/, "")}`);
+  }
+  if (process.env.NODE_ENV === "development") {
+    return new URL("http://localhost:3000");
+  }
+  return new URL(siteConfig.url);
+}
+
+/**
  * Central metadata factory.
  * Every route should call this to ensure consistent SEO output.
  *
@@ -54,7 +77,15 @@ export function buildMetadata(overrides: MetadataOverrides = {}): Metadata {
     category: "technology",
     creator: siteConfig.author.name,
     publisher: siteConfig.author.name,
-    metadataBase: new URL(siteConfig.url),
+    icons: {
+      icon: [
+        { url: "/favicon.ico", sizes: "any" },
+        { url: siteConfig.brand.logo, type: "image/png" },
+      ],
+      apple: [{ url: siteConfig.brand.logo, type: "image/png" }],
+      shortcut: [{ url: siteConfig.brand.logo }],
+    },
+    metadataBase: resolveMetadataBaseOrigin(),
     alternates: {
       canonical: url,
       languages: {

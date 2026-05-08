@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandMark } from "@/components/brand/brand-mark";
 import { cn } from "@/lib/utils/cn";
 
 type DashboardShellProps = {
@@ -18,13 +19,20 @@ export function DashboardShell({ children }: DashboardShellProps) {
     <div className="min-h-dvh bg-[var(--color-background)]">
       <div className="border-b border-[var(--color-border)] px-5 py-4 sm:px-6 lg:px-10 xl:px-16">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--color-muted)]">
-              Platform console
-            </p>
-            <h1 className="mt-1 text-xl font-semibold tracking-[-0.02em] text-[var(--color-foreground)]">
-              Engineering Dashboard
-            </h1>
+          <div className="flex items-center gap-3">
+            <BrandMark
+              showWordmark={false}
+              iconClassName="h-10"
+              className="shrink-0"
+            />
+            <div>
+              <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--color-muted)]">
+                Platform console
+              </p>
+              <h1 className="mt-1 text-xl font-semibold tracking-[-0.02em] text-[var(--color-foreground)]">
+                Engineering Dashboard
+              </h1>
+            </div>
           </div>
           <nav
             aria-label="Dashboard navigation"

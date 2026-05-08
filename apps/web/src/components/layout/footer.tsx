@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandMark } from "@/components/brand/brand-mark";
 import { siteConfig } from "@/lib/constants/site";
 import { MaxWidthWrapper } from "./max-width-wrapper";
 import { cn } from "@/lib/utils/cn";
@@ -10,9 +11,16 @@ export function Footer() {
     <footer className="border-t border-[var(--color-border)] py-8">
       <MaxWidthWrapper>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[12px] text-[var(--color-muted)] max-w-none">
-            &copy; {year} {siteConfig.author.name}
-          </p>
+          <div className="flex items-center gap-3">
+            <BrandMark
+              showWordmark={false}
+              iconClassName="h-6"
+              className="opacity-80"
+            />
+            <p className="max-w-none text-[12px] text-[var(--color-muted)]">
+              &copy; {year} {siteConfig.author.name}
+            </p>
+          </div>
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             <Link
