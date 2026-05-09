@@ -3,6 +3,17 @@
 The platform currently behaves like a lightweight CMS backed by one structured
 content model, an authenticated dashboard, and a local media workflow.
 
+## CMS Runtime Diagram
+
+```mermaid
+flowchart TD
+  Dashboard[Dashboard UI] --> BFF[Next.js /api dashboard routes]
+  BFF --> AdminAPI[FastAPI /admin/content and /admin/media]
+  AdminAPI --> Repo[ContentRepository]
+  Repo --> DB[(Postgres)]
+  AdminAPI --> Media[LocalMediaStorage]
+```
+
 ## Content Responsibility Split
 
 There are two distinct API surfaces for content.
@@ -15,6 +26,16 @@ There are two distinct API surfaces for content.
 This separation is important because public delivery and editorial operations
 have different safety requirements even when they share the same persistence
 model.
+
+## Admin and Public Content Split
+
+```mermaid
+flowchart LR
+  Editor[Editor] --> Admin[Admin content routes]
+  Visitor[Public visitor] --> Public[Public content routes]
+  Admin --> Shared[Shared content_items model]
+  Public --> Shared
+```
 
 ## Shared Content Model
 
@@ -51,6 +72,18 @@ Content moves through the system with explicit publish-state semantics.
 This keeps the editorial model honest without introducing a heavier workflow
 engine prematurely.
 
+## Publishing Lifecycle Diagram
+
+```mermaid
+stateDiagram-v2
+  [*] --> Draft
+  Draft --> Review
+  Review --> Published
+  Published --> Archived
+  Review --> Draft
+  Published --> Draft
+```
+
 ## Locale-Aware Content Handling
 
 Locale is not a presentation-only concern in this platform.
@@ -64,6 +97,17 @@ Locale is not a presentation-only concern in this platform.
 
 This prepares the platform for multilingual publishing and future multilingual
 retrieval without claiming that translation automation already exists.
+
+## Locale Flow Diagram
+
+```mermaid
+flowchart LR
+  Path[Locale in path or cookie] --> Web[Next.js proxy]
+  Web --> Query[locale query param]
+  Query --> API[FastAPI content routes]
+  API --> Repo[ContentRepository locale filter]
+  Repo --> DB[(Localized content rows)]
+```
 
 ## Dashboard Data Flow
 
@@ -90,6 +134,26 @@ Media is currently local by design.
 This keeps the editorial loop simple while preserving a storage boundary that
 can be swapped later.
 
+## Media Lifecycle Diagram
+
+```mermaid
+sequenceDiagram
+  participant D as Dashboard
+  participant N as Next.js media route
+  participant A as FastAPI media route
+  participant S as LocalMediaStorage
+  participant F as Local filesystem
+
+  D->>N: POST /api/dashboard/media
+  N->>A: multipart proxy
+  A->>S: save_image(file)
+  S->>F: write bytes
+  F-->>S: file path
+  S-->>A: media metadata
+  A-->>N: JSON response
+  N-->>D: same-origin response
+```
+
 ## Repository Boundary and Persistence Lifecycle
 
 `ContentRepository` is the main persistence seam for content operations.
@@ -103,6 +167,13 @@ can be swapped later.
 
 This repository pattern is less about abstraction for its own sake and more
 about keeping operational rules consistent across public and admin surfaces.
+
+## Current Limitations
+
+- media remains local-first and process-served
+- publishing does not trigger background processing
+- no dedicated preview system is described beyond current dashboard workflows
+- no indexing or retrieval pipeline runs as part of content writes
 
 ## Future Readiness
 

@@ -3,6 +3,13 @@
 The platform runs as two applications in one repository: a Next.js web app and
 a FastAPI backend backed by Postgres for persisted content and admin identity.
 
+## Subsystem Summary
+
+- `apps/web`: pages, dashboard UI, locale routing, same-origin `/api` layer
+- `apps/api`: typed backend routes, auth, persistence, media serving
+- Postgres: admin users and content items
+- local filesystem: uploaded media storage
+
 ## Frontend
 
 ```bash
@@ -87,6 +94,17 @@ web app still starts.
 This same-origin BFF pattern is the intended development topology, so prefer
 using the web app for dashboard workflows instead of calling backend admin
 routes directly from the browser.
+
+## Local Startup Order
+
+1. Start Postgres or run `docker compose up`.
+2. Run backend migrations.
+3. Start the FastAPI app.
+4. Start the Next.js app.
+5. Access dashboard and public flows through the web app.
+
+This order reflects actual service dependencies: the backend depends on the
+database, and the dashboard flow depends on both web and API applications.
 
 ## Additional Architecture Docs
 

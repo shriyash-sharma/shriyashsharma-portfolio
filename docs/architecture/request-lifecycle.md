@@ -2,6 +2,29 @@
 
 This document explains how requests move through the current platform.
 
+## System Request Map
+
+```mermaid
+sequenceDiagram
+   participant B as Browser
+   participant W as Next.js
+   participant P as Proxy/BFF
+   participant A as FastAPI
+   participant R as Repository
+   participant D as Postgres
+
+   B->>W: page or /api request
+   W->>P: route through proxy or route handler
+   P->>A: backend request
+   A->>R: route calls repository/service
+   R->>D: query or mutation
+   D-->>R: rows
+   R-->>A: domain result
+   A-->>P: typed response
+   P-->>W: same-origin response
+   W-->>B: HTML or JSON
+```
+
 ## 1. Public Web Request
 
 For a standard page request, the browser hits the Next.js app first.
@@ -21,6 +44,12 @@ For a standard page request, the browser hits the Next.js app first.
 The key separation is that locale routing is handled in the web app, while
 publish-state enforcement is handled in the backend.
 
+### Ownership
+
+- Next.js owns locale-aware routing and page composition.
+- FastAPI owns public content eligibility.
+- The repository owns query semantics and slug lookup behavior.
+
 ## 2. Dashboard Session Request
 
 Dashboard traffic adds a same-origin session loop.
@@ -39,6 +68,26 @@ Dashboard traffic adds a same-origin session loop.
 
 The cookie only proves that a browser holds a token. The backend remains the
 authority on whether that token is valid and maps to an active user.
+
+## Session Diagram
+
+```mermaid
+sequenceDiagram
+   participant B as Browser
+   participant W as Next.js login route
+   participant A as FastAPI auth route
+   participant U as AdminUserRepository
+   participant D as Postgres
+
+   B->>W: POST /api/auth/login
+   W->>A: POST /auth/login
+   A->>U: authenticate(email, password)
+   U->>D: load admin user
+   D-->>U: user row
+   U-->>A: authenticated user
+   A-->>W: JWT + session metadata
+   W-->>B: HttpOnly cookie set
+```
 
 ## 3. Dashboard Data Request
 
@@ -60,6 +109,36 @@ backend directly.
 This BFF pattern keeps browser code same-origin and centralizes token
 forwarding, backend URL resolution, and future gateway behavior.
 
+## Dashboard Data Diagram
+
+```mermaid
+sequenceDiagram
+   participant C as Dashboard client component
+   participant N as Next.js /api route
+   participant A as FastAPI admin route
+   participant Auth as Auth dependency
+   participant R as ContentRepository
+   participant D as Postgres
+
+   C->>N: fetch /api/dashboard/content/...
+   N->>A: proxy with bearer token
+   A->>Auth: require admin user
+   Auth-->>A: active admin user
+   A->>R: list/count/create/update/delete
+   R->>D: query or commit
+   D-->>R: rows/ack
+   R-->>A: typed model
+   A-->>N: JSON response
+   N-->>C: same-origin JSON
+```
+
+### Request Ownership
+
+- Client components own UI state and timing.
+- Next.js BFF routes own same-origin transport and token forwarding.
+- FastAPI routes own request validation and response shape.
+- Repositories own persistence rules.
+
 ## 4. Media Upload Request
 
 The media workflow follows the same authenticated path with multipart payloads.
@@ -76,3 +155,22 @@ The media workflow follows the same authenticated path with multipart payloads.
 
 This is intentionally simple and local. The route/service split preserves a
 clear migration seam if object storage is introduced later.
+
+## Persistence Lifecycle
+
+For content and auth-backed operations, persistence follows the same pattern.
+
+1. FastAPI receives a validated request with a request-scoped AsyncSession.
+2. The route calls a repository or service.
+3. Query logic, slug normalization, and publish-state handling happen inside
+    the persistence boundary.
+4. Mutations commit within the repository.
+5. The route serializes the resulting model through Pydantic response schemas.
+
+## Current Scope Boundaries
+
+- No background workers participate in request completion.
+- No distributed session invalidation exists beyond token expiry and user state.
+- No async ingestion or indexing pipeline is triggered by content writes.
+- Search and assistant routes remain contract boundaries rather than deep
+   retrieval systems.

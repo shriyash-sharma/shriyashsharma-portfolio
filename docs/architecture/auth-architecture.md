@@ -4,6 +4,20 @@ The current authentication model is intentionally narrow: it exists to protect
 dashboard and admin tooling, not to provide a generalized multi-tenant identity
 platform.
 
+## Auth Flow Diagram
+
+```mermaid
+flowchart TD
+  Browser[Browser] --> LoginRoute[Next.js login route]
+  LoginRoute --> AuthAPI[FastAPI /auth/login]
+  AuthAPI --> UserRepo[AdminUserRepository]
+  UserRepo --> DB[(Postgres)]
+  AuthAPI --> Token[Signed JWT]
+  Token --> Cookie[HttpOnly dashboard cookie]
+  Cookie --> SessionCheck[Next.js session helpers]
+  SessionCheck --> SessionAPI[FastAPI /auth/session]
+```
+
 ## Session Model
 
 Admin login is implemented as a signed JWT session with an expiration window.
@@ -38,6 +52,13 @@ Protected backend routes do not trust the presence of the cookie alone.
 
 This keeps authorization checks close to the backend business boundary and
 prevents the web app from becoming the source of truth for session validity.
+
+## Why Not Stateful Sessions First?
+
+The current dashboard scope benefits more from a simple signed-token model than
+from a heavier session store. Centralized revocation and richer session control
+are valid future needs, but they are intentionally deferred until they justify
+the additional moving parts.
 
 ## Current Constraints
 

@@ -3,6 +3,17 @@
 This platform uses a deliberate split between user-facing web concerns and
 backend system concerns.
 
+## Coordination Diagram
+
+```mermaid
+flowchart LR
+  Browser[Browser] --> Page[Next.js page or client component]
+  Page --> BFF[Next.js same-origin API route]
+  BFF --> Backend[FastAPI admin or public route]
+  Backend --> Repo[Repository/service layer]
+  Repo --> DB[(Postgres)]
+```
+
 ## Why the Monorepo Is Structured This Way
 
 The repository keeps `apps/web` and `apps/api` together because the most
@@ -36,6 +47,18 @@ Benefits of the current approach:
   rewriting client components
 - the dashboard can remain same-origin even if the API deployment topology
   changes later
+
+## Admin and Public API Separation
+
+```mermaid
+flowchart TD
+    PublicWeb[Public web pages] --> PublicAPI[/content routes/]
+    Dashboard[Dashboard UI] --> BFF[/api dashboard routes/]
+    BFF --> AdminAPI[/admin routes/]
+    PublicAPI --> Repo[Shared repository boundary]
+    AdminAPI --> Repo
+    Repo --> DB[(Postgres)]
+```
 
 ## Typed Request Coordination
 
@@ -75,3 +98,9 @@ data fetching.
   `lib/auth/session.ts`
 
 This gives the dashboard a stable interaction model even as the backend grows.
+
+## Why Not Direct Browser-to-Backend Access?
+
+Direct browser calls would couple client code to backend topology and shift more
+auth handling into the browser surface. The current same-origin BFF pattern is
+chosen for transport simplicity and maintainable session coordination.

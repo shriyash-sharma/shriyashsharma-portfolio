@@ -1,11 +1,14 @@
 # Shriyash Sharma Engineering Platform
 
-Premium engineering portfolio evolving into an AI-ready product ecosystem.
+Engineering portfolio platform with a Next.js frontend, FastAPI backend,
+Postgres persistence, authenticated dashboard CMS, locale-aware routing, and
+same-origin operational proxying.
 
-The repository is organized as a monorepo with a Next.js frontend and a
-FastAPI backend foundation. The backend currently exposes production-oriented
-boundaries for health, platform metadata, content, search, and assistant
-streaming without implementing premature RAG or AI generation.
+The repository is organized as a monorepo with separate web and API
+applications. The current system already includes public content delivery,
+editorial content management, dashboard authentication, media handling, and
+typed backend boundaries. Search and assistant APIs exist as explicit platform
+boundaries, but they do not yet claim deep retrieval or AI infrastructure.
 
 ## Structure
 
@@ -63,6 +66,14 @@ Docker:
 docker compose up --build
 ```
 
+For architecture-oriented onboarding, start with:
+
+- `docs/architecture/onboarding.md`
+- `docs/architecture/request-lifecycle.md`
+- `docs/architecture/auth-architecture.md`
+- `docs/architecture/cms-architecture.md`
+- `docs/architecture/adrs/`
+
 ## Quality Checks
 
 Frontend:
@@ -117,4 +128,5 @@ Prepared but intentionally not implemented yet:
 - content ingestion and chunking
 - retrieval and AI observability
 
-See `docs/backend-architecture.md` and `docs/local-development.md`.
+See `docs/backend-architecture.md`, `docs/local-development.md`, and
+`docs/architecture/`.

@@ -12,6 +12,10 @@ decision context rather than feature marketing.
 - `auth-architecture.md`: admin session lifecycle and authorization boundaries
 - `cms-architecture.md`: content, publishing, locale, media, and persistence
   workflows
+- `onboarding.md`: subsystem overview and where engineering responsibilities live
+- `current-limitations.md`: current scope boundaries and intentionally deferred complexity
+- `why-not-x.md`: concise engineering rationale for notable architectural choices
+- `adrs/`: concise architecture decision records for the current platform shape
 
 ## Current System Shape
 
@@ -39,6 +43,22 @@ portfolio site. That shows up in a few deliberate choices:
 - Same-origin Next.js proxy routes keep browser auth and backend integration
   simple while preserving room for stricter gateway behavior later.
 
+## Runtime Overview
+
+```mermaid
+flowchart LR
+    Browser[Browser] --> Web[Next.js web app]
+    Web --> Proxy[Same-origin /api and request proxy]
+    Proxy --> API[FastAPI backend]
+    API --> Repo[Repository layer]
+    Repo --> DB[(Postgres)]
+    API --> Media[Local media storage]
+```
+
+The runtime intentionally stays compact. Web concerns, backend concerns,
+persistence, and media handling are separated, but the system does not pretend
+to be more distributed than it is.
+
 ## Future Readiness Without Premature Claims
 
 The current model already leaves useful extension points for semantic search,
@@ -49,3 +69,11 @@ embedding pipelines, multilingual retrieval, and AI indexing:
 - content collections distinguish indexable and non-indexable domains
 - search and assistant APIs exist as stable contracts, but their deeper
   implementation is intentionally deferred until the product needs it
+
+## Reading Order
+
+1. Start with `onboarding.md` for subsystem ownership and runtime orientation.
+2. Read `request-lifecycle.md` to understand actual request coordination.
+3. Read `auth-architecture.md` and `cms-architecture.md` for the operational
+  flows behind the dashboard and publishing system.
+4. Use `adrs/` when you need the reasoning behind a structural choice.
