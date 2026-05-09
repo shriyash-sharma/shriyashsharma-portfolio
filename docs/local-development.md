@@ -1,5 +1,8 @@
 # Local Development
 
+The platform runs as two applications in one repository: a Next.js web app and
+a FastAPI backend backed by Postgres for persisted content and admin identity.
+
 ## Frontend
 
 ```bash
@@ -20,6 +23,11 @@ uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 Backend runs on `http://localhost:8000`.
+
+The backend expects a working Postgres database. Current core persistence uses:
+
+- `admin_users` for dashboard identity
+- `content_items` for localized editorial content
 
 Run database migrations:
 
@@ -42,7 +50,13 @@ Useful endpoints:
 - `GET /content`
 - `GET /content/{type}`
 - `GET /content/{type}/{slug}`
+- `POST /auth/login`
+- `GET /auth/session`
 - `POST /admin/content/{type}`
+- `GET /admin/content/{type}`
+- `GET /admin/content/{type}/overview`
+- `POST /admin/media`
+- `GET /admin/media`
 - `POST /search`
 - `POST /assistant`
 - `POST /assistant/stream`
@@ -59,8 +73,25 @@ Services:
 - `api` on `http://localhost:8000`
 - `postgres` on `localhost:5433` (mapped to container port `5432`)
 
-Postgres is available for future persistence work. The backend does not yet
-open a database connection.
+The backend actively uses Postgres through SQLAlchemy async and `asyncpg`.
+If the database is unavailable, auth and content routes will fail even if the
+web app still starts.
+
+## Request Topology
+
+- public page requests enter the Next.js app first
+- dashboard page requests are gated by the Next.js proxy and cookie presence
+- authenticated dashboard data requests flow through same-origin `/api` routes
+- those routes proxy to the FastAPI backend with the dashboard token attached
+
+This same-origin BFF pattern is the intended development topology, so prefer
+using the web app for dashboard workflows instead of calling backend admin
+routes directly from the browser.
+
+## Additional Architecture Docs
+
+See `docs/architecture/` for request lifecycle, auth, and CMS architecture
+documentation.
 
 ## Backend Quality
 

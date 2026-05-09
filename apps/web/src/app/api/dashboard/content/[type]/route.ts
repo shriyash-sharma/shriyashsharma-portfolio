@@ -1,3 +1,11 @@
+/**
+ * Dashboard content BFF routes.
+ *
+ * These handlers keep client components on same-origin `/api` calls while the
+ * actual content management API lives in FastAPI. They are intentionally thin:
+ * auth forwarding and backend URL resolution happen in shared route utilities.
+ */
+
 import { proxyBackendRequest } from "@/lib/api/route-utils";
 
 type RouteContext = {

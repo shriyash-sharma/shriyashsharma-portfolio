@@ -1,3 +1,16 @@
+/**
+ * Dashboard workspace for content operations.
+ *
+ * This client component coordinates the editor-facing list view for persisted
+ * content. It combines filter state, dashboard BFF routes, and per-status
+ * overview data so administrators can operate on localized drafts and published
+ * entries from one surface.
+ *
+ * The component intentionally treats the backend as the source of truth for
+ * filters and counts; local state only provides responsive loading and delete
+ * optimism.
+ */
+
 "use client";
 
 import Link from "next/link";

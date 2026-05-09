@@ -1,3 +1,17 @@
+"""Security primitives for admin authentication.
+
+This module centralizes password hashing, signed token creation, token
+validation, and request token extraction. Keeping these primitives together
+lets the rest of the backend depend on a narrow security boundary rather than
+reimplementing credential or session logic in routes.
+
+Design notes:
+- The current admin session model uses signed JWTs with role claims and a
+    bounded TTL.
+- Tokens can arrive via bearer headers or same-origin dashboard cookies so the
+    backend can serve both direct API clients and the Next.js BFF layer.
+"""
+
 import base64
 import hashlib
 import hmac

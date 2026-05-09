@@ -1,3 +1,16 @@
+"""Admin content management routes.
+
+This module is the operational backend for the editorial dashboard. It exposes
+filtered listing, per-status overview counts, item CRUD, and locale-aware
+content retrieval over the shared content_items persistence model.
+
+Architectural role:
+- Keep admin workflows explicit and authenticated under /admin/content.
+- Reuse the repository layer for both dashboard listings and publishing
+    transitions so public and admin reads stay aligned.
+- Preserve room for richer workflow states without changing the route shape.
+"""
+
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, status

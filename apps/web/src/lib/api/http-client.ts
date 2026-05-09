@@ -1,7 +1,14 @@
 /**
- * Typed HTTP client boundary for the future FastAPI backend.
- * Keep UI components away from fetch() so auth, errors, tracing, and
- * streaming concerns can evolve in one place.
+ * Typed HTTP client boundary for backend access.
+ *
+ * UI code and server components call through this module instead of touching
+ * fetch() directly. That keeps auth propagation, timeout policy, error mapping,
+ * and future tracing or streaming behavior concentrated in one place.
+ *
+ * Boundaries:
+ * - Endpoint-specific knowledge belongs in endpoint wrappers.
+ * - Session lookup belongs in auth/session or route utilities.
+ * - This layer is transport-oriented and intentionally thin.
  */
 
 export class ApiError extends Error {

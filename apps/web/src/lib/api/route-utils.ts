@@ -1,3 +1,15 @@
+/**
+ * Shared helpers for Next.js route handlers that proxy dashboard requests.
+ *
+ * These utilities implement the frontend BFF layer used by authenticated UI
+ * workflows. The browser talks to same-origin `/api/...` routes, while these
+ * helpers forward requests to the FastAPI backend with the dashboard token
+ * attached.
+ *
+ * This keeps backend URLs and token forwarding out of client components and
+ * preserves a single place to evolve request policy later.
+ */
+
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { dashboardAuthCookieName } from "@/lib/auth/constants";

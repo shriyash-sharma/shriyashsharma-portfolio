@@ -1,3 +1,16 @@
+"""Top-level API router registration.
+
+This module defines the backend surface area by composing public, protected,
+and future-facing route groups into one router. It is intentionally declarative:
+responsibility for behavior remains inside the individual route modules.
+
+Routing intent:
+- Public read paths live beside platform metadata and capability boundaries.
+- Authenticated dashboard operations are isolated under /admin.
+- Search and assistant routes can expose stable contracts before their deeper
+	implementations exist.
+"""
+
 from fastapi import APIRouter
 
 from app.api.routes import assistant, auth, content, health, platform, search

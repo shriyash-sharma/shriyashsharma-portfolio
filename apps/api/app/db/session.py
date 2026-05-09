@@ -1,3 +1,15 @@
+"""Async SQLAlchemy session factory.
+
+This module owns backend database connectivity. It exposes one shared engine
+and a request-scoped AsyncSession generator that FastAPI dependencies can use
+without leaking connection management into routes or repositories.
+
+Why async here:
+- The backend is structured around async request handling.
+- Using asyncpg and AsyncSession keeps persistence aligned with that execution
+    model and avoids blocking the event loop as the platform grows.
+"""
+
 from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine

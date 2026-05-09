@@ -1,3 +1,17 @@
+"""Local media storage service for dashboard uploads.
+
+This service is the current storage boundary behind admin media routes. It
+stores uploaded images on local disk, returns stable public URLs, and exposes
+listing semantics for the dashboard media manager.
+
+Why local storage now:
+- The current product stage benefits more from a simple, debuggable editorial
+    loop than from introducing object storage, background processing, or asset
+    databases prematurely.
+- The route/service split keeps a clean migration path if storage later moves
+    behind a different provider.
+"""
+
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path

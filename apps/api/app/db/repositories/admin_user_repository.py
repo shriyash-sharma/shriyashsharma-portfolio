@@ -1,3 +1,11 @@
+"""Repository for admin identity lifecycle operations.
+
+This module handles the small but security-sensitive persistence workflow around
+admin users: bootstrap creation, identity lookup, and credential validation.
+Routes intentionally call into this repository instead of performing direct ORM
+queries so authentication behavior stays centralized and testable.
+"""
+
 from datetime import UTC, datetime
 
 from sqlalchemy import select

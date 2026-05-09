@@ -1,3 +1,17 @@
+"""SQLAlchemy content model for editorial and public delivery.
+
+The platform stores multiple content collections in one table with a typed
+discriminator and shared publishing fields. This favors a unified dashboard,
+uniform API contracts, and a predictable indexing surface over early table
+fragmentation.
+
+Important fields:
+- status and published_at model the draft-to-public lifecycle.
+- locale participates in uniqueness so localized entries can coexist per slug.
+- metadata, ai_indexable, and indexed_at reserve space for future indexing and
+    retrieval work without claiming those pipelines already exist.
+"""
+
 from enum import StrEnum
 from typing import Any
 

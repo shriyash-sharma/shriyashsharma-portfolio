@@ -1,3 +1,17 @@
+"""Admin media management routes.
+
+This module supports the current dashboard upload workflow. It keeps media
+operations behind authenticated admin routes while delegating storage concerns
+to the media service.
+
+Current scope:
+- Local image upload and listing only.
+- No CDN, transformations, or asset metadata persistence yet.
+
+That constraint is deliberate: the route contract can remain stable if storage
+later moves from local disk to an external object store.
+"""
+
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
 
 from app.api.dependencies.auth import CurrentAdminUser

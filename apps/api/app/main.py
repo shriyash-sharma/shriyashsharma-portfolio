@@ -1,3 +1,21 @@
+"""FastAPI application assembly for the portfolio platform.
+
+This module is the runtime composition root for the backend. It wires global
+concerns that must exist before any route executes: logging, typed settings,
+CORS for the frontend origin, static media serving, and the shared API router.
+
+Boundaries:
+- Domain behavior stays in route, repository, and service modules.
+- This file should only compose infrastructure and application-wide middleware.
+
+Design notes:
+- Media is served from the same process during the current platform stage to
+    keep editorial workflows simple while the dashboard and local storage model
+    mature.
+- App construction is kept behind create_app() so tests and future startup
+    hooks can reuse the same assembly path.
+"""
+
 from pathlib import Path
 
 from fastapi import FastAPI

@@ -1,3 +1,15 @@
+/**
+ * Server-side dashboard session accessors.
+ *
+ * This module is the authenticated entry point for Next.js server components
+ * and layouts that need dashboard identity. It reads the same-origin cookie,
+ * validates it against the backend session route, and normalizes unauthorized
+ * states into redirects or null sessions.
+ *
+ * Caching is applied at the request level so one render tree can reuse the
+ * resolved session without repeating backend calls.
+ */
+
 import "server-only";
 
 import { cache } from "react";

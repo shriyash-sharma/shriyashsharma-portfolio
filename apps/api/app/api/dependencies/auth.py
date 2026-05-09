@@ -1,3 +1,14 @@
+"""Authentication dependency layer for protected backend routes.
+
+These helpers convert raw request credentials into an active admin user object.
+They are the enforcement seam between transport-level token handling and route
+logic, which keeps protected handlers focused on business behavior.
+
+The dependency accepts either bearer tokens or the dashboard cookie-backed BFF
+flow so the same authorization checks work across direct API access and the web
+application's same-origin proxy routes.
+"""
+
 from typing import Annotated, cast
 
 from fastapi import Depends, HTTPException, status

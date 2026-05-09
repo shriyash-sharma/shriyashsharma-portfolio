@@ -1,3 +1,17 @@
+/**
+ * Edge request coordination for the Next.js application.
+ *
+ * This proxy enforces two platform-wide concerns before a request reaches the
+ * route tree: dashboard session gating and locale normalization. It keeps the
+ * default locale unprefixed, rewrites non-default locale paths back onto the
+ * shared route tree, and redirects unauthenticated dashboard traffic to login.
+ *
+ * Architectural role:
+ * - Preserve same-origin session behavior for dashboard pages.
+ * - Keep locale-aware routing orthogonal to page implementation details.
+ * - Allow localized content expansion without duplicating the app structure.
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { dashboardAuthCookieName } from "@/lib/auth/constants";
 import {
@@ -48,8 +62,6 @@ export function proxy(request: NextRequest) {
   );
   const cookieLocale = request.cookies.get(localeCookieName)?.value;
 
-  // Default locale remains unprefixed. Non-default locale paths are rewritten
-  // to the existing route tree so localized content can be added incrementally.
   if (pathLocale !== defaultLocale) {
     const url = request.nextUrl.clone();
     url.pathname = stripLocaleFromPath(pathname);

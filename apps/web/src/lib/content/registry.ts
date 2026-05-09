@@ -1,3 +1,12 @@
+/**
+ * Frontend content collection registry.
+ *
+ * This mirrors the backend's collection vocabulary for routing, labeling, and
+ * editorial UI decisions. It is intentionally capability-oriented rather than
+ * item-oriented so views can reason about supported collection types without
+ * coupling to persistence implementation details.
+ */
+
 import type { ContentType } from "@/lib/api/contracts/content";
 
 export type ContentCollection = {

@@ -1,3 +1,12 @@
+/**
+ * Locale configuration and path helpers.
+ *
+ * The platform keeps one shared route tree and layers locale behavior around
+ * it through path prefixes, cookies, and request rewriting. These helpers are
+ * the source of truth for supported locales and how localized URLs map back to
+ * canonical application paths.
+ */
+
 export const defaultLocale = "en";
 
 export const locales = ["en", "es", "ar", "hi", "pt", "de", "fr"] as const;

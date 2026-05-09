@@ -1,3 +1,18 @@
+"""Async repository for persisted content operations.
+
+This repository is the primary query and mutation boundary for the platform's
+content model. Route handlers call into it for both public reads and dashboard
+workflows so filtering, slug normalization, publish timestamp rules, and search
+criteria stay consistent across the application.
+
+Design decisions:
+- One repository serves multiple content types because the current product
+    model shares lifecycle semantics across projects, articles, case studies,
+    experiments, and research notes.
+- Locale and status filters are first-class because they shape public delivery,
+    editorial workflows, and future retrieval/indexing pipelines.
+"""
+
 from uuid import UUID
 
 import re

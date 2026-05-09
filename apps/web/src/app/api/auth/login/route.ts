@@ -1,3 +1,12 @@
+/**
+ * Same-origin login bridge for the dashboard.
+ *
+ * The browser posts credentials to this Next.js route, which forwards them to
+ * the backend auth API and stores the returned access token as an HttpOnly
+ * cookie. This keeps credential exchange and cookie issuance on the web origin
+ * instead of exposing backend auth mechanics directly to the client.
+ */
+
 import { NextResponse } from "next/server";
 import type { AdminAuthResponse } from "@/lib/api/contracts/admin";
 import { httpClient, ApiError } from "@/lib/api/http-client";

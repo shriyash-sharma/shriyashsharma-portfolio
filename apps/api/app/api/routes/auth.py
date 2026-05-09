@@ -1,3 +1,16 @@
+"""Authentication routes for dashboard access.
+
+This module owns the backend half of the admin session flow. It exchanges
+credentials for a signed access token, exposes the current session identity,
+and provides a logout endpoint for symmetry with the frontend cookie lifecycle.
+
+Boundaries:
+- Credential verification stays in the admin user repository.
+- Token construction stays in core.security.
+- Cookie storage is intentionally handled by the Next.js frontend so the web
+    app can keep browser session mechanics same-origin.
+"""
+
 from fastapi import APIRouter, HTTPException, status
 
 from app.api.dependencies.auth import CurrentAdminUser

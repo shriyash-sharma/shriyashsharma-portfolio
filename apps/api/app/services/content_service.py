@@ -1,3 +1,13 @@
+"""Static content collection registry.
+
+This service describes the platform's supported content collections without
+exposing database details to callers. The registry is consumed by public and
+editorial experiences as capability metadata rather than as a persistence API.
+
+The split matters because collection definitions are part of platform contract
+design, while individual items remain the repository layer's responsibility.
+"""
+
 from app.schemas.content import ContentCollection, ContentCollectionsResponse
 
 

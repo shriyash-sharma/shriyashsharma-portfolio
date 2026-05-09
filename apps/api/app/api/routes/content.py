@@ -1,3 +1,16 @@
+"""Public content delivery routes.
+
+These handlers expose published content to the public web experience while
+keeping authoring and moderation operations on separate admin routes. Locale
+and publish-state filtering are applied at the repository boundary so the
+frontend can request localized public content through one consistent contract.
+
+Design notes:
+- Public routes never expose drafts or review items.
+- Collection metadata is served separately so the frontend can discover the
+    platform's supported content types without coupling to database details.
+"""
+
 from fastapi import APIRouter, HTTPException
 
 from app.api.dependencies.database import DbSessionDep
