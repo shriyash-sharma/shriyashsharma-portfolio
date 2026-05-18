@@ -15,11 +15,14 @@ from collections.abc import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.core.config import get_settings
+from app.db.database_url import prepare_asyncpg_database_url
 
 settings = get_settings()
+database_url, connect_args = prepare_asyncpg_database_url(settings.database_url)
 
 engine = create_async_engine(
-    settings.database_url,
+    database_url,
+    connect_args=connect_args,
     pool_pre_ping=True,
     future=True,
 )
