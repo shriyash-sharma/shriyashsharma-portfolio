@@ -1,3 +1,4 @@
+import re
 from datetime import UTC, datetime
 from typing import Literal
 
@@ -9,6 +10,15 @@ from app.api.dependencies.settings import SettingsDep
 from app.schemas.health import HealthResponse
 
 router = APIRouter(tags=["health"])
+
+
+def _sanitize_db_error(exc: Exception) -> str:
+    message = re.sub(
+        r"postgresql(\+asyncpg)?://[^\s]+",
+        "postgresql://***",
+        str(exc),
+    )
+    return f"{type(exc).__name__}: {message[:240]}"
 
 
 @router.get("/health", response_model=HealthResponse)
@@ -30,10 +40,12 @@ async def readiness(
 ) -> HealthResponse:
     """Readiness probe — verifies database connectivity."""
     status: Literal["ok", "degraded"] = "ok"
+    detail: str | None = None
     try:
         await session.execute(text("SELECT 1"))
-    except Exception:
+    except Exception as exc:
         status = "degraded"
+        detail = _sanitize_db_error(exc)
 
     return HealthResponse(
         status=status,
@@ -41,4 +53,5 @@ async def readiness(
         environment=settings.app_env,
         version=settings.api_version,
         checked_at=datetime.now(UTC),
+        detail=detail,
     )

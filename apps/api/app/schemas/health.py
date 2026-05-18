@@ -12,3 +12,4 @@ class HealthResponse(BaseModel):
     environment: str
     version: str
     checked_at: datetime
+    detail: str | None = None
