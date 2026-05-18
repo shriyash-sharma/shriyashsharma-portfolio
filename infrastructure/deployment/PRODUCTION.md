@@ -57,7 +57,9 @@ The API refuses to start in `production` / `staging` if JWT secret, bootstrap pa
 
 1. Import the GitHub repo.
 2. **Root Directory:** `apps/web` (required — do not deploy from repo root).
-3. Framework: Next.js (auto-detected).
+3. Framework: Next.js; Install `npm ci`, Build `npm run build` (see `apps/web/vercel.json`).
+
+If the build log shows **“Detected Turbo”** and finishes in ~100ms with no `npm ci` / `next build`, either Root Directory is wrong or a `turbo.json` at the repo root is triggering an empty Turbo build. This repo keeps Turbo config in `tooling/turbo.json` so Vercel runs the Next.js install/build instead.
 
 **Environment variables:**
 
