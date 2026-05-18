@@ -8,46 +8,65 @@ import {
   type Locale,
 } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
+import { absoluteUrl, resolveMetadataBase } from "@/lib/seo/urls";
 
-type MetadataOverrides = {
+export type MetadataOverrides = {
   title?: string;
   description?: string;
   image?: string;
   path?: string;
   noIndex?: boolean;
   locale?: Locale;
+  openGraphType?: "website" | "article";
 };
 
-/**
- * Resolves origins for resolving relative OG/icon URLs (`metadataBase`) without
- * breaking local dev — `siteConfig.url` alone would point `/favicon.ico` at production while on localhost.
- */
-function resolveMetadataBaseOrigin(): URL {
-  const trimmed = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (trimmed) {
-    try {
-      return new URL(trimmed.endsWith("/") ? trimmed.slice(0, -1) : trimmed);
-    } catch {
-      // fall through
-    }
-  }
-  const vercelHost = process.env.VERCEL_URL?.trim();
-  if (vercelHost) {
-    return new URL(`https://${vercelHost.replace(/^https?:\/\//, "").replace(/\/$/, "")}`);
-  }
-  if (process.env.NODE_ENV === "development") {
-    return new URL("http://localhost:3000");
-  }
-  return new URL(siteConfig.url);
-}
+/** Per-route SEO copy for public marketing and content index pages. */
+export const pageSeo = {
+  projects: {
+    title: "Projects",
+    description:
+      "Selected software projects — React, Next.js, FastAPI, and production system design.",
+    path: "/projects",
+  },
+  caseStudies: {
+    title: "Case Studies",
+    description:
+      "Engineering case studies on architecture decisions, delivery, and measurable outcomes.",
+    path: "/case-studies",
+  },
+  blog: {
+    title: "Blog",
+    description:
+      "Technical writing on modern web development, AI integration, and platform engineering.",
+    path: "/blog",
+  },
+  architecture: {
+    title: "Architecture",
+    description:
+      "Architecture notes on APIs, content systems, and platform design.",
+    path: "/architecture",
+  },
+  about: {
+    title: "About",
+    description:
+      "About Shriyash Sharma — Senior Software Engineer at Globant, speaker, and engineering mentor.",
+    path: "/about",
+  },
+  speaking: {
+    title: "Speaking",
+    description:
+      "Conference and team talks on React, Next.js, AI systems, and engineering leadership.",
+    path: "/speaking",
+  },
+  contact: {
+    title: "Contact",
+    description: "Contact Shriyash Sharma for engineering roles, speaking, and collaboration.",
+    path: "/contact",
+  },
+} as const;
 
-/**
- * Central metadata factory.
- * Every route should call this to ensure consistent SEO output.
- *
- * Usage:
- *   export const metadata = buildMetadata({ title: "Projects", path: "/projects" });
- */
+export type PageSeoKey = keyof typeof pageSeo;
+
 export function buildMetadata(overrides: MetadataOverrides = {}): Metadata {
   const locale = overrides.locale ?? defaultLocale;
   const dictionary = getDictionary(locale);
@@ -56,14 +75,13 @@ export function buildMetadata(overrides: MetadataOverrides = {}): Metadata {
     : dictionary.meta.title;
   const description = overrides.description ?? dictionary.meta.description;
   const image = overrides.image ?? siteConfig.ogImage;
-  const url = overrides.path
-    ? `${siteConfig.url}${overrides.path}`
-    : siteConfig.url;
   const path = overrides.path ?? "/";
+  const canonical = absoluteUrl(path);
+
   const languageAlternates = Object.fromEntries(
     locales.map((item) => [
       localeLanguageTags[item],
-      `${siteConfig.url}${localizePath(path, item)}`,
+      absoluteUrl(localizePath(path, item)),
     ])
   );
 
@@ -74,33 +92,25 @@ export function buildMetadata(overrides: MetadataOverrides = {}): Metadata {
     },
     description,
     applicationName: siteConfig.name,
-    category: "technology",
     creator: siteConfig.author.name,
     publisher: siteConfig.author.name,
-    icons: {
-      icon: [
-        { url: "/favicon.ico", sizes: "any" },
-        { url: siteConfig.brand.logo, type: "image/png" },
-      ],
-      apple: [{ url: siteConfig.brand.logo, type: "image/png" }],
-      shortcut: [{ url: siteConfig.brand.logo }],
-    },
-    metadataBase: resolveMetadataBaseOrigin(),
+    // Favicon: src/app/icon.png (512) and apple-icon.png (180) — square, trimmed, light bg.
+    metadataBase: resolveMetadataBase(),
     alternates: {
-      canonical: url,
+      canonical,
       languages: {
         ...languageAlternates,
-        "x-default": `${siteConfig.url}${localizePath(path, defaultLocale)}`,
+        "x-default": absoluteUrl(localizePath(path, defaultLocale)),
       },
     },
     openGraph: {
-      type: "website",
+      type: overrides.openGraphType ?? "website",
       locale: localeLanguageTags[locale].replace("-", "_"),
-      url,
+      url: canonical,
       title,
       description,
       siteName: siteConfig.name,
-      images: [{ url: image, width: 1200, height: 630, alt: title }],
+      images: [{ url: image, alt: title }],
     },
     twitter: {
       card: "summary_large_image",
@@ -112,6 +122,19 @@ export function buildMetadata(overrides: MetadataOverrides = {}): Metadata {
     robots: overrides.noIndex
       ? { index: false, follow: false }
       : { index: true, follow: true },
-    authors: [{ name: siteConfig.author.name }],
+    authors: [{ name: siteConfig.author.name, url: absoluteUrl("/about") }],
   };
+}
+
+export function pageMetadata(
+  key: PageSeoKey,
+  overrides: MetadataOverrides = {}
+): Metadata {
+  const page = pageSeo[key];
+  return buildMetadata({
+    title: page.title,
+    description: page.description,
+    path: page.path,
+    ...overrides,
+  });
 }

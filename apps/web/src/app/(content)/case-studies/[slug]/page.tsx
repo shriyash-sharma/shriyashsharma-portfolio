@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { PublicContentDetail } from "@/components/content/public-content-detail";
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
-import { buildMetadata } from "@/lib/seo/metadata";
+import { buildContentMetadata } from "@/lib/seo/content-metadata";
+import { breadcrumbJsonLd, techArticleJsonLd } from "@/lib/seo/json-ld";
+import { pageMetadata } from "@/lib/seo/metadata";
 import { getCaseStudy } from "@/lib/services/content-service";
 
 type RouteContext = {
@@ -17,13 +20,14 @@ export async function generateMetadata(
   const caseStudy = await getCaseStudy(slug);
 
   if (!caseStudy) {
-    return buildMetadata({ title: "Case Studies", path: "/case-studies" });
+    return pageMetadata("caseStudies");
   }
 
-  return buildMetadata({
+  return buildContentMetadata({
     title: caseStudy.seoTitle ?? caseStudy.title,
     description: caseStudy.seoDescription ?? caseStudy.description,
     path: `/case-studies/${caseStudy.slug}`,
+    openGraphType: "article",
   });
 }
 
@@ -35,15 +39,34 @@ export default async function CaseStudyPage({ params }: RouteContext) {
     notFound();
   }
 
+  const path = `/case-studies/${caseStudy.slug}`;
+
   return (
-    <PageShell>
-      <Section>
-        <PublicContentDetail
-          entry={caseStudy}
-          backHref="/case-studies"
-          backLabel="Back to case studies"
-        />
-      </Section>
-    </PageShell>
+    <>
+      <JsonLdScript
+        data={[
+          techArticleJsonLd({
+            title: caseStudy.title,
+            description: caseStudy.description,
+            path,
+            datePublished: caseStudy.publishedAt,
+            dateModified: caseStudy.updatedAt,
+          }),
+          breadcrumbJsonLd([
+            { name: "Case Studies", path: "/case-studies" },
+            { name: caseStudy.title, path },
+          ]),
+        ]}
+      />
+      <PageShell>
+        <Section>
+          <PublicContentDetail
+            entry={caseStudy}
+            backHref="/case-studies"
+            backLabel="Back to case studies"
+          />
+        </Section>
+      </PageShell>
+    </>
   );
 }

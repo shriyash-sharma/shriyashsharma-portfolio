@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { BrandMark } from "@/components/brand/brand-mark";
 import { LoginForm } from "@/components/dashboard/login-form";
 import { getDashboardSession } from "@/lib/auth/session";
-import { buildMetadata } from "@/lib/seo/metadata";
+import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
   title: "Dashboard Login",

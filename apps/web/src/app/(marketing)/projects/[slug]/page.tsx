@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { PublicProjectDetail } from "@/components/content/public-project-detail";
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
-import { buildMetadata } from "@/lib/seo/metadata";
+import { buildContentMetadata } from "@/lib/seo/content-metadata";
+import { breadcrumbJsonLd, creativeWorkJsonLd } from "@/lib/seo/json-ld";
+import { pageMetadata } from "@/lib/seo/metadata";
 import { getProject } from "@/lib/services/project-service";
 
 type RouteContext = {
@@ -17,10 +20,10 @@ export async function generateMetadata(
   const project = await getProject(slug);
 
   if (!project) {
-    return buildMetadata({ title: "Projects", path: "/projects" });
+    return pageMetadata("projects");
   }
 
-  return buildMetadata({
+  return buildContentMetadata({
     title: project.seoTitle ?? project.title,
     description: project.seoDescription ?? project.description,
     path: `/projects/${project.slug}`,
@@ -35,11 +38,30 @@ export default async function ProjectPage({ params }: RouteContext) {
     notFound();
   }
 
+  const path = `/projects/${project.slug}`;
   return (
-    <PageShell>
-      <Section>
-        <PublicProjectDetail project={project} />
-      </Section>
-    </PageShell>
+    <>
+      <JsonLdScript
+        data={[
+          creativeWorkJsonLd({
+            title: project.title,
+            description: project.description,
+            path,
+            datePublished: project.publishedAt,
+            github: project.links.github,
+            live: project.links.live,
+          }),
+          breadcrumbJsonLd([
+            { name: "Projects", path: "/projects" },
+            { name: project.title, path },
+          ]),
+        ]}
+      />
+      <PageShell>
+        <Section>
+          <PublicProjectDetail project={project} />
+        </Section>
+      </PageShell>
+    </>
   );
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { requireDashboardSession } from "@/lib/auth/session";
-import { buildMetadata } from "@/lib/seo/metadata";
+import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
   title: "Dashboard",
