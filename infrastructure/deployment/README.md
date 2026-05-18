@@ -1,6 +1,8 @@
 # Deployment
 
-Reserved for production deployment notes and provider-specific configuration.
+Production runbook: **[PRODUCTION.md](./PRODUCTION.md)** (Vercel web + Render API + Supabase).
 
-No Kubernetes, reverse proxy, or orchestration layer is added until deployment
-requirements justify it.
+Provider config in repo root:
+
+- `render.yaml` — Render blueprint for `apps/api`
+- `vercel.json` — deploy gate on `main` (set Vercel **Root Directory** to `apps/web`)

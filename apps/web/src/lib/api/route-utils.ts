@@ -12,16 +12,10 @@
 
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { createBackendUrl } from "@/lib/api/backend-url";
 import { dashboardAuthCookieName } from "@/lib/auth/constants";
 
-export function createBackendUrl(path: string): string {
-  const baseUrl =
-    process.env.API_INTERNAL_URL ??
-    process.env.NEXT_PUBLIC_API_URL ??
-    "http://localhost:8000";
-
-  return new URL(path, baseUrl).toString();
-}
+export { createBackendUrl };
 
 export async function getDashboardToken() {
   const cookieStore = await cookies();

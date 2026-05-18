@@ -11,6 +11,8 @@
  * - This layer is transport-oriented and intentionally thin.
  */
 
+import { resolveBackendBaseUrl } from "@/lib/api/backend-url";
+
 export class ApiError extends Error {
   constructor(
     public readonly status: number,
@@ -32,12 +34,7 @@ function createUrl(path: string): string {
     return path;
   }
 
-  const baseUrl = process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL;
-  if (!baseUrl) {
-    return path;
-  }
-
-  return new URL(path, baseUrl).toString();
+  return new URL(path, `${resolveBackendBaseUrl()}/`).toString();
 }
 
 async function request<T>(

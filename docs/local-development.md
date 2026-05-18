@@ -14,11 +14,18 @@ a FastAPI backend backed by Postgres for persisted content and admin identity.
 
 ```bash
 cd apps/web
+cp .env.example .env.local
 npm install
 npm run dev
 ```
 
 Frontend runs on `http://localhost:3000`.
+
+Required in `apps/web/.env.local`:
+
+- `NEXT_PUBLIC_API_URL` — browser and media URLs (local: `http://localhost:8000`)
+- `API_INTERNAL_URL` — server-side BFF and RSC (local: `http://localhost:8000`)
+- `NEXT_PUBLIC_SITE_URL` — canonical/SEO (local: `http://localhost:3000`)
 
 ## Backend
 
@@ -42,6 +49,18 @@ Run database migrations:
 cd apps/api
 uv run alembic upgrade head
 ```
+
+### Supabase (production / remote Postgres)
+
+Use the **transaction pooler** URI from Supabase and prefix the driver for SQLAlchemy async:
+
+```text
+postgresql+asyncpg://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres?sslmode=require
+```
+
+Set `DATABASE_URL` in Render (or `apps/api/.env` locally when pointing at Supabase). Run `uv run alembic upgrade head` before serving traffic.
+
+See `infrastructure/deployment/PRODUCTION.md` for the full Vercel + Render checklist.
 
 Seed development content:
 

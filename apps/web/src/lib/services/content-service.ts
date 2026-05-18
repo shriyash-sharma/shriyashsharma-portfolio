@@ -10,6 +10,7 @@ import type {
   ApiContentItem,
   ContentType,
 } from "@/lib/api/contracts/content";
+import { hasBackendUrl } from "@/lib/api/backend-url";
 import { getContentItem, listContent } from "@/lib/api/endpoints/content-api";
 import { contentCollections } from "@/lib/content/registry";
 
@@ -36,10 +37,6 @@ export type BlogPost = PublicContentEntry;
 export type CaseStudy = PublicContentEntry;
 
 export type ArchitectureNote = PublicContentEntry;
-
-function hasBackendUrl() {
-  return Boolean(process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL);
-}
 
 function readTimeFrom(item: ApiContentItem) {
   return typeof item.metadata.read_time === "string"

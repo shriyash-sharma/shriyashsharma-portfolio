@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { startTransition, useEffect, useState } from "react";
 import type { MediaAsset, MediaListResponse, MediaUploadResponse } from "@/lib/api/contracts/admin";
+import { resolvePublicApiBaseUrl } from "@/lib/api/backend-url";
 import { Button } from "@/components/ui/button";
 
 function formatBytes(value: number) {
@@ -151,7 +152,7 @@ export function MediaManager() {
             >
               <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)]">
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"}${item.url}`}
+                  src={`${resolvePublicApiBaseUrl()}${item.url}`}
                   alt={item.alt_text ?? item.filename}
                   fill
                   className="object-cover"

@@ -4,6 +4,7 @@
  * Swap implementation for API-backed data without changing callers.
  */
 
+import { hasBackendUrl } from "@/lib/api/backend-url";
 import { listContent, getContentItem } from "@/lib/api/endpoints/content-api";
 import type { ApiContentItem } from "@/lib/api/contracts/content";
 
@@ -29,10 +30,6 @@ export type Project = {
     caseStudy?: string;
   };
 };
-
-function hasBackendUrl() {
-  return Boolean(process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL);
-}
 
 function mapProject(item: ApiContentItem): Project {
   return {
