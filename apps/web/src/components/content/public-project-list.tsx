@@ -9,9 +9,14 @@ function formatDate(value: string) {
 
 type PublicProjectListProps = {
   projects: Project[];
+  /** False when NEXT_PUBLIC_API_URL / API_INTERNAL_URL are unset (common on Vercel without env). */
+  backendConfigured?: boolean;
 };
 
-export function PublicProjectList({ projects }: PublicProjectListProps) {
+export function PublicProjectList({
+  projects,
+  backendConfigured = true,
+}: PublicProjectListProps) {
   return (
     <div className="grid gap-10">
       <div className="max-w-3xl">
@@ -60,7 +65,16 @@ export function PublicProjectList({ projects }: PublicProjectListProps) {
         </div>
       ) : (
         <div className="rounded-[28px] border border-dashed border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-12 text-[15px] text-[var(--color-muted)]">
-          No published projects yet.
+          {!backendConfigured ? (
+            <>
+              Content API is not configured for this deployment. Set{" "}
+              <code className="text-[13px]">NEXT_PUBLIC_API_URL</code> and{" "}
+              <code className="text-[13px]">API_INTERNAL_URL</code> on Vercel,
+              then redeploy.
+            </>
+          ) : (
+            "No published projects yet."
+          )}
         </div>
       )}
     </div>

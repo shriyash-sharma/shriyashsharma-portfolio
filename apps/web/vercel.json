@@ -1,4 +1,16 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://portfolio-api-0pp2.onrender.com",
+    "API_INTERNAL_URL": "https://portfolio-api-0pp2.onrender.com",
+    "NEXT_PUBLIC_SITE_URL": "https://shriyashsharma.com"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_API_URL": "https://portfolio-api-0pp2.onrender.com",
+      "API_INTERNAL_URL": "https://portfolio-api-0pp2.onrender.com",
+      "NEXT_PUBLIC_SITE_URL": "https://shriyashsharma.com"
+    }
+  }
 }

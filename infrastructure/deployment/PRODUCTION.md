@@ -66,15 +66,17 @@ The API refuses to start in `production` / `staging` if JWT secret, bootstrap pa
 
 If the build log shows **“Detected Turbo”** and finishes in ~100ms with no `next build`, a `turbo.json` at the repo root was triggering an empty Turbo build. This repo keeps Turbo config in `tooling/turbo.json` to avoid that.
 
-**Environment variables:**
+**Environment variables** (required for public pages to load CMS content):
 
 | Variable | Value |
 |----------|--------|
-| `NEXT_PUBLIC_API_URL` | `https://your-api.onrender.com` |
-| `API_INTERNAL_URL` | same as public API URL (unless using private networking) |
+| `NEXT_PUBLIC_API_URL` | `https://portfolio-api-0pp2.onrender.com` |
+| `API_INTERNAL_URL` | same as public API URL |
 | `NEXT_PUBLIC_SITE_URL` | `https://shriyashsharma.com` |
 
-Copy `apps/web/.env.example` for local parity.
+Defaults for these are also committed in `apps/web/vercel.json` so production works after deploy even if the Vercel dashboard env list is empty. You can override them in the dashboard; redeploy after any change.
+
+Local dev: copy `apps/web/.env.local.example` → `.env.local` (same API URLs; `NEXT_PUBLIC_SITE_URL` is usually `http://localhost:3000`).
 
 ## 4. CORS and cookies
 
