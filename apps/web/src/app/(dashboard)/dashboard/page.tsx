@@ -1,11 +1,19 @@
-import { getAdminContentOverview } from "@/lib/api/endpoints/admin-api";
+import { getAdminContentOverview, isUnauthorizedApiError } from "@/lib/api/endpoints/admin-api";
 import { getDashboardAccessToken } from "@/lib/auth/session";
 import { contentCollections } from "@/lib/content/registry";
+import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
   const token = await getDashboardAccessToken();
-  const overviewItems = token
-    ? await Promise.all(
+  let overviewItems: Array<{
+    collection: (typeof contentCollections)[number];
+    total: number;
+    published: number;
+  }> = [];
+
+  if (token) {
+    try {
+      overviewItems = await Promise.all(
         contentCollections.map(async (collection) => {
           const overview = await getAdminContentOverview({
             token,
@@ -20,8 +28,15 @@ export default async function DashboardPage() {
             published,
           };
         })
-      )
-    : [];
+      );
+    } catch (error) {
+      if (isUnauthorizedApiError(error)) {
+        redirect("/login?next=%2Fdashboard");
+      }
+
+      throw error;
+    }
+  }
 
   return (
     <div className="grid gap-8">

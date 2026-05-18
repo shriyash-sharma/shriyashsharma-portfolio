@@ -49,12 +49,8 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (normalizedPath === "/login" && hasDashboardSession) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
-    url.search = "";
-    return NextResponse.redirect(url);
-  }
+  // Do not redirect /login → /dashboard based on cookie presence alone.
+  // Stale tokens are validated on the login page via /auth/session.
 
   const pathLocale = getPathLocale(pathname);
   const preferredLocale = getPreferredLocale(
