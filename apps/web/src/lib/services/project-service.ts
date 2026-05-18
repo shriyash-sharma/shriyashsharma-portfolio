@@ -76,7 +76,10 @@ export async function getProjects(): Promise<Project[]> {
   try {
     const response = await listContent({ type: "project", limit: 50 });
     return response.items.map(mapProject);
-  } catch {
+  } catch (error) {
+    if (process.env.NODE_ENV === "production") {
+      console.error("[getProjects] failed to load from API:", error);
+    }
     return [];
   }
 }

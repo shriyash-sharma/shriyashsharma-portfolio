@@ -1,23 +1,24 @@
 import type { Metadata } from "next";
-import { buildMetadata } from "@/lib/seo/metadata";
+import { buildPageMetadata } from "@/lib/seo/pages";
 import { PublicProjectList } from "@/components/content/public-project-list";
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
+import { hasBackendUrl } from "@/lib/api/backend-url";
 import { getProjects } from "@/lib/services/project-service";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Projects",
-  description: "A collection of projects I have built or contributed to.",
-  path: "/projects",
-});
+export const metadata: Metadata = buildPageMetadata("projects");
 
 export default async function ProjectsPage() {
   const projects = await getProjects();
+  const backendConfigured = hasBackendUrl();
 
   return (
     <PageShell>
       <Section>
-        <PublicProjectList projects={projects} />
+        <PublicProjectList
+          projects={projects}
+          backendConfigured={backendConfigured}
+        />
       </Section>
     </PageShell>
   );
