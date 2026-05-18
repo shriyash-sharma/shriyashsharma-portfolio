@@ -64,6 +64,25 @@ def _parse_authority(authority: str) -> tuple[str, str | None, str, str]:
     return username, password, host, database, port
 
 
+def _is_supabase_host(host: str) -> bool:
+    return host.endswith(".supabase.com") or host.endswith(".pooler.supabase.com")
+
+
+def _build_ssl_context(host: str) -> ssl.SSLContext:
+    settings = get_settings()
+    if settings.database_ssl_insecure:
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+        return context
+
+    # Supabase: use the OS trust store (works on Render). certifi can fail on some hosts.
+    if _is_supabase_host(host):
+        return ssl.create_default_context()
+
+    return ssl.create_default_context(cafile=certifi.where())
+
+
 def prepare_asyncpg_database_url(database_url: str) -> tuple[str, dict[str, object]]:
     """Return a URL and connect_args suitable for create_async_engine(asyncpg)."""
     match = _SCHEME_RE.match(database_url)
@@ -87,15 +106,11 @@ def prepare_asyncpg_database_url(database_url: str) -> tuple[str, dict[str, obje
 
     connect_args: dict[str, object] = {}
     sslmode = query.pop("sslmode", None)
-    needs_ssl = sslmode in ("require", "verify-ca", "verify-full", "prefer") or host.endswith(
-        ".supabase.com"
+    needs_ssl = sslmode in ("require", "verify-ca", "verify-full", "prefer") or _is_supabase_host(
+        host
     )
     if needs_ssl:
-        ssl_context = ssl.create_default_context(cafile=certifi.where())
-        if get_settings().database_ssl_insecure:
-            ssl_context.check_hostname = False
-            ssl_context.verify_mode = ssl.CERT_NONE
-        connect_args["ssl"] = ssl_context
+        connect_args["ssl"] = _build_ssl_context(host)
 
     # Supabase transaction pooler (port 6543) does not support prepared statement cache.
     if host.endswith(".pooler.supabase.com"):
