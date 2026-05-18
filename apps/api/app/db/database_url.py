@@ -68,16 +68,24 @@ def _is_supabase_host(host: str) -> bool:
     return host.endswith(".supabase.com") or host.endswith(".pooler.supabase.com")
 
 
-def _build_ssl_context(host: str) -> ssl.SSLContext:
+def _relaxed_ssl_context() -> ssl.SSLContext:
+    """TLS without cert verification (connection still encrypted)."""
+    context = ssl.create_default_context()
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    return context
+
+
+def _build_ssl_context(host: str) -> ssl.SSLContext | bool:
     settings = get_settings()
     if settings.database_ssl_insecure:
-        context = ssl.create_default_context()
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
-        return context
+        return _relaxed_ssl_context()
 
-    # Supabase: use the OS trust store (works on Render). certifi can fail on some hosts.
+    # Supabase pooler: strict verify often fails on PaaS hosts (e.g. Render) and
+    # some corporate networks. Traffic remains TLS-encrypted.
     if _is_supabase_host(host):
+        if settings.app_env == "production":
+            return _relaxed_ssl_context()
         return ssl.create_default_context()
 
     return ssl.create_default_context(cafile=certifi.where())

@@ -19,6 +19,7 @@ services:
         value: "3.12"
       - key: DATABASE_URL
         sync: false
+      # Use https://your-site.vercel.app in prod; http://localhost:3000 for local web → Render API.
       - key: FRONTEND_ORIGIN
         sync: false
       - key: ADMIN_JWT_SECRET
