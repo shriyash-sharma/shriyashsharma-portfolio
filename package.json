@@ -2,13 +2,13 @@
   "name": "shriyashsharma-platform",
   "private": true,
   "scripts": {
-    "dev": "turbo dev",
+    "dev": "turbo dev --config tooling/turbo.json",
     "dev:web": "pnpm --filter web dev",
     "dev:api": "cd apps/api && uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
-    "build": "turbo build",
-    "lint": "turbo lint",
-    "typecheck": "turbo typecheck",
-    "test": "turbo test",
+    "build": "turbo build --config tooling/turbo.json",
+    "lint": "turbo lint --config tooling/turbo.json",
+    "typecheck": "turbo typecheck --config tooling/turbo.json",
+    "test": "turbo test --config tooling/turbo.json",
     "docker:dev": "docker compose up --build"
   },
   "devDependencies": {
