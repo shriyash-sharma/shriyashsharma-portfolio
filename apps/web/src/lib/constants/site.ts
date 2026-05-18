@@ -4,7 +4,11 @@ export const siteConfig = {
   description:
     "Software engineer specializing in scalable frontend systems, AI integration, and modern product engineering.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://shriyashsharma.dev",
-  ogImage: "/og.jpg",
+  ogImage: "/ShriyashLogo.png",
+  brand: {
+    logo: "/ShriyashLogo.png",
+    wordmark: "/ShriyashWordmark.svg",
+  },
   author: {
     name: "Shriyash Sharma",
     email: "hello@shriyashsharma.dev",

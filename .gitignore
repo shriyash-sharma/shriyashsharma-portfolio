@@ -1,3 +1,24 @@
 node_modules/
 .DS_Store
 *.log
+.env
+.env.*
+!.env.example
+
+# Next.js
+.next/
+out/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build/cache
+.turbo/
+
+# Editor local history (keep on disk, never commit)
+.history/

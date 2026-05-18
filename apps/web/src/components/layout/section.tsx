@@ -5,15 +5,16 @@ type SectionProps = {
   children: React.ReactNode;
   className?: string;
   containerClassName?: string;
-  /** Renders the section with no Container wrapper when true */
   fullWidth?: boolean;
   id?: string;
   as?: React.ElementType;
-};
+} & React.HTMLAttributes<HTMLElement>;
 
 /**
- * Semantic section wrapper with consistent vertical rhythm.
- * By default wraps content in a Container; use fullWidth to opt out.
+ * Canonical section wrapper.
+ * Spacing: mobile 64px → tablet 80px → desktop 96px → xl 112px.
+ * Never use ad-hoc py-* on sections — always go through this component
+ * so vertical rhythm stays consistent across the page.
  */
 export function Section({
   children,
@@ -22,9 +23,14 @@ export function Section({
   fullWidth = false,
   id,
   as: Tag = "section",
+  ...props
 }: SectionProps) {
   return (
-    <Tag id={id} className={cn("py-20 lg:py-28", className)}>
+    <Tag
+      id={id}
+      className={cn("py-16 sm:py-20 lg:py-24 xl:py-28", className)}
+      {...props}
+    >
       {fullWidth ? (
         children
       ) : (
