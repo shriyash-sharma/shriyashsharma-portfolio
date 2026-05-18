@@ -19,7 +19,8 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = buildMetadata();
+export const metadata: Metadata = buildMetadata({ path: "/" });
+
 const localeRuntimeConfig = Object.fromEntries(
   Object.entries(localeConfigs).map(([locale, config]) => [
     locale,

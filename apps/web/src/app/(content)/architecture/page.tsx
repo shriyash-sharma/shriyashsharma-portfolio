@@ -1,16 +1,11 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo/metadata";
+import { PublicContentList } from "@/components/content/public-content-list";
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
-import { PublicContentList } from "@/components/content/public-content-list";
-import { buildMetadata } from "@/lib/seo/metadata";
 import { getArchitectureNotes } from "@/lib/services/content-service";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Architecture",
-  description:
-    "Platform architecture notes for backend integration, content systems, and future AI capabilities.",
-  path: "/architecture",
-});
+export const metadata: Metadata = pageMetadata("architecture");
 
 export default async function ArchitecturePage() {
   const notes = await getArchitectureNotes();
@@ -19,12 +14,12 @@ export default async function ArchitecturePage() {
     <PageShell>
       <Section>
         <PublicContentList
-          eyebrow="Systems"
+          eyebrow="Platform"
           heading="Architecture"
-          subheading="Published architecture notes, platform decisions, and implementation references from the content system."
+          subheading="System topology, ADR-style decisions, AI assistant foundations, and platform evolution."
           entries={notes}
           hrefBase="/architecture"
-          emptyLabel="No published architecture notes yet. Publish an architecture note from the dashboard to make it appear here."
+          emptyLabel="No published architecture notes yet."
         />
       </Section>
     </PageShell>

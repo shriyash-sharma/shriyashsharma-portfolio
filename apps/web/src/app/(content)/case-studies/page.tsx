@@ -1,16 +1,11 @@
 import type { Metadata } from "next";
-import { buildMetadata } from "@/lib/seo/metadata";
+import { pageMetadata } from "@/lib/seo/metadata";
+import { PublicContentList } from "@/components/content/public-content-list";
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
-import { PublicContentList } from "@/components/content/public-content-list";
 import { getCaseStudies } from "@/lib/services/content-service";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Case Studies",
-  description:
-    "Detailed engineering breakdowns of systems, architecture decisions, and outcomes.",
-  path: "/case-studies",
-});
+export const metadata: Metadata = pageMetadata("caseStudies");
 
 export default async function CaseStudiesPage() {
   const caseStudies = await getCaseStudies();
@@ -19,12 +14,12 @@ export default async function CaseStudiesPage() {
     <PageShell>
       <Section>
         <PublicContentList
-          eyebrow="Deep dives"
+          eyebrow="Work"
           heading="Case Studies"
-          subheading="Published engineering breakdowns, architecture tradeoffs, and implementation outcomes from the content platform."
+          subheading="Published case studies from the content system, including shipped work, architecture context, and linked projects."
           entries={caseStudies}
           hrefBase="/case-studies"
-          emptyLabel="No published case studies yet. Publish a case study from the dashboard to make it appear here."
+          emptyLabel="No published case studies yet."
         />
       </Section>
     </PageShell>

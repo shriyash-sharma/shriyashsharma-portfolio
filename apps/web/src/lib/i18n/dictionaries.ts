@@ -9,6 +9,7 @@ type Dictionary = {
     projects: string;
     caseStudies: string;
     blog: string;
+    speaking: string;
     about: string;
     contact: string;
   };
@@ -39,14 +40,15 @@ type Dictionary = {
 export const dictionaries: Record<Locale, Dictionary> = {
   en: {
     meta: {
-      title: "Shriyash Sharma — Software Engineer",
+      title: "Shriyash Sharma — Senior Software Engineer",
       description:
-        "Software engineer specializing in scalable frontend systems, AI integration, and modern product engineering.",
+        "Senior Software Engineer at Globant. React, Next.js, FastAPI, and AI/RAG systems for scalable web applications.",
     },
     nav: {
       projects: "Projects",
       caseStudies: "Case Studies",
       blog: "Blog",
+      speaking: "Speaking",
       about: "About",
       contact: "Contact",
     },
@@ -89,6 +91,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       projects: "Proyectos",
       caseStudies: "Casos",
       blog: "Blog",
+      speaking: "Charlas",
       about: "Perfil",
       contact: "Contacto",
     },
@@ -131,6 +134,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       projects: "المشاريع",
       caseStudies: "دراسات الحالة",
       blog: "المدونة",
+      speaking: "محاضرات",
       about: "نبذة",
       contact: "تواصل",
     },
@@ -173,6 +177,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       projects: "प्रोजेक्ट्स",
       caseStudies: "केस स्टडीज़",
       blog: "ब्लॉग",
+      speaking: "वार्ता",
       about: "परिचय",
       contact: "संपर्क",
     },
@@ -215,6 +220,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       projects: "Projetos",
       caseStudies: "Estudos",
       blog: "Blog",
+      speaking: "Palestras",
       about: "Sobre",
       contact: "Contato",
     },
@@ -257,6 +263,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       projects: "Projekte",
       caseStudies: "Fallstudien",
       blog: "Blog",
+      speaking: "Vorträge",
       about: "Profil",
       contact: "Kontakt",
     },
@@ -299,6 +306,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       projects: "Projets",
       caseStudies: "Études",
       blog: "Blog",
+      speaking: "Conférences",
       about: "Profil",
       contact: "Contact",
     },
