@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     database_url: str = (
         "postgresql+asyncpg://portfolio:portfolio@localhost:5433/portfolio"
     )
+    # Local-only escape hatch when a corporate proxy breaks SSL verification.
+    database_ssl_insecure: bool = False
     redis_url: str | None = None
     ai_provider_api_key: SecretStr | None = None
 

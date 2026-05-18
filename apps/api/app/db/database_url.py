@@ -6,11 +6,12 @@
 
 from __future__ import annotations
 
-import os
 import re
 import ssl
 
 import certifi
+
+from app.core.config import get_settings
 
 from sqlalchemy.engine import make_url
 from sqlalchemy.engine.url import URL
@@ -91,10 +92,14 @@ def prepare_asyncpg_database_url(database_url: str) -> tuple[str, dict[str, obje
     )
     if needs_ssl:
         ssl_context = ssl.create_default_context(cafile=certifi.where())
-        if os.getenv("DATABASE_SSL_INSECURE", "").lower() in {"1", "true", "yes"}:
+        if get_settings().database_ssl_insecure:
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
         connect_args["ssl"] = ssl_context
+
+    # Supabase transaction pooler (port 6543) does not support prepared statement cache.
+    if host.endswith(".pooler.supabase.com"):
+        connect_args["statement_cache_size"] = 0
 
     sqlalchemy_url = URL.create(
         drivername="postgresql+asyncpg",
