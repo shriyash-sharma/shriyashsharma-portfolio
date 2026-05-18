@@ -44,7 +44,7 @@ Use the repo `render.yaml` blueprint or create a **Web Service** manually:
 |----------|---------|
 | `APP_ENV` | `production` |
 | `DATABASE_URL` | Supabase async URL above |
-| `FRONTEND_ORIGIN` | `https://your-site.vercel.app` |
+| `FRONTEND_ORIGIN` | `https://shriyashsharma.com` (scheme + host only, no path or trailing slash) |
 | `ADMIN_JWT_SECRET` | long random string (not the example default) |
 | `ADMIN_BOOTSTRAP_EMAIL` | your admin email |
 | `ADMIN_BOOTSTRAP_PASSWORD` | strong password (not `changeme-admin-password`) |
@@ -56,10 +56,15 @@ The API refuses to start in `production` / `staging` if JWT secret, bootstrap pa
 ## 3. Vercel (web)
 
 1. Import the GitHub repo.
-2. **Root Directory:** `apps/web` (required — do not deploy from repo root).
-3. Framework: Next.js; Install `npm ci`, Build `npm run build` (see `apps/web/vercel.json`).
+2. **Root Directory:** `apps/web` (not `./apps/web`, not repo root).
+3. **Include files outside the root directory in the Build Step:** **Enabled** (monorepo access to repo root if needed later).
+4. **Framework:** Next.js.
+5. **Turn off all build overrides** (Install, Build, Output Directory toggles **gray / off**). Let Vercel use zero-config Next.js defaults. Manual overrides (especially Output Directory left “on” but empty) can produce ~100ms empty builds and `404 NOT_FOUND`.
+6. Do **not** set Install to `npm ci` in the dashboard for this app: `apps/web` has its own `package-lock.json`, but forced overrides have caused silent empty builds; defaults work when overrides are off.
 
-If the build log shows **“Detected Turbo”** and finishes in ~100ms with no `npm ci` / `next build`, either Root Directory is wrong or a `turbo.json` at the repo root is triggering an empty Turbo build. This repo keeps Turbo config in `tooling/turbo.json` so Vercel runs the Next.js install/build instead.
+**Monorepo tooling in this repo:** [pnpm workspaces](https://pnpm.io/workspaces) at the repo root (`pnpm-workspace.yaml`), [Turborepo](https://turbo.build) for local `pnpm build` / `pnpm dev` (config in `tooling/turbo.json`, not at repo root — so Vercel does not auto-enable Turbo). The Vercel web project deploys **`apps/web` only** with **npm** (`apps/web/package-lock.json`), not pnpm, unless you change that deliberately.
+
+If the build log shows **“Detected Turbo”** and finishes in ~100ms with no `next build`, a `turbo.json` at the repo root was triggering an empty Turbo build. This repo keeps Turbo config in `tooling/turbo.json` to avoid that.
 
 **Environment variables:**
 
@@ -67,13 +72,13 @@ If the build log shows **“Detected Turbo”** and finishes in ~100ms with no `
 |----------|--------|
 | `NEXT_PUBLIC_API_URL` | `https://your-api.onrender.com` |
 | `API_INTERNAL_URL` | same as public API URL (unless using private networking) |
-| `NEXT_PUBLIC_SITE_URL` | `https://your-site.vercel.app` |
+| `NEXT_PUBLIC_SITE_URL` | `https://shriyashsharma.com` |
 
 Copy `apps/web/.env.example` for local parity.
 
 ## 4. CORS and cookies
 
-- `FRONTEND_ORIGIN` on the API must exactly match the Vercel URL (scheme + host, no trailing slash mismatch).
+- `FRONTEND_ORIGIN` on the API must exactly match the browser origin (e.g. `https://shriyashsharma.com`, not `https://shriyashsharma.com/projects`). If both `www` and apex are used, pick one canonical host and redirect the other in Vercel DNS/domain settings.
 - Dashboard auth uses an httpOnly cookie on the web origin; the browser never calls Render admin routes directly.
 
 ## 5. Smoke test checklist
