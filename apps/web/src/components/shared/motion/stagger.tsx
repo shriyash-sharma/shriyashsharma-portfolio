@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/styles/motion";
 
 type StaggerProps = {
@@ -9,16 +9,22 @@ type StaggerProps = {
 };
 
 /**
- * Container that staggers its children with fade-up animation.
- * Wrap a list of items in <Stagger> and each direct child gets staggered.
+ * Container that orchestrates staggered fade-up entrances for its children.
+ * Respects prefers-reduced-motion — renders immediately without animation.
  */
 export function Stagger({ children, className }: StaggerProps) {
+  const reduced = useReducedMotion();
+
+  if (reduced) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
     <motion.div
       variants={staggerContainer}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-40px" }}
+      viewport={{ once: true, margin: "-60px" }}
       className={className}
     >
       {children}
@@ -34,6 +40,12 @@ export function StaggerItem({
   children: React.ReactNode;
   className?: string;
 }) {
+  const reduced = useReducedMotion();
+
+  if (reduced) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
     <motion.div variants={staggerItem} className={className}>
       {children}

@@ -6,11 +6,13 @@
  * 3. Pipe the SSE stream back to the client
  */
 
+import type { AssistantRequest } from "@/lib/api/contracts/ai";
+
 export const runtime = "edge";
 
 export async function POST(request: Request) {
   // Stub – replace with real implementation
-  const body = await request.json();
+  const body = (await request.json()) as AssistantRequest;
   void body;
 
   return new Response(

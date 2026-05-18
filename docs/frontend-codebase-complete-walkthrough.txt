@@ -1,0 +1,451 @@
+Frontend Codebase Deep Dive
+
+1. Overall Architecture and Design Patterns
+
+This frontend is a Next.js 16 App Router application that serves:
+- public marketing pages (portfolio)
+- public content pages (blog, case studies, architecture notes)
+- authenticated dashboard/CMS pages
+
+The architecture intentionally follows a Backend-for-Frontend (BFF) model:
+
+Browser -> Next.js page/client component -> same-origin Next.js /api route -> FastAPI backend -> repositories/services -> database
+
+Key patterns used:
+- Server Components by default, Client Components only when interactivity is required.
+- Contract-first API design through TypeScript contracts in src/lib/api/contracts.
+- Layered transport design:
+  - contracts -> endpoint wrappers -> http client -> route handlers/services
+- Edge middleware coordination in src/proxy.ts for:
+  - dashboard auth gating
+  - locale detection/normalization and path rewriting
+- Feature and platform separation:
+  - src/features for page-level domain compositions
+  - src/components for reusable UI/layout pieces
+  - src/lib for non-UI platform logic
+
+2. Folder Structure and Directory Purpose
+
+apps/web/
+- AGENTS.md, CLAUDE.md: instruction/reference docs
+- README.md: project entry docs
+- package.json: scripts/deps
+- next.config.ts: Next config
+- tsconfig.json: TS setup
+- eslint.config.mjs: linting
+- postcss.config.mjs: CSS pipeline
+- Dockerfile: container setup
+- public/: static brand and icon assets
+- src/: application source
+
+src/
+- proxy.ts: edge request coordination (auth + locale)
+- app/: App Router routes/layouts/errors/seo generators/api routes
+- components/: reusable UI/layout/content/dashboard components
+- features/: feature-domain compositions (home, assistant)
+- hooks/: client hooks
+- lib/: platform modules (api/auth/i18n/seo/services/constants/utils/content)
+- styles/: global CSS tokens + shared motion presets
+- types/: common utility types
+
+3. Important Files and Why They Exist
+
+Core app and routing:
+- src/app/layout.tsx
+  - root HTML/body shell
+  - global CSS import
+  - font setup (Geist)
+  - metadata wiring via buildMetadata
+  - locale sync bootstrap script
+- src/app/error.tsx
+  - top-level error boundary UI
+- src/app/not-found.tsx
+  - custom 404 screen
+- src/app/robots.ts and src/app/sitemap.ts
+  - dynamic SEO outputs
+
+Edge middleware:
+- src/proxy.ts
+  - protects /dashboard routes based on auth cookie
+  - normalizes locale-prefixed paths into a shared route tree
+  - stores locale preference cookie
+
+Config and build:
+- package.json
+  - scripts: dev, build, start, lint, typecheck
+  - runtime deps: next/react/framer-motion/radix/cva/clsx/tw-merge/lucide
+- next.config.ts
+  - turbopack root
+- tsconfig.json
+  - strict TS, path aliasing (@/*)
+- eslint.config.mjs
+  - Next + TS lint standards
+- postcss.config.mjs
+  - Tailwind v4 pipeline
+- Dockerfile
+  - containerized local/dev runtime
+
+API and contracts:
+- src/lib/api/contracts/*.ts
+  - canonical frontend-facing API types
+- src/lib/api/http-client.ts
+  - typed fetch wrapper with timeout, auth header injection, API error normalization
+- src/lib/api/endpoints/*.ts
+  - endpoint-specific typed wrappers
+- src/lib/api/route-utils.ts
+  - shared BFF helpers for forwarding dashboard requests with cookie token
+
+Auth:
+- src/lib/auth/constants.ts
+  - auth cookie name and route constants
+- src/lib/auth/session.ts
+  - server-side cached session resolver + redirect helper
+- src/app/api/auth/login/route.ts
+  - login bridge; sets HttpOnly auth cookie
+- src/app/api/auth/logout/route.ts
+  - clears auth cookie
+- src/app/api/auth/session/route.ts
+  - exposes current authenticated session info
+
+i18n:
+- src/lib/i18n/config.ts
+  - locale list/config (en/es/ar/hi/pt/de/fr), direction, path helpers
+- src/lib/i18n/routing.ts
+  - Accept-Language parsing + cookie locale name
+- src/lib/i18n/dictionaries.ts
+  - translated labels/copy
+
+SEO:
+- src/lib/seo/metadata.ts
+  - centralized metadata factory (title/description/open graph/twitter/alternates)
+- src/lib/seo/json-ld.ts
+  - person/website/article schema generators
+
+Content model and registry:
+- src/lib/content/registry.ts
+  - content collection taxonomy and capabilities
+- src/lib/content/schema.ts
+  - frontmatter typing model
+
+Services:
+- src/lib/services/content-service.ts
+  - maps API content into frontend view model for public surfaces
+- src/lib/services/project-service.ts
+  - project retrieval/mapping
+- src/lib/services/platform-service.ts
+  - platform readiness metadata
+
+Design system and utilities:
+- src/styles/globals.css
+  - tokens, reset, typography hierarchy, focus/accessibility styles
+- src/styles/motion.ts
+  - shared transition curves/variants
+- src/lib/utils/cn.ts
+  - clsx + tailwind-merge utility
+- src/lib/utils/format.ts
+  - formatting helpers
+
+UI/component architecture:
+- src/components/layout/*
+  - navbar/footer/page wrappers/language switcher/skip-link
+- src/components/ui/*
+  - primitives (button/badge/section-heading)
+- src/components/shared/motion/*
+  - reusable animation wrappers
+- src/components/content/*
+  - public list/detail rendering components
+- src/components/dashboard/*
+  - login/editor/workspace/media manager/dashboard shell
+
+4. Technologies, Frameworks, Libraries and Rationale
+
+- Next.js 16 + App Router:
+  - best fit for server component architecture, nested layouts, route handlers
+- React 19:
+  - modern rendering and transition APIs
+- TypeScript strict mode:
+  - contract safety and maintainability
+- Tailwind CSS v4:
+  - utility-first speed + tokenized design via CSS variables
+- Framer Motion:
+  - orchestrated motion with reduced-motion compliance
+- Radix UI primitives:
+  - accessible composable primitives without visual lock-in
+- class-variance-authority:
+  - type-safe UI variant patterns
+- clsx + tailwind-merge:
+  - predictable class composition
+- lucide-react:
+  - lightweight iconography
+
+5. State Management and Data Flow
+
+Primary strategy:
+- server-first data loading for public pages
+- local component state for interactive dashboards
+
+Data flow layers:
+1) UI pages/components call service modules
+2) service modules call endpoint wrappers
+3) endpoint wrappers call the shared http client
+4) http client resolves URL, applies timeout/auth, parses errors
+5) backend returns typed JSON aligned with contracts
+
+Client state examples:
+- dashboard content workspace:
+  - selected type/locale/status filters
+  - deferred query value
+  - item list/overview/load/error flags
+- content editor:
+  - form state
+  - autosave timestamps
+  - local draft persistence in localStorage
+
+No global state manager is used, which is consistent with server-first rendering and route-local concerns.
+
+6. Component Reuse and Structure Patterns
+
+- Primitive-first reuse:
+  - Button, Badge, SectionHeading as low-level building blocks
+- Layout shells:
+  - AppChrome conditionally applies Navbar/Footer
+  - dashboard routes intentionally bypass public chrome
+- Motion wrappers:
+  - FadeIn and Stagger centralize animation behavior
+- Domain components:
+  - content and dashboard components encapsulate specific workflows
+
+Button design pattern:
+- CVA variants for visual style and size
+- asChild support (Radix Slot) for semantic flexibility (button/link)
+
+7. Routing and Navigation Flow
+
+Public surfaces:
+- /, /about, /contact, /projects, /projects/[slug]
+- /blog, /blog/[slug]
+- /case-studies, /case-studies/[slug]
+- /architecture, /architecture/[slug]
+
+Dashboard surfaces:
+- /login
+- /dashboard
+- /dashboard/content
+- /dashboard/content/new
+- /dashboard/content/[itemId]
+- /dashboard/media
+
+Navigation model:
+- centralized nav config in src/lib/constants/nav.ts
+- localization-aware path generation via localizePath
+- desktop and mobile nav share same nav source
+
+8. API Integration and Network Design
+
+Network strategy:
+- public reads can use endpoint wrappers and service modules directly
+- dashboard writes/reads go through same-origin API routes
+
+Why this BFF design matters:
+- browser remains independent from backend topology
+- token handling stays server-side
+- request shaping/logging/rate-limit hooks can be added centrally later
+
+Shared http behavior in http-client.ts:
+- AbortController timeout (default 10s)
+- token-based Authorization header support
+- ApiError abstraction with parsed backend message
+- 204 response handling
+
+9. Authentication and Authorization Flow
+
+Login flow:
+1) user posts credentials to /api/auth/login
+2) route forwards to backend /auth/login
+3) response access token stored as HttpOnly cookie (dashboard_access_token)
+4) client receives user profile payload
+
+Session usage:
+- middleware checks cookie presence for dashboard route gating
+- server session helper validates token against backend session endpoint
+- unauthorized outcomes resolve to redirect/login or 401 in API layer
+
+Logout:
+- /api/auth/logout clears cookie with maxAge 0
+
+Security posture:
+- HttpOnly cookie (token inaccessible to client JS)
+- SameSite=lax and secure in production
+- backend remains source of truth for authorization
+
+10. Form Handling and Validation Strategy
+
+Current approach:
+- controlled React inputs with typed form state
+- backend-driven validation and detailed error parsing
+- helper transforms for slug generation/csv parsing
+
+Editor-specific behavior:
+- auto-generate slug from title until user manually edits slug
+- autosave form draft to localStorage (debounced)
+- structured metadata rows are dynamic key/value entries
+
+Validation note:
+- frontend validation is intentionally light; backend enforces strict schema.
+
+11. Styling System
+
+Tailwind + tokenized CSS variables in globals.css.
+
+Highlights:
+- layered near-black surfaces
+- strong text contrast hierarchy
+- custom spacing/radii/duration/easing tokens
+- accessible focus and skip-link styling
+- prefers-reduced-motion support in CSS and JS
+- RTL support for Arabic locale
+
+No Styled Components or CSS-in-JS runtime is used.
+
+12. Error Handling Strategy
+
+Error control layers:
+- app-level error boundary screen
+- not-found page
+- API error normalization into ApiError
+- user-facing inline errors in dashboard workflows
+- optimistic delete rollback logic in workspace
+- graceful service fallbacks (returning empty arrays/null when backend unavailable)
+
+13. Performance Optimizations and Best Practices
+
+- server components reduce client bundle pressure
+- fonts loaded via next/font with swap
+- motion respects reduced-motion preference
+- request-level cache for dashboard session resolver
+- deferred search input for responsive filtering
+- passive scroll listener + rAF throttling hook
+- centralized motion tokens prevent expensive ad-hoc animation misuse
+
+14. Build System and Environment
+
+Scripts:
+- npm run dev
+- npm run build
+- npm run start
+- npm run lint
+- npm run typecheck
+
+Env vars:
+- API_INTERNAL_URL
+- NEXT_PUBLIC_API_URL
+- NEXT_PUBLIC_SITE_URL
+- VERCEL_URL
+- NODE_ENV
+
+Monorepo context:
+- web app coordinates with apps/api backend
+- turborepo workspace orchestration at repo root
+
+15. Deployment Flow and CI/CD Overview
+
+Current repository supports local containerized/dev workflows with Docker and monorepo scripts. Typical production path:
+- build with next build
+- run with next start
+- backend deployed independently
+- web app points to backend via environment variables
+
+Because authenticated calls are proxied through same-origin Next API routes, frontend deployment remains stable even if backend topology changes.
+
+16. Frontend Security Considerations
+
+- token isolation in HttpOnly cookie
+- same-origin dashboard API route mediation
+- secure cookie in production
+- SameSite=lax CSRF mitigation baseline
+- middleware-level route protection
+- strict typing and constrained API parsing
+
+Future hardening opportunities:
+- explicit CSRF tokens for write routes
+- route-level rate limiting
+- richer audit logging around auth-sensitive operations
+
+17. Coding Standards and Conventions
+
+- TypeScript strictness
+- clear boundary comments in key platform files
+- path alias imports (@/...)
+- consistent functional components
+- selective use of use client only where needed
+- shared utility for class merging (cn)
+- centralized constants and dictionaries
+
+18. Testing Strategy
+
+Current state:
+- typecheck and lint are primary safety nets
+- no dedicated frontend unit/integration/e2e suite configured yet
+
+Recommended direction:
+- unit tests for utility and API helpers
+- component tests for dashboard editor/workspace behavior
+- integration tests for /api auth and dashboard proxy routes
+- e2e tests for login, content CRUD, locale routing
+
+19. Scalability and Maintainability
+
+Why this scales:
+- contracts and endpoint wrappers isolate backend changes
+- service layer isolates data-source swaps
+- content registry centralizes collection taxonomy
+- i18n config centralizes locale behavior
+- reusable UI primitives keep visual/system consistency
+- dashboard and marketing surfaces are separated cleanly
+
+Adding a new content type usually requires:
+1) extend content contract union
+2) add registry entry
+3) add route + page composition
+4) optionally add dashboard filtering/support
+
+20. Common Frontend Patterns in This Project
+
+- BFF (same-origin API mediation)
+- server-first rendering + client islands
+- variant-based component primitives
+- optimistic UI updates with rollback
+- debounced local draft autosave
+- centralized metadata/SEO generation
+- localization via route/cookie/header negotiation
+
+21. Important Business Logic and Where It Lives
+
+- auth and route gating: src/proxy.ts and src/lib/auth/*
+- content taxonomy: src/lib/content/registry.ts
+- metadata/SEO: src/lib/seo/metadata.ts and json-ld.ts
+- dashboard CRUD orchestration: src/components/dashboard/content-workspace.tsx
+- editor workflow and autosave: src/components/dashboard/content-editor.tsx
+- transport/error normalization: src/lib/api/http-client.ts
+
+22. Senior Engineer Review Priorities
+
+- add comprehensive automated tests
+- tighten write-route CSRF and rate-limit controls
+- harden markdown preview/render path if user-provided markup expands
+- improve loading skeletons and progressive dashboard UX states
+- define clear production CI/CD checks and preview pipelines
+- consider pagination/virtualization for larger content sets
+- evaluate observability hooks for frontend errors and latency
+
+23. Junior Developer Must-Knows Before Contributing
+
+- understand server vs client component boundaries
+- always use shared API/service layers instead of ad-hoc fetch calls
+- rely on contracts for backend response shape assumptions
+- use localized path helpers and dictionary keys for user-facing text
+- use design tokens and cn helper for styling consistency
+- run lint/typecheck before opening PRs
+- follow existing file organization (components/features/lib separation)
+
+End of walkthrough.

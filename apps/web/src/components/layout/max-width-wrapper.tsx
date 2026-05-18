@@ -6,12 +6,13 @@ type MaxWidthWrapperProps = {
 };
 
 /**
- * Wider max-width column for hero-style or full-bleed sections.
- * Use when you want slightly more room than the standard Container.
+ * Full-width editorial wrapper for hero, project grids, and wide zones.
+ * No max-width cap — fills the viewport at every screen size.
+ * Padding matches the navbar so all zones share the same left/right anchors.
  */
 export function MaxWidthWrapper({ children, className }: MaxWidthWrapperProps) {
   return (
-    <div className={cn("mx-auto w-full max-w-7xl px-6 lg:px-8", className)}>
+    <div className={cn("w-full px-5 sm:px-6 lg:px-10 xl:px-16", className)}>
       {children}
     </div>
   );

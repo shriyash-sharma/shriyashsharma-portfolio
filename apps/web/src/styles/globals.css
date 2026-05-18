@@ -2,77 +2,95 @@
 
 /* ─── Design Tokens ─────────────────────────────────────────────── */
 @theme {
-  /* Colors – dark minimal palette */
-  --color-background:  #0a0a0a;
-  --color-surface:     #111111;
-  --color-surface-2:   #1a1a1a;
-  --color-surface-3:   #222222;
-  --color-border:      #2a2a2a;
-  --color-border-subtle: #1e1e1e;
+  /* ── Color system ────────────────────────────────────────────── */
+  /* Background layers – stepped, never pure black */
+  --color-background:    #080808;
+  --color-surface:       #0f0f0f;
+  --color-surface-2:     #161616;
+  --color-surface-3:     #1c1c1c;
+  --color-surface-4:     #242424;
 
-  --color-foreground:  #ededed;
-  --color-muted:       #888888;
-  --color-muted-2:     #555555;
+  /* Borders – very subtle, layered hierarchy */
+  --color-border:        #232323;
+  --color-border-subtle: #181818;
+  --color-border-strong: #303030;
 
-  --color-accent:      #e2e2e2;
-  --color-accent-dim:  #888888;
+  /* Text scale — calibrated for contrast on #080808 background:
+     foreground ~20:1, secondary ~14:1, muted ~6:1, muted-2 ~3.8:1 */
+  --color-foreground:    #ebebeb;
+  --color-secondary:     #b8b8b8;
+  --color-muted:         #909090;
+  --color-muted-2:       #696969;
+  --color-placeholder:   #333333;
 
-  /* Gradient tokens */
-  --color-gradient-from: #ffffff10;
-  --color-gradient-to:   #ffffff00;
+  /* Accent – reserved for future interactive states */
+  --color-accent:        #e8e8e8;
+  --color-accent-dim:    #8e8e8e;
 
-  /* Typography */
+  /* ── Typography ──────────────────────────────────────────────── */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "Cascadia Code", monospace;
+  --font-mono: var(--font-geist-mono), ui-monospace, "Cascadia Code", "Fira Code", monospace;
 
-  --font-size-xs:   0.75rem;    /* 12px */
-  --font-size-sm:   0.875rem;   /* 14px */
-  --font-size-base: 1rem;       /* 16px */
-  --font-size-lg:   1.125rem;   /* 18px */
-  --font-size-xl:   1.25rem;    /* 20px */
-  --font-size-2xl:  1.5rem;     /* 24px */
-  --font-size-3xl:  1.875rem;   /* 30px */
-  --font-size-4xl:  2.25rem;    /* 36px */
-  --font-size-5xl:  3rem;       /* 48px */
-  --font-size-6xl:  3.75rem;    /* 60px */
-  --font-size-7xl:  4.5rem;     /* 72px */
+  /* ── Spacing rhythm ──────────────────────────────────────────── */
+  /* Section padding uses py-24 lg:py-32 inline for flexibility */
+  --spacing-page-x:    1.5rem;
+  --spacing-page-x-lg: 2rem;
 
-  /* Spacing scale */
-  --spacing-section: 5rem;      /* 80px between major sections */
-  --spacing-page-x:  1.5rem;    /* horizontal page padding mobile */
-  --spacing-page-x-lg: 2rem;    /* horizontal page padding desktop */
+  /* ── Radii ───────────────────────────────────────────────────── */
+  --radius-xs: 0.1875rem;   /* 3px */
+  --radius-sm: 0.3125rem;   /* 5px */
+  --radius-md: 0.5rem;      /* 8px */
+  --radius-lg: 0.75rem;     /* 12px */
+  --radius-xl: 1rem;        /* 16px */
+  --radius-2xl: 1.25rem;    /* 20px */
 
-  /* Radii */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
+  /* ── Motion ──────────────────────────────────────────────────── */
+  --duration-instant: 80ms;
+  --duration-fast:    140ms;
+  --duration-base:    220ms;
+  --duration-slow:    360ms;
+  --duration-slower:  500ms;
 
-  /* Transitions */
-  --duration-fast:   150ms;
-  --duration-base:   250ms;
-  --duration-slow:   400ms;
-  --ease-smooth:     cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-spring:     cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-in-out:     cubic-bezier(0.4, 0, 0.6, 1);
+  /* Precise easing curves */
+  --ease-smooth:  cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-out:     cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out:  cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-expo:    cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 /* ─── Base Reset ─────────────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
+  margin: 0;
 }
 
 html {
   background-color: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans);
+  font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
   scroll-behavior: smooth;
+  tab-size: 2;
 }
 
-/* Respect reduced motion at OS level */
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] body {
+  text-align: right;
+}
+
+html[dir="rtl"] [data-direction-neutral="true"] {
+  direction: ltr;
+  text-align: left;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -84,19 +102,43 @@ html {
 
 body {
   min-height: 100dvh;
-  line-height: 1.6;
+  line-height: 1.65;
+  color: var(--color-foreground);
+  background-color: var(--color-background);
 }
 
-/* ─── Typography base ─────────────────────────────────────────────── */
-h1, h2, h3, h4, h5, h6 {
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+/* ─── Typography hierarchy ────────────────────────────────────────── */
+h1 {
+  line-height: 1.1;
+  letter-spacing: -0.03em;
   font-weight: 600;
+  color: var(--color-foreground);
+}
+
+h2 {
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+  color: var(--color-foreground);
+}
+
+h3 {
+  line-height: 1.25;
+  letter-spacing: -0.018em;
+  font-weight: 500;
+  color: var(--color-foreground);
+}
+
+h4, h5, h6 {
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+  color: var(--color-foreground);
 }
 
 p {
-  color: var(--color-muted);
-  max-width: 65ch;
+  color: var(--color-secondary);
+  line-height: 1.72;
 }
 
 a {
@@ -104,34 +146,55 @@ a {
   text-decoration: none;
 }
 
-code, pre {
+code, pre, kbd {
   font-family: var(--font-mono);
+  font-size: 0.875em;
 }
 
-/* ─── Scrollbar – minimal dark ───────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 6px;
+img, video, svg {
+  display: block;
+  max-width: 100%;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
+
+/* ─── Scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 5px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  {
   background: var(--color-border);
   border-radius: 3px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-muted-2);
-}
+::-webkit-scrollbar-thumb:hover { background: var(--color-muted-2); }
 
-/* ─── Focus ring ─────────────────────────────────────────────────── */
+/* ─── Focus ───────────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid var(--color-foreground);
-  outline-offset: 3px;
+  outline: 2px solid color-mix(in srgb, var(--color-foreground) 72%, transparent);
+  outline-offset: 4px;
   border-radius: var(--radius-sm);
 }
 
-/* ─── Selection ──────────────────────────────────────────────────── */
-::selection {
+/* Accessible skip navigation, visually quiet until focused. */
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 0.75rem;
+  z-index: 100;
+  transform: translateY(-150%);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
   background: var(--color-surface-3);
+  color: var(--color-foreground);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* ─── Selection ───────────────────────────────────────────────────── */
+::selection {
+  background: var(--color-surface-4);
   color: var(--color-foreground);
 }

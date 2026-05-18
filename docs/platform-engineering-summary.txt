@@ -1,0 +1,199 @@
+Platform Engineering Summary
+
+This document is a single-file summary of the current platform architecture,
+operational flows, and engineering decisions.
+
+System Shape
+
+- apps/web: Next.js application for the public site, dashboard UI, locale-aware
+  routing, and same-origin API proxy routes.
+- apps/api: FastAPI backend for platform metadata, content delivery, dashboard
+  authentication, admin content operations, and local media handling.
+- packages/*: shared package space for configuration, shared types, and
+  utilities.
+- docs/: architecture and operational documentation.
+
+Why the Monorepo Exists
+
+The frontend and backend evolve together around typed contracts, shared product
+behavior, and one engineering workflow. The monorepo keeps these boundaries
+close without forcing both apps into one runtime.
+
+Current Architectural Boundaries
+
+- Web app owns browser-facing routing, locale normalization, server rendering,
+  dashboard pages, and same-origin session handling.
+- API app owns request validation, persistence, auth enforcement, publish-state
+  rules, and media serving.
+- Public API and admin API are intentionally separate even when they depend on
+  the same content repository.
+
+Frontend and Backend Coordination
+
+The browser does not call authenticated backend admin routes directly.
+
+1. The browser talks to same-origin Next.js routes under /api.
+2. Those route handlers proxy requests to FastAPI.
+3. The proxy forwards the dashboard token from the HttpOnly cookie.
+4. FastAPI validates the token and resolves the active admin user.
+5. Repositories and services perform the requested content or media operation.
+
+This is a lightweight backend-for-frontend pattern. It keeps browser code same-
+origin, hides backend hostnames from client components, and centralizes auth
+forwarding.
+
+Auth and Session Flow
+
+1. Credentials are submitted to the Next.js login route.
+2. The login route forwards them to POST /auth/login on the backend.
+3. FastAPI authenticates against persisted admin users.
+4. The backend returns a signed JWT session token and user metadata.
+5. Next.js stores the token as an HttpOnly cookie.
+6. Dashboard requests are gated by the web proxy and revalidated against
+   GET /auth/session.
+
+Important design choice: the backend is the source of truth for session
+validity, while the frontend owns browser cookie issuance for same-origin
+behavior.
+
+Public Content Flow
+
+1. The user requests a page in the Next.js app.
+2. The web proxy normalizes locale behavior.
+3. Page code calls typed endpoint wrappers.
+4. The backend public content routes read published content only.
+5. The content repository applies locale and publish-state filtering.
+
+Admin Content Workflow
+
+The dashboard works against authenticated admin content routes.
+
+- list items by collection
+- filter by locale
+- filter by status
+- search across key fields
+- fetch overview counts by status
+- create, update, and delete items
+
+The dashboard content workspace uses the backend as the source of truth for the
+filtered list and publishing-state overview.
+
+Draft and Publish Lifecycle
+
+The current content lifecycle is explicit but intentionally lightweight.
+
+- draft: not publicly visible
+- review: editorially active, not publicly visible
+- published: publicly visible and eligible for public delivery
+- archived: retained for admin visibility but removed from public delivery
+
+The repository sets published_at when an item moves into published state unless
+an explicit value is supplied.
+
+Locale-Aware Content Handling
+
+Locale is part of the content model, not just a frontend decoration.
+
+- locale is stored on each content item
+- locale participates in uniqueness with type and slug
+- public content reads are locale-aware
+- admin views can filter by locale
+- the web app persists locale preference through path and cookie behavior
+
+This prepares the platform for multilingual publishing and multilingual
+retrieval later without claiming that automated translation already exists.
+
+Media Upload Flow
+
+1. The dashboard uploads an image through a same-origin /api route.
+2. The Next.js proxy forwards the multipart request to FastAPI.
+3. The backend validates the session and image content type.
+4. LocalMediaStorage writes the file under storage/media.
+5. FastAPI serves the file through the mounted /media path.
+
+The current media strategy is intentionally local and simple. The route and
+service split preserves a migration path to object storage later.
+
+Persistence Lifecycle
+
+The backend uses SQLAlchemy async with asyncpg and Postgres.
+
+- app/db/session.py owns engine and AsyncSession creation.
+- request-scoped session dependencies inject database access into routes.
+- repositories own query logic and mutation rules.
+- content persistence uses a shared content_items model.
+- admin identity uses persisted admin users.
+
+Why the Repository Pattern Is Used
+
+Repositories centralize behavior that should not be duplicated across routes:
+
+- slug normalization
+- locale filtering
+- publish-state filtering
+- query search behavior
+- publish timestamp handling
+- commit and refresh lifecycle
+
+This keeps public and admin workflows aligned against the same business rules.
+
+Why FastAPI Was Chosen
+
+- typed contracts are first-class
+- async request handling matches the backend execution model
+- dependency injection keeps auth and database access explicit
+- the framework is lightweight enough for the current product stage
+
+Why SQLAlchemy Async Was Chosen
+
+- it aligns with async FastAPI request handling
+- it provides a real persistence layer without inventing custom data access
+- it keeps database lifecycle and query logic explicit and testable
+
+Same-Origin Proxy Decision
+
+The same-origin proxy architecture exists to:
+
+- avoid exposing backend routing details to the browser
+- keep auth token forwarding centralized
+- preserve same-origin cookie handling for dashboard sessions
+- create a stable integration seam for future gateway behavior
+
+AI and Search Readiness
+
+The codebase is prepared for AI-adjacent features, but those systems are not yet
+implemented in depth.
+
+What exists today:
+
+- typed search and assistant API boundaries
+- content collection metadata
+- ai_indexable and indexed_at fields on content items
+- locale-aware content identity
+- content types that can support future retrieval and indexing workflows
+
+What is intentionally not claimed here:
+
+- no production RAG pipeline
+- no embedding storage pipeline
+- no live semantic retrieval implementation
+- no fake scale or fake AI infrastructure claims
+
+Operational Summary
+
+- public reads are cleanly separated from admin mutations
+- dashboard sessions are validated on the backend
+- browser admin traffic stays same-origin through the web app
+- content lifecycle rules live in repository code rather than scattered routes
+- local media keeps the current editorial loop simple and inspectable
+
+Recommended Starting Points For Engineers
+
+- docs/architecture/README.md
+- docs/architecture/request-lifecycle.md
+- docs/architecture/auth-architecture.md
+- docs/architecture/cms-architecture.md
+- docs/backend-architecture.md
+- apps/web/src/proxy.ts
+- apps/api/app/main.py
+- apps/api/app/db/repositories/content_repository.py

@@ -1,13 +1,14 @@
 export type NavItem = {
+  key: "projects" | "caseStudies" | "blog" | "about" | "contact";
   label: string;
   href: string;
   external?: boolean;
 };
 
 export const navItems: NavItem[] = [
-  { label: "Projects", href: "/projects" },
-  { label: "Case Studies", href: "/case-studies" },
-  { label: "Blog", href: "/blog" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  { key: "projects", label: "Projects", href: "/projects" },
+  { key: "caseStudies", label: "Case Studies", href: "/case-studies" },
+  { key: "blog", label: "Blog", href: "/blog" },
+  { key: "about", label: "About", href: "/about" },
+  { key: "contact", label: "Contact", href: "/contact" },
 ];

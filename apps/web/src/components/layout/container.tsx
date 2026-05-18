@@ -7,8 +7,10 @@ type ContainerProps = {
 };
 
 /**
- * Constrains content to the max-width layout column with consistent
- * horizontal padding. Use as the outermost wrapper in every section.
+ * Standard content column for text-reading sections.
+ * Uses consistent gutter padding; capped at 1440px so body-copy
+ * sections (case studies, contact) stay comfortable at ultra-wide.
+ * Sections that must fill the full viewport use MaxWidthWrapper.
  */
 export function Container({
   children,
@@ -18,7 +20,7 @@ export function Container({
   return (
     <Tag
       className={cn(
-        "mx-auto w-full max-w-5xl px-6 lg:px-8",
+        "mx-auto w-full max-w-[1440px] px-5 sm:px-6 lg:px-10 xl:px-16",
         className
       )}
     >

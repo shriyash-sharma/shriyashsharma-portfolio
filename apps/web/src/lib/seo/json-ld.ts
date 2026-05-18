@@ -1,4 +1,5 @@
 import { siteConfig } from "@/lib/constants/site";
+import { localeLanguageTags, locales } from "@/lib/i18n/config";
 
 /** JSON-LD Person schema for the portfolio owner. */
 export function personJsonLd() {
@@ -8,17 +9,32 @@ export function personJsonLd() {
     name: siteConfig.author.name,
     url: siteConfig.url,
     sameAs: [siteConfig.links.github, siteConfig.links.linkedin],
-    jobTitle: "Software Engineer",
+    jobTitle: "Senior Software Engineer",
+    email: siteConfig.author.email,
+    knowsAbout: [
+      "Frontend architecture",
+      "Next.js",
+      "TypeScript",
+      "AI application engineering",
+      "System design",
+    ],
   };
 }
 
-/** JSON-LD WebSite schema with SearchAction stub. */
+/** JSON-LD WebSite schema for the portfolio. */
 export function websiteJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: siteConfig.name,
     url: siteConfig.url,
+    inLanguage: locales.map((locale) => localeLanguageTags[locale]),
+    description: siteConfig.description,
+    publisher: {
+      "@type": "Person",
+      name: siteConfig.author.name,
+      url: siteConfig.url,
+    },
   };
 }
 
