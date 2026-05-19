@@ -33,7 +33,8 @@ export default function SpeakingPage() {
           </p>
         </header>
 
-        <div className="mt-12 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        {/* Same row padding as About — avoids margin collapse between stacked grids. */}
+        <div className="mt-12 grid gap-8 py-3 sm:py-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <section className="rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 sm:p-8">
             <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
               Session themes

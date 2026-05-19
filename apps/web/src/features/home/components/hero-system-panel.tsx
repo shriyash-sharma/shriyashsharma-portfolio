@@ -6,6 +6,9 @@ import { cn } from "@/lib/utils/cn";
  * A deployment / system metadata snapshot: communicates infrastructure
  * awareness without decoration. All figures are representative.
  * Hidden on mobile — this is intentional desktop-only depth.
+ *
+ * Temporarily not rendered (commented out in hero-section.tsx): metrics were
+ * illustrative, not live. Re-enable after simplifying to factual stack copy only.
  */
 export function HeroSystemPanel() {
   return (

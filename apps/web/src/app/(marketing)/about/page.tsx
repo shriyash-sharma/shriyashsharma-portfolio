@@ -16,7 +16,7 @@ export default function AboutPage() {
       <JsonLdScript data={personJsonLd()} />
       <PageShell>
         <Section>
-          <header className="max-w-4xl">
+          <header className="max-w-4xl py-4 sm:py-5">
             <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--color-muted)]">
               About
             </p>
@@ -32,7 +32,8 @@ export default function AboutPage() {
             </p>
           </header>
 
-          <div className="mt-12 grid gap-4 sm:grid-cols-3">
+          {/* Row padding prevents adjacent mt-12 grids from margin-collapsing and overlapping. */}
+          <div className="mt-12 grid gap-4 py-4 sm:grid-cols-3 sm:py-5">
             <div className="rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
               <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
                 Current role
@@ -62,7 +63,7 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="mt-12 grid gap-8 xl:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)]">
+          <div className="mt-12 grid gap-8 py-4 sm:py-5 xl:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)]">
             <section className="rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 sm:p-8">
               <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
                 How I work
@@ -143,7 +144,7 @@ export default function AboutPage() {
             </div>
           </section>
 
-          <div className="mt-12 grid gap-8 xl:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="mt-12 grid gap-8 py-4 sm:py-5 xl:grid-cols-[minmax(0,1fr)_320px]">
             <section className="rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 sm:p-8">
               <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
                 Education
