@@ -7,7 +7,7 @@ import { ArrowRight } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Stagger, StaggerItem } from "@/components/shared/motion/stagger";
-import { HeroSystemPanel } from "./hero-system-panel";
+// import { HeroSystemPanel } from "./hero-system-panel";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { getPathLocale, localizePath } from "@/lib/i18n/config";
 import { slideInRight, transitions } from "@/styles/motion";
@@ -149,7 +149,7 @@ export function HeroSection() {
           </Stagger>
         </div>
 
-        {/* Right — portrait plus system panel, enters after hero text begins */}
+        {/* Right — portrait (system panel disabled for now; see hero-system-panel.tsx) */}
         <motion.div
           className="hidden lg:flex lg:flex-col lg:items-end lg:gap-4"
           variants={slideInRight}
@@ -157,7 +157,7 @@ export function HeroSection() {
           animate={reduced ? false : "visible"}
         >
           <HeroPortraitCard />
-          <HeroSystemPanel />
+          {/* <HeroSystemPanel /> */}
         </motion.div>
       </div>
     </section>
