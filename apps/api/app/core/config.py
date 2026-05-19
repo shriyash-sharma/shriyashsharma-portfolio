@@ -26,6 +26,29 @@ class Settings(BaseSettings):
     redis_url: str | None = None
     ai_provider_api_key: SecretStr | None = None
 
+    # --- RAG / AI assistant configuration -----------------------------------
+    # Embeddings
+    embedding_provider: Literal["openai"] = "openai"
+    embedding_model: str = "text-embedding-3-small"
+    embedding_dimensions: int = 1536
+    openai_api_key: SecretStr | None = None
+    openai_base_url: str = "https://api.openai.com/v1"
+
+    # LLM (Groq preferred; OpenAI fallback)
+    llm_provider: Literal["groq", "openai"] = "groq"
+    llm_model: str = "llama-3.3-70b-versatile"
+    llm_temperature: float = 0.2
+    llm_max_tokens: int = 700
+    groq_api_key: SecretStr | None = None
+    groq_base_url: str = "https://api.groq.com/openai/v1"
+
+    # Retrieval / prompting
+    rag_top_k: int = 5
+    rag_min_similarity: float = 0.15
+    rag_max_context_chars: int = 6000
+    rag_chunk_size: int = 800
+    rag_chunk_overlap: int = 120
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

@@ -4,6 +4,7 @@ import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { PublicProjectDetail } from "@/components/content/public-project-detail";
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
+import { ContextualAssistantCta } from "@/features/assistant";
 import { buildContentMetadata } from "@/lib/seo/content-metadata";
 import { breadcrumbJsonLd, creativeWorkJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -60,6 +61,15 @@ export default async function ProjectPage({ params }: RouteContext) {
       <PageShell>
         <Section>
           <PublicProjectDetail project={project} />
+          <ContextualAssistantCta
+            eyebrow="Ask AI about this project"
+            title={project.title}
+            prompts={[
+              `Summarize "${project.title}" in a paragraph.`,
+              `What technical decisions stand out in "${project.title}"?`,
+              `Which technologies were used to build "${project.title}"?`,
+            ]}
+          />
         </Section>
       </PageShell>
     </>

@@ -4,6 +4,7 @@ import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { PublicContentDetail } from "@/components/content/public-content-detail";
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
+import { ContextualAssistantCta } from "@/features/assistant";
 import { buildContentMetadata } from "@/lib/seo/content-metadata";
 import { blogPostingJsonLd, breadcrumbJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -64,6 +65,15 @@ export default async function BlogPostPage({ params }: RouteContext) {
             entry={post}
             backHref="/blog"
             backLabel="Back to blog"
+          />
+          <ContextualAssistantCta
+            eyebrow="Explore with AI"
+            title={post.title}
+            prompts={[
+              `Summarize the blog post "${post.title}".`,
+              `What are the key takeaways from "${post.title}"?`,
+              `How does "${post.title}" relate to the rest of the portfolio?`,
+            ]}
           />
         </Section>
       </PageShell>
