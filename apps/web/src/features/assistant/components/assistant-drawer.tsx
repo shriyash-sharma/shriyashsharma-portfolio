@@ -55,10 +55,10 @@ export function AssistantDrawer() {
             className={cn(
               "fixed z-[61] flex flex-col gap-3 bg-[var(--color-background)]",
               "border-[var(--color-border)] shadow-[0_24px_80px_-24px_rgba(0,0,0,0.7)]",
-              // Mobile: bottom sheet
+              // Mobile: bottom sheet — bounded so internal scroller activates
               "inset-x-0 bottom-0 max-h-[88dvh] rounded-t-2xl border-t p-4",
-              // Desktop: right rail
-              "sm:inset-y-0 sm:right-0 sm:bottom-auto sm:max-h-none sm:w-[420px] sm:rounded-none sm:rounded-l-2xl sm:border-l sm:border-t-0 sm:p-5",
+              // Desktop: right rail — full viewport height, scrolls inside
+              "sm:inset-y-0 sm:right-0 sm:bottom-auto sm:h-dvh sm:max-h-dvh sm:w-[420px] sm:rounded-none sm:rounded-l-2xl sm:border-l sm:border-t-0 sm:p-5",
               "focus:outline-none"
             )}
           >
@@ -90,6 +90,7 @@ export function AssistantDrawer() {
               </Dialog.Close>
             </header>
 
+            {/* min-h-0 lets this flex child shrink so the panel's inner scroller activates. */}
             <div className="min-h-0 flex-1">
               <AssistantPanel
                 density="compact"
