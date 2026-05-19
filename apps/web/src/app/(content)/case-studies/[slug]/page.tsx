@@ -4,6 +4,7 @@ import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { PublicContentDetail } from "@/components/content/public-content-detail";
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
+import { ContextualAssistantCta } from "@/features/assistant";
 import { buildContentMetadata } from "@/lib/seo/content-metadata";
 import { breadcrumbJsonLd, techArticleJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -64,6 +65,15 @@ export default async function CaseStudyPage({ params }: RouteContext) {
             entry={caseStudy}
             backHref="/case-studies"
             backLabel="Back to case studies"
+          />
+          <ContextualAssistantCta
+            eyebrow="Ask AI about this case study"
+            title={caseStudy.title}
+            prompts={[
+              `Summarize the case study "${caseStudy.title}".`,
+              `What problem and solution does "${caseStudy.title}" describe?`,
+              `What were the trade-offs in "${caseStudy.title}"?`,
+            ]}
           />
         </Section>
       </PageShell>

@@ -63,6 +63,12 @@ export const pageSeo = {
     description: "Contact Shriyash Sharma for engineering roles, speaking, and collaboration.",
     path: "/contact",
   },
+  assistant: {
+    title: "AI assistant",
+    description:
+      "Chat with the portfolio's AI guide. Answers are grounded in indexed projects, case studies, architecture notes, and articles.",
+    path: "/assistant",
+  },
 } as const;
 
 export type PageSeoKey = keyof typeof pageSeo;

@@ -4,6 +4,7 @@ import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { PublicContentDetail } from "@/components/content/public-content-detail";
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
+import { ContextualAssistantCta } from "@/features/assistant";
 import { buildContentMetadata } from "@/lib/seo/content-metadata";
 import { breadcrumbJsonLd, techArticleJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -64,6 +65,15 @@ export default async function ArchitectureNotePage({ params }: RouteContext) {
             entry={note}
             backHref="/architecture"
             backLabel="Back to architecture"
+          />
+          <ContextualAssistantCta
+            eyebrow="Explain architecture decisions"
+            title={note.title}
+            prompts={[
+              `Explain the architecture note "${note.title}".`,
+              `What decisions and trade-offs does "${note.title}" cover?`,
+              `How does "${note.title}" fit into the wider platform?`,
+            ]}
           />
         </Section>
       </PageShell>

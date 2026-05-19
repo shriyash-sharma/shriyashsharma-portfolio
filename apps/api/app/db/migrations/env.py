@@ -10,6 +10,7 @@ from app.db.base import Base
 from app.db.database_url import prepare_asyncpg_database_url
 from app.db.models import AdminUser
 from app.db.models import ContentItem
+from app.db.models import KnowledgeChunk, KnowledgeDocument
 
 config = context.config
 settings = get_settings()
@@ -21,6 +22,8 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 _ = ContentItem
 _ = AdminUser
+_ = KnowledgeDocument
+_ = KnowledgeChunk
 
 
 def run_migrations_offline() -> None:
