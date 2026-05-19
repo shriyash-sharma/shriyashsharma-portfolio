@@ -26,7 +26,11 @@ export default function AssistantPage() {
               embeddings, and Groq LLM inference.
             </p>
           </header>
-          <AssistantPanel />
+          {/* Bounded height so the internal scroller overflows instead of
+              the page growing with each new message. */}
+          <div className="h-[min(72dvh,720px)] min-h-[420px]">
+            <AssistantPanel className="h-full" />
+          </div>
         </div>
       </Section>
     </PageShell>
