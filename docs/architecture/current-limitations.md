@@ -42,27 +42,55 @@ That complexity is deferred until the platform has a stronger need for it.
 
 ## Data and Retrieval Limits
 
-### No vector search yet
+### Retrieval exists, but ingestion is still manual
 
-Search and assistant routes exist as explicit boundaries, but there is no live
-vector search or semantic retrieval implementation behind them.
+The platform now includes live semantic retrieval through pgvector and a
+grounded assistant route. The limitation is not the existence of retrieval. The
+limitation is the operational shape around it.
 
-The codebase does contain fields and structural seams that prepare for future
-indexing work. That should be read as readiness, not as an existing subsystem.
+Current constraints:
 
-### No AI indexing pipeline yet
+- content changes do not automatically trigger reindexing
+- embeddings are refreshed through an explicit ingestion command
+- retrieval quality depends on editorial discipline and curated knowledge sources
 
-Content items carry `ai_indexable` and `indexed_at`, but content writes do not
-trigger background indexing, embedding generation, or retrieval updates.
+This keeps the system understandable, but it is not yet a continuously updated
+indexing pipeline.
 
-This preserves a stable content model without prematurely adding infrastructure.
+### No background AI indexing workers
 
-### No async ingestion pipeline
+Content items carry `ai_indexable` and `indexed_at`, but there is still no
+queue-backed indexing worker or async processing layer behind content writes.
 
-The repository does not currently include automated import flows for external
-research, documents, or project artifacts.
+That means:
 
-Editorial content enters the system through dashboard operations and seed data.
+- no automatic embedding refresh after publish
+- no distributed retry strategy for ingestion failures
+- no off-request orchestration for large indexing jobs
+
+This is a conscious decision to keep the runtime topology compact.
+
+### No retrieval evaluation or reranking layer yet
+
+The assistant performs semantic retrieval, context packing, and grounded answer
+generation, but the system does not yet include:
+
+- an evaluation suite for known good questions
+- reranking over retrieved chunks
+- query rewriting or multi-stage retrieval
+- answer-quality analytics or source coverage dashboards
+
+The assistant is useful and grounded today, but its quality model is still
+closer to a carefully implemented product feature than a fully instrumented AI
+platform.
+
+### No async ingestion pipeline for external sources
+
+The repository still does not include automated import flows for external
+research, uploaded documents, or third-party data sources.
+
+Editorial content enters through dashboard operations, seed data, and markdown
+documents checked into the repository.
 
 ## Why These Limits Improve Maintainability Right Now
 

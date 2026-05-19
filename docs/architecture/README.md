@@ -9,9 +9,17 @@ decision context rather than feature marketing.
 - `request-lifecycle.md`: end-to-end request flow across the web and API apps
 - `frontend-backend-coordination.md`: same-origin proxying, typed API access,
   and dashboard coordination patterns
+- `frontend-architecture.md`: public app structure, route ownership, UI system
+  boundaries, and content rendering patterns
 - `auth-architecture.md`: admin session lifecycle and authorization boundaries
 - `cms-architecture.md`: content, publishing, locale, media, and persistence
   workflows
+- `ai-rag-architecture.md`: ingestion, retrieval, prompting, and assistant
+  delivery for the engineering portfolio guide
+- `deployment-architecture.md`: deployment shape across Vercel, FastAPI,
+  PostgreSQL, Docker, and production caveats
+- `engineering-philosophy.md`: practical engineering principles that shape the
+  platform's implementation choices
 - `onboarding.md`: subsystem overview and where engineering responsibilities live
 - `current-limitations.md`: current scope boundaries and intentionally deferred complexity
 - `why-not-x.md`: concise engineering rationale for notable architectural choices
@@ -59,16 +67,17 @@ The runtime intentionally stays compact. Web concerns, backend concerns,
 persistence, and media handling are separated, but the system does not pretend
 to be more distributed than it is.
 
-## Future Readiness Without Premature Claims
+## Current AI / Retrieval Posture
 
-The current model already leaves useful extension points for semantic search,
-embedding pipelines, multilingual retrieval, and AI indexing:
+The platform now includes a working manual RAG pipeline:
 
 - content items carry `ai_indexable` and `indexed_at` metadata
-- locale is part of content identity and filtering
-- content collections distinguish indexable and non-indexable domains
-- search and assistant APIs exist as stable contracts, but their deeper
-  implementation is intentionally deferred until the product needs it
+- markdown architecture docs and CMS content are ingested into pgvector
+- retrieval and assistant APIs are implemented as stable backend boundaries
+- prompt construction is grounded in retrieved content rather than generic chat
+
+What remains intentionally small is the operational shape around that system:
+manual ingestion, no background indexing workers, and no heavier agent layer.
 
 ## Reading Order
 
@@ -76,4 +85,6 @@ embedding pipelines, multilingual retrieval, and AI indexing:
 2. Read `request-lifecycle.md` to understand actual request coordination.
 3. Read `auth-architecture.md` and `cms-architecture.md` for the operational
   flows behind the dashboard and publishing system.
-4. Use `adrs/` when you need the reasoning behind a structural choice.
+4. Read `frontend-architecture.md` and `ai-rag-architecture.md` for the public
+  experience and retrieval system.
+5. Use `adrs/` when you need the reasoning behind a structural choice.

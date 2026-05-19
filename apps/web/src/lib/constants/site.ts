@@ -2,7 +2,7 @@ export const siteConfig = {
   name: "Shriyash Sharma",
   title: "Shriyash Sharma — Senior Software Engineer",
   description:
-    "Senior Software Engineer at Globant building scalable web applications with React, Next.js, FastAPI, and AI/RAG systems.",
+    "Senior Software Engineer building scalable web applications and evolving AI-powered engineering systems.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://shriyashsharma.com",
   ogImage: "/ShriyashLogo.png",
   brand: {
@@ -11,14 +11,14 @@ export const siteConfig = {
   },
   author: {
     name: "Shriyash Sharma",
-    email: "hello@shriyashsharma.dev",
+    email: "hello@shriyashsharma.com",
     twitter: "@shriyashsharma",
-    github: "https://github.com/shriyashsharma",
-    linkedin: "https://linkedin.com/in/shriyashsharma",
+    github: "https://github.com/shriyash-sharma",
+    linkedin: "https://www.linkedin.com/in/shriyash-sharma-3b2b27119/",
   },
   links: {
-    github: "https://github.com/shriyashsharma",
-    linkedin: "https://linkedin.com/in/shriyashsharma",
+    github: "https://github.com/shriyash-sharma",
+    linkedin: "https://www.linkedin.com/in/shriyash-sharma-3b2b27119/",
   },
 } as const;
 

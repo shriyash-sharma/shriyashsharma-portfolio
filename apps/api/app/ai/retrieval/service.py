@@ -24,6 +24,9 @@ class RetrievedChunk:
     document_title: str
     document_url: str | None
     source_type: str
+    # CMS content type when ingested from ContentItem (project, case-study, etc.).
+    # Stored in KnowledgeDocument.extra during ingestion for accurate source labels.
+    content_type: str | None
     heading_path: str | None
     content: str
     similarity: float
@@ -82,6 +85,11 @@ class RetrievalService:
                     document_title=document.title,
                     document_url=document.url,
                     source_type=str(document.source_type),
+                    content_type=(
+                        document.extra.get("content_type")
+                        if isinstance(document.extra, dict)
+                        else None
+                    ),
                     heading_path=chunk.heading_path,
                     content=chunk.content,
                     similarity=similarity,

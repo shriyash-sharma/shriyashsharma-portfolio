@@ -42,7 +42,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     meta: {
       title: "Shriyash Sharma — Senior Software Engineer",
       description:
-        "Senior Software Engineer at Globant. React, Next.js, FastAPI, and AI/RAG systems for scalable web applications.",
+        "Senior Software Engineer building scalable web applications and evolving AI-powered engineering systems.",
     },
     nav: {
       projects: "Projects",
@@ -63,21 +63,21 @@ export const dictionaries: Record<Locale, Dictionary> = {
       currentLanguage: "Current language",
     },
     home: {
-      status: "Available for new roles",
+      status: "Available for selected consulting collaborations",
       heading: "Senior software engineer",
-      headingAccent: "building things that last",
+      headingAccent: "building scalable web and AI-assisted systems",
       intro:
-        "I build production software with care — API design, frontend systems, and the architecture decisions that compound over time. I prefer boring, reliable choices and get the structure right before worrying about anything else.",
+        "I build scalable frontend and full-stack systems with a bias toward maintainability, clear delivery boundaries, and practical architecture. Most of my work sits at the intersection of React, Next.js, TypeScript, backend collaboration, and the careful adoption of AI where it improves the product instead of complicating it.",
       primaryCta: "View work",
       secondaryCta: "About me",
       meta: [
-        "5+ yrs production software",
-        "Frontend · Fullstack · Systems",
-        "India · Remote-first",
+        "7+ years building production software",
+        "React · Next.js · FastAPI · RAG",
+        "Pune, India · Remote-first",
       ],
-      contactHeading: "Open to the right opportunity",
+      contactHeading: "Open to senior engineering roles and consulting collaborations.",
       contactCopy:
-        "Looking for senior engineering roles, architecture consulting, or contract work. If you are building something technically ambitious, let's talk.",
+        "I am most useful where product work and engineering depth meet: frontend architecture, platform-quality UI systems, full-stack coordination, and AI-assisted product workflows that need to stay grounded in real delivery constraints.",
       contactPrimary: "Get in touch",
     },
   },

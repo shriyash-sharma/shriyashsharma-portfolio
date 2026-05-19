@@ -265,96 +265,53 @@ type Project = {
   visualLabel: string;
 };
 
+// Home-page project cards — static highlights that mirror CMS seed slugs.
+// Keep hrefs in sync with apps/api/scripts/seed_content.py.
 const PROJECTS: Project[] = [
   {
     id: "1",
-    title: "Platform infrastructure rewrite",
+    title: "AI-powered engineering portfolio platform",
     description:
-      "Migrated a 3-year-old React SPA to Next.js App Router serving 200k MAU across 12 regions.",
+      "A portfolio platform built as a small product system with CMS-backed content, architecture docs, and a grounded assistant over indexed engineering knowledge.",
     keyDecision:
-      "ISR for content pages, SSR only for authenticated routes — a blanket SSR approach would have tripled egress costs and eliminated 94% cache efficiency.",
-    architecture: "Next.js App Router · ISR + SSR hybrid · Turborepo · Vercel Edge",
-    systemDetail: "p75 LCP 0.81s · 12 edge regions · Redis cache warming",
-    stack: ["Next.js", "TypeScript", "Turborepo", "Redis"],
-    href: "/projects/platform-rewrite",
-    label: "Production",
-    visual: "rendering-pipeline",
-    visualLabel: "Architecture diagram showing client traffic routed through an edge layer into ISR and SSR rendering paths.",
+      "Keep identity and branding static, keep projects and writing in the content system, and use markdown plus pgvector retrieval to make the portfolio explorable instead of purely presentational.",
+    architecture: "Next.js App Router · FastAPI · PostgreSQL · pgvector · monorepo",
+    systemDetail: "CMS content + docs ingestion + grounded assistant + recruiter-oriented UX",
+    stack: ["Next.js", "TypeScript", "FastAPI", "pgvector"],
+    href: "/projects/ai-engineering-portfolio-platform",
+    label: "Public Platform",
+    visual: "retrieval-pipeline",
+    visualLabel: "Retrieval pipeline diagram showing indexed content flowing into a grounded assistant experience.",
   },
   {
     id: "2",
-    title: "Real-time collaboration engine",
+    title: "Enterprise booking frontend systems",
     description:
-      "Collaborative editing layer for a B2B document editor supporting 50+ concurrent sessions.",
+      "Frontend architecture work across booking-style enterprise workflows where reliability, incremental change, and backend coordination mattered more than novelty.",
     keyDecision:
-      "Operational transforms over CRDTs — server infrastructure already implemented OT and the product had no offline requirement to justify CRDT complexity.",
-    architecture: "WebSockets · Redis pub/sub · OT · Optimistic UI + rollback",
-    systemDetail: "8s presence TTL · reconnect backoff · Redis fanout per document",
-    stack: ["React", "Node.js", "Redis", "WebSockets"],
-    href: "/projects/collab-engine",
-    label: "Open Source",
-    visual: "collab-topology",
-    visualLabel: "Topology diagram showing multiple clients connected to a WebSocket server and Redis pub/sub broker.",
+      "Prefer explicit workflow boundaries, predictable state transitions, and backend-aware UI decisions over large rewrites or fragile shared abstractions.",
+    architecture: "React · TypeScript · REST APIs · workflow-heavy frontend systems",
+    systemDetail: "Validation, error handling, and release-safe UI evolution across customer-facing flows",
+    stack: ["React", "TypeScript", "REST APIs"],
+    href: "/projects/enterprise-booking-frontend-systems",
+    label: "Enterprise Delivery",
+    visual: "rendering-pipeline",
+    visualLabel: "Architecture fragment representing structured frontend delivery and runtime coordination.",
   },
   {
     id: "3",
-    title: "Semantic document search",
+    title: "Search and data-quality tooling for enterprise product data",
     description:
-      "RAG pipeline over a 400k-document enterprise knowledge base with streaming responses and source attribution.",
+      "Search, filtering, and data-quality workflows built for enterprise product information systems where UI behavior and backend semantics had to stay aligned.",
     keyDecision:
-      "Hybrid BM25 + vector retrieval fused with RRF over pure embeddings — keyword matching outperforms vectors for product codes and proper nouns in this domain.",
-    architecture: "FastAPI · pgvector · BM25 hybrid · RRF reranking · SSE",
-    systemDetail: "400k docs · p95 under 900ms · 7d embedding cache",
-    stack: ["Python", "FastAPI", "pgvector", "OpenAI"],
-    href: "/projects/semantic-search",
-    label: "In Progress",
-    visual: "retrieval-pipeline",
-    visualLabel: "Retrieval pipeline diagram showing BM25 and pgvector results fused before streaming through an LLM.",
-  },
-  {
-    id: "4",
-    title: "Observability workspace",
-    description:
-      "Internal reliability surface for tracing latency regressions across API, queue, and worker systems.",
-    keyDecision:
-      "Sampled traces instead of full retention — kept investigation detail for slow paths without turning the dashboard into an expensive log warehouse.",
-    architecture: "OpenTelemetry · ClickHouse · SLO budgets · anomaly windows",
-    systemDetail: "15m rollups · p95 traces · alert noise grouped by service owner",
-    stack: ["Next.js", "OTel", "ClickHouse", "Postgres"],
-    href: "/projects/observability-workspace",
-    label: "Internal Tool",
-    visual: "observability-panel",
-    visualLabel: "Observability panel fragment with service status, trace latency bars, and an SLO budget card.",
-  },
-  {
-    id: "5",
-    title: "Editorial CMS architecture",
-    description:
-      "Composable content workflow for technical case studies, project pages, and previewable documentation.",
-    keyDecision:
-      "Schema-first content contracts over freeform rich text — authors keep flexibility while the frontend preserves predictable rendering and SEO.",
-    architecture: "Content collections · preview tokens · edge revalidation · MDX",
-    systemDetail: "draft previews · typed frontmatter · sitemap-safe publishing",
-    stack: ["Next.js", "MDX", "Zod", "Vercel"],
-    href: "/projects/editorial-cms",
-    label: "Design System",
+      "Build search and filtering as explicit product workflows so users can understand what the system is doing instead of treating complex data views as generic table controls.",
+    architecture: "React · JavaScript · Node.js · Python · enterprise search workflows",
+    systemDetail: "Filtering behavior, backend-aligned queries, and UI support for data-quality-heavy systems",
+    stack: ["React", "Node.js", "Python", "MySQL"],
+    href: "/projects/search-and-data-quality-tooling",
+    label: "Enterprise Product",
     visual: "cms-workflow",
-    visualLabel: "CMS workflow diagram showing draft, review, and publish states with schema validation and edge revalidation.",
-  },
-  {
-    id: "6",
-    title: "Deployment orchestration tooling",
-    description:
-      "Release coordination utility for small teams shipping web services across multiple regions.",
-    keyDecision:
-      "Canary promotion with explicit rollback checkpoints over fully automatic rollout — safer for low-volume services where signals can lag.",
-    architecture: "Queue workers · canary deploys · region locks · rollback checkpoints",
-    systemDetail: "5% canary · region locks · deploy notes stored with SHA",
-    stack: ["Node.js", "BullMQ", "Redis", "GitHub API"],
-    href: "/projects/deploy-orchestration",
-    label: "Prototype",
-    visual: "deployment-topology",
-    visualLabel: "Deployment topology diagram showing a queue, deploy worker pool, canary rollout, and regional deployment targets.",
+    visualLabel: "Structured workflow diagram representing coordinated search, filtering, and data quality processes.",
   },
 ];
 
