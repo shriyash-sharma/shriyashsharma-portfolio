@@ -20,5 +20,8 @@ __pycache__/
 # Build/cache
 .turbo/
 
+# Database backups (local pg_dump output — never commit)
+backups/
+
 # Editor local history (keep on disk, never commit)
 .history/
