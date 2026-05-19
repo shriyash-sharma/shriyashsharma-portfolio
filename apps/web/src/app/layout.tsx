@@ -21,6 +21,13 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = buildMetadata({ path: "/" });
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover" as const,
+  interactiveWidget: "resizes-content" as const,
+};
+
 const localeRuntimeConfig = Object.fromEntries(
   Object.entries(localeConfigs).map(([locale, config]) => [
     locale,

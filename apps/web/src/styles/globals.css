@@ -193,6 +193,14 @@ img, video, svg {
   transform: translateY(0);
 }
 
+/* Assistant: hide floating launcher while typing in the panel on small screens. */
+@media (max-width: 639px) {
+  body:has([data-assistant-panel]:focus-within) [data-assistant-launcher] {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
 /* ─── Selection ───────────────────────────────────────────────────── */
 ::selection {
   background: var(--color-surface-4);
