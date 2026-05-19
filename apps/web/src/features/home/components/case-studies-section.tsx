@@ -16,66 +16,67 @@ type CaseStudy = {
   readTime: string;
 };
 
+// Home-page case study teasers — static highlights that mirror CMS seed slugs.
 const CASE_STUDIES: CaseStudy[] = [
   {
     id: "1",
-    title: "Scaling a frontend monorepo to 20+ engineers",
+    title: "Building an AI-native engineering portfolio without turning it into a gimmick",
     challenge:
-      "A shared-everything SPA where any PR could silently break unrelated teams. 4-minute CI runs, no module ownership, and implicit coupling through global state.",
+      "Most portfolios stop at screenshots and technology lists. That makes it hard for a recruiter or engineer to inspect how the system was actually designed or what tradeoffs shaped it.",
     decision:
-      "Moved to feature-owned package boundaries, kept shared UI intentionally small, and used dependency constraints to make ownership visible in CI.",
+      "Treat the portfolio as a real product system: CMS-backed content, markdown architecture docs, retrieval-backed assistant behavior, and a public experience designed around technical trust.",
     operations:
-      "Affected graph builds · module boundary checks · PR previews per package",
+      "Next.js + FastAPI · pgvector retrieval · markdown ingestion · recruiter-oriented assistant UX",
     outcome:
-      "60% build time reduction · team-scoped ownership · fewer cross-boundary regressions",
-    tags: ["Architecture", "Monorepo", "DX"],
-    href: "/case-studies/monorepo-scaling",
-    readTime: "8 min",
+      "A portfolio that behaves like an engineering knowledge system instead of a brochure.",
+    tags: ["Architecture", "RAG", "Platform"],
+    href: "/case-studies/building-an-ai-native-engineering-portfolio",
+    readTime: "9 min",
   },
   {
     id: "2",
-    title: "Building a production RAG pipeline for document search",
+    title: "Frontend architecture for enterprise booking workflows",
     challenge:
-      "Keyword search with poor recall on 400k+ enterprise documents. Users couldn't find information phrased differently from how it was written.",
+      "Workflow-heavy enterprise products accumulate validation, error handling, partial failure states, and backend-dependent steps faster than teams expect.",
     decision:
-      "Used hybrid retrieval with RRF instead of pure vector search, then streamed answers only after source chunks passed a relevance threshold.",
+      "Keep the frontend architecture explicit around workflow boundaries, state transitions, and API coordination instead of hiding everything behind generic shared abstractions.",
     operations:
-      "Embedding cache TTL 7d · p95 under 900ms · citation coverage tracked",
+      "React + TypeScript · workflow state modeling · backend contract alignment",
     outcome:
-      "Higher recall for semantic queries · preserved exact-match behavior for SKUs and policy codes",
-    tags: ["AI/ML", "FastAPI", "pgvector"],
-    href: "/case-studies/rag-pipeline",
-    readTime: "12 min",
+      "A product surface that is easier to change safely and easier for teams to reason about during delivery.",
+    tags: ["Frontend", "TypeScript", "Delivery"],
+    href: "/case-studies/frontend-architecture-for-enterprise-booking-workflows",
+    readTime: "8 min",
   },
   {
     id: "3",
-    title: "Designing preview-safe content publishing",
+    title: "Same-origin coordination between Next.js and FastAPI",
     challenge:
-      "Marketing and engineering content needed draft previews without exposing unpublished URLs or letting malformed MDX break production builds.",
+      "As products grow, auth, backend URLs, timeout handling, and API coordination can leak too much complexity into the browser layer.",
     decision:
-      "Added signed preview tokens, typed frontmatter validation, and a narrow publishing contract between content collections and route metadata.",
+      "Use a same-origin proxy pattern so the web app owns browser-facing integration while the API keeps retrieval, validation, and backend orchestration concerns.",
     operations:
-      "Preview TTL 30m · schema checks in CI · sitemap updates on publish",
+      "Route handlers as BFF layer · typed contracts · assistant requests through one public endpoint",
     outcome:
-      "Safer editorial workflow · predictable SEO output · fewer production-only content failures",
-    tags: ["CMS", "SEO", "Next.js"],
-    href: "/case-studies/preview-safe-publishing",
+      "Cleaner browser integration and a more intentional split between public UX and backend behavior.",
+    tags: ["Next.js", "FastAPI", "Architecture"],
+    href: "/case-studies/same-origin-coordination-between-nextjs-and-fastapi",
     readTime: "7 min",
   },
   {
     id: "4",
-    title: "Reducing alert fatigue in an internal ops dashboard",
+    title: "Search and filtering for enterprise product tooling",
     challenge:
-      "Engineers were receiving noisy latency alerts from queue workers where short spikes were expected during batch windows.",
+      "Search-heavy enterprise tooling becomes difficult to trust when filters feel inconsistent, result states are unclear, or users cannot tell whether a problem is in the query or the underlying data.",
     decision:
-      "Grouped alerts around service ownership and SLO burn rate instead of raw threshold breaches, with trace samples linked to each incident window.",
+      "Treat search and filtering as a product workflow with explicit state, backend alignment, and clear user feedback rather than just a set of table controls.",
     operations:
-      "15m burn windows · p95 trace samples · owner-based routing",
+      "Search flows · filtering semantics · data-quality-aware UI behavior",
     outcome:
-      "Fewer duplicate alerts · faster triage · clearer runtime ownership across services",
-    tags: ["Observability", "SLO", "Platform"],
-    href: "/case-studies/alert-fatigue",
-    readTime: "9 min",
+      "A more trustworthy enterprise tool where operational users can reason about results instead of guessing what the system is doing.",
+    tags: ["Search", "Tooling", "Enterprise UX"],
+    href: "/case-studies/search-and-filtering-for-enterprise-product-tooling",
+    readTime: "7 min",
   },
 ];
 
@@ -100,9 +101,9 @@ export function CaseStudiesSection() {
               Case Studies
             </h2>
             <p className="max-w-[58ch] text-[14px] leading-[1.72] text-[var(--color-muted)] sm:text-[15px]">
-              Short previews of the kind of engineering decisions that matter
-              after launch: boundaries, latency, ownership, reliability, and
-              publishing safety.
+              Engineering-focused writeups about architecture choices,
+              delivery tradeoffs, integration boundaries, and the practical
+              constraints behind the systems on this platform.
             </p>
           </div>
           <Link

@@ -148,14 +148,26 @@ def _to_sources(chunks: list[RetrievedChunk]) -> list[SearchSource]:
             SearchSource(
                 id=document_key,
                 title=chunk.document_title,
-                type=_SOURCE_TYPE_TO_CONTENT_TYPE.get(
-                    chunk.source_type, "article"
-                ),
+                type=_resolve_source_type(chunk),
                 excerpt=_excerpt(chunk.content),
                 score=round(chunk.similarity, 4),
             )
         )
     return sources
+
+
+def _resolve_source_type(chunk: RetrievedChunk) -> ContentType:
+    """Prefer CMS content_type over knowledge source_type for citation labels."""
+    if chunk.content_type in {
+        "project",
+        "case-study",
+        "article",
+        "architecture-note",
+        "experiment",
+        "research-log",
+    }:
+        return chunk.content_type
+    return _SOURCE_TYPE_TO_CONTENT_TYPE.get(chunk.source_type, "article")
 
 
 def _excerpt(text: str, *, max_chars: int = 240) -> str:

@@ -1,7 +1,7 @@
 /** Schema.org / positioning constants — keep factual and concise. */
 export const seoConfig = {
   positioning:
-    "Senior Software Engineer at Globant building scalable web applications and AI-powered systems.",
+    "Senior Software Engineer building scalable web applications and evolving AI-powered engineering systems.",
   employer: {
     name: "Globant",
     url: "https://www.globant.com",
@@ -10,10 +10,13 @@ export const seoConfig = {
     "React",
     "Next.js",
     "TypeScript",
+    "JavaScript",
     "FastAPI",
     "Python",
+    "PostgreSQL",
+    "Semantic search",
     "RAG systems",
-    "System design",
     "Frontend architecture",
+    "System design",
   ],
 } as const;
