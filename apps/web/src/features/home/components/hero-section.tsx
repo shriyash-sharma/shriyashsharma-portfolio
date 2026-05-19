@@ -111,7 +111,7 @@ export function HeroSection() {
             {/* CTAs — stack on mobile, row on sm+ */}
             <StaggerItem>
               <div className={cn(
-                "mt-7 flex flex-col gap-2.5",
+                "mt-7 flex flex-col gap-2.5 py-2 sm:py-3",
                 "sm:mt-9 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3"
               )}>
                 <Button asChild size="lg" className="w-full justify-center sm:w-auto">

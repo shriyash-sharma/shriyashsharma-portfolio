@@ -29,6 +29,10 @@ const SUGGESTED_QUESTIONS = [
 type AssistantPanelProps = {
   /** Visual density. Drawer uses "compact" for tighter chrome. */
   density?: "comfortable" | "compact";
+  /** Drawer embed: flex footer input, no double border. */
+  layout?: "default" | "drawer";
+  /** Extra bottom padding when the mobile keyboard is open (from visualViewport). */
+  keyboardInset?: number;
   /** Optional override for the suggested prompts shown in the empty state. */
   suggestedPrompts?: readonly string[];
   /** Hide the header (the drawer renders its own). */
@@ -38,6 +42,8 @@ type AssistantPanelProps = {
 
 export function AssistantPanel({
   density = "comfortable",
+  layout = "default",
+  keyboardInset = 0,
   suggestedPrompts = SUGGESTED_QUESTIONS,
   hideHeader = false,
   className,
@@ -45,6 +51,7 @@ export function AssistantPanel({
   const { messages, isLoading, error, ask } = useAssistant();
   const [input, setInput] = React.useState("");
   const scrollerRef = React.useRef<HTMLDivElement | null>(null);
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   React.useEffect(() => {
     scrollerRef.current?.scrollTo({
@@ -62,12 +69,31 @@ export function AssistantPanel({
   };
 
   const compact = density === "compact";
+  const inDrawer = layout === "drawer";
+  const keyboardOpen = keyboardInset > 48;
+
+  const scrollInputIntoView = () => {
+    if (inDrawer) return;
+    window.requestAnimationFrame(() => {
+      inputRef.current?.scrollIntoView({
+        block: "end",
+        inline: "nearest",
+        behavior: "smooth",
+      });
+    });
+  };
 
   return (
     <div
+      data-assistant-panel
       className={[
-        "flex h-full min-h-0 flex-col gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)]",
-        compact ? "p-3" : "p-4 sm:gap-4",
+        "flex h-full min-h-0 min-w-0 w-full max-w-full flex-col",
+        inDrawer
+          ? "gap-2 bg-transparent"
+          : [
+              "gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)]",
+              compact ? "p-3" : "p-4 sm:gap-4",
+            ].join(" "),
         className ?? "",
       ].join(" ")}
     >
@@ -86,7 +112,13 @@ export function AssistantPanel({
 
       <div
         ref={scrollerRef}
-        className="min-h-[260px] flex-1 overflow-y-auto rounded-md border border-[var(--color-border)] bg-[var(--color-background)] p-3"
+        className={[
+          "min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain",
+          inDrawer
+            ? "rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-3"
+            : "min-h-[140px] rounded-md border border-[var(--color-border)] bg-[var(--color-background)] p-3 sm:min-h-[260px]",
+          keyboardOpen && inDrawer ? "max-h-[min(42vh,280px)]" : "",
+        ].join(" ")}
       >
         {messages.length === 0 ? (
           <EmptyState
@@ -95,7 +127,7 @@ export function AssistantPanel({
             onPick={(prompt) => void ask(prompt)}
           />
         ) : (
-          <ul className="flex flex-col gap-3">
+          <ul className="flex min-w-0 max-w-full flex-col gap-3">
             {messages.map((message) => (
               <MessageBubble key={message.id} message={message} />
             ))}
@@ -114,22 +146,41 @@ export function AssistantPanel({
         </p>
       ) : null}
 
-      <form onSubmit={handleSubmit} className="flex gap-2">
+      <form
+        onSubmit={handleSubmit}
+        className={[
+          "z-10 shrink-0",
+          inDrawer
+            ? "box-border w-full min-w-0 max-w-full border-t border-[var(--color-border)] bg-[var(--color-background)] px-1 pt-3"
+            : "sticky bottom-0 bg-[var(--color-surface-2)] px-0.5 pt-1",
+          inDrawer || keyboardOpen
+            ? "flex flex-row items-center gap-2"
+            : "flex flex-col gap-2 sm:flex-row sm:items-center",
+        ].join(" ")}
+      >
         <input
+          ref={inputRef}
           aria-label="Ask the portfolio assistant"
           value={input}
           onChange={(event) => setInput(event.target.value)}
+          onFocus={scrollInputIntoView}
           placeholder="Ask about a project, architecture, or system…"
           disabled={isLoading}
-          className="flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-3)] px-3 text-[13px] text-[var(--color-foreground)] placeholder:text-[var(--color-muted)] focus:border-[var(--color-border-strong)] focus:outline-none"
-          style={{ height: 36 }}
+          enterKeyHint="send"
+          autoComplete="off"
+          className={[
+            "min-h-11 min-w-0 flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-3)] px-3 text-base text-[var(--color-foreground)] placeholder:text-[var(--color-muted)]",
+            "outline-none focus:border-[var(--color-border-strong)] focus:ring-2 focus:ring-inset focus:ring-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/25",
+            !inDrawer ? "sm:min-h-9 sm:text-[13px]" : "",
+          ].join(" ")}
         />
         <Button
           type="submit"
           variant="primary"
+          className="h-11 shrink-0 px-4 sm:h-9"
           disabled={isLoading || !input.trim()}
         >
-          {isLoading ? "Thinking…" : "Ask"}
+          {isLoading ? "…" : "Ask"}
         </Button>
       </form>
     </div>
@@ -170,16 +221,16 @@ function MessageBubble({ message }: { message: AssistantMessage }) {
   const isUser = message.role === "user";
   return (
     <li
-      className={`flex flex-col gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 ${
+      className={`flex max-w-full min-w-0 flex-col gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 ${
         isUser
-          ? "self-end bg-[var(--color-surface-3)]"
-          : "self-start bg-[var(--color-surface-2)]"
+          ? "ml-auto max-w-[92%] self-end bg-[var(--color-surface-3)]"
+          : "max-w-[92%] self-start bg-[var(--color-surface-2)]"
       }`}
     >
       <span className="text-[10.5px] uppercase tracking-[0.08em] text-[var(--color-muted)]">
         {isUser ? "You" : "Assistant"}
       </span>
-      <p className="whitespace-pre-wrap text-[13px] leading-[1.55] text-[var(--color-foreground)]">
+      <p className="break-words whitespace-pre-wrap text-[13px] leading-[1.55] text-[var(--color-foreground)]">
         {message.content}
       </p>
       {message.sources && message.sources.length > 0 ? (

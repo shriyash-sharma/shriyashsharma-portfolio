@@ -39,9 +39,14 @@ def create_app() -> FastAPI:
         description="Backend foundation for the engineering portfolio platform.",
     )
 
+    cors_origins = [
+        origin.strip()
+        for origin in str(settings.frontend_origin).split(",")
+        if origin.strip()
+    ]
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[str(settings.frontend_origin)],
+        allow_origins=cors_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
