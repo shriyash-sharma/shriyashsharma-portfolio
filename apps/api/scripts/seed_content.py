@@ -53,7 +53,15 @@ The interesting part is not the technology list. It is the combination of editor
         "categories": ["project", "ai", "architecture"],
         "extra": {
             "stack": "Next.js, TypeScript, FastAPI, PostgreSQL, pgvector",
-            "system_detail": "Config-driven identity + CMS content + markdown ingestion + grounded assistant",
+            "system_detail": "CMS content + docs ingestion + grounded assistant + recruiter-oriented UX",
+            "key_decision": (
+                "Keep identity and branding static, keep projects and writing in the content system, "
+                "and use markdown plus pgvector retrieval to make the portfolio explorable instead of purely presentational."
+            ),
+            "architecture_summary": "Next.js App Router · FastAPI · PostgreSQL · pgvector · monorepo",
+            "card_label": "Public Platform",
+            "home_visual": "retrieval-pipeline",
+            "visual_label": "Retrieval pipeline diagram showing indexed content flowing into a grounded assistant experience.",
             "featured": True,
             "caseStudy": "/case-studies/building-an-ai-native-engineering-portfolio",
         },
@@ -88,7 +96,15 @@ Booking-style products are rarely impressive because of a single technical trick
         "categories": ["project", "enterprise", "frontend"],
         "extra": {
             "stack": "React, TypeScript, REST APIs",
-            "system_detail": "Customer-facing workflow architecture with frontend/backend coordination",
+            "system_detail": "Validation, error handling, and release-safe UI evolution across customer-facing flows",
+            "key_decision": (
+                "Prefer explicit workflow boundaries, predictable state transitions, and backend-aware UI decisions "
+                "over large rewrites or fragile shared abstractions."
+            ),
+            "architecture_summary": "React · TypeScript · REST APIs · workflow-heavy frontend systems",
+            "card_label": "Enterprise Delivery",
+            "home_visual": "rendering-pipeline",
+            "visual_label": "Architecture fragment representing structured frontend delivery and runtime coordination.",
             "featured": True,
             "caseStudy": "/case-studies/frontend-architecture-for-enterprise-booking-workflows",
         },
@@ -122,9 +138,17 @@ Enterprise tooling only feels simple when state, performance, and data integrity
         "tags": ["Search", "Data Quality", "Enterprise Tooling"],
         "categories": ["project", "search", "enterprise"],
         "extra": {
-            "stack": "React, JavaScript, Node.js, Python, MySQL",
-            "system_detail": "Search flows, filtering systems, and product data tooling",
-            "featured": False,
+            "stack": "React, Node.js, Python, MySQL",
+            "system_detail": "Filtering behavior, backend-aligned queries, and UI support for data-quality-heavy systems",
+            "key_decision": (
+                "Build search and filtering as explicit product workflows so users can understand what the system is doing "
+                "instead of treating complex data views as generic table controls."
+            ),
+            "architecture_summary": "React · JavaScript · Node.js · Python · enterprise search workflows",
+            "card_label": "Enterprise Product",
+            "home_visual": "cms-workflow",
+            "visual_label": "Structured workflow diagram representing coordinated search, filtering, and data quality processes.",
+            "featured": True,
         },
         "seo_title": "Search and data-quality tooling",
         "seo_description": "Frontend and integration work across enterprise search, filtering, and product data workflows.",
@@ -180,6 +204,16 @@ The platform becomes more trustworthy when the architecture itself is visible. R
         "extra": {
             "read_time": "9 min",
             "system_area": "AI-native product architecture",
+            "challenge": (
+                "Most portfolios stop at screenshots and technology lists. That makes it hard for a recruiter or engineer "
+                "to inspect how the system was actually designed or what tradeoffs shaped it."
+            ),
+            "decision": (
+                "Treat the portfolio as a real product system: CMS-backed content, markdown architecture docs, "
+                "retrieval-backed assistant behavior, and a public experience designed around technical trust."
+            ),
+            "operations": "Next.js + FastAPI · pgvector retrieval · markdown ingestion · recruiter-oriented assistant UX",
+            "outcome": "A portfolio that behaves like an engineering knowledge system instead of a brochure.",
         },
         "seo_title": "AI-native engineering portfolio case study",
         "seo_description": "Case study on turning a portfolio into a CMS-backed engineering knowledge system with grounded retrieval.",
@@ -227,6 +261,18 @@ The interesting constraint in enterprise systems is rarely raw scale. It is the 
         "extra": {
             "read_time": "8 min",
             "system_area": "workflow architecture",
+            "challenge": (
+                "Workflow-heavy enterprise products accumulate validation, error handling, partial failure states, "
+                "and backend-dependent steps faster than teams expect."
+            ),
+            "decision": (
+                "Keep the frontend architecture explicit around workflow boundaries, state transitions, and API coordination "
+                "instead of hiding everything behind generic shared abstractions."
+            ),
+            "operations": "React + TypeScript · workflow state modeling · backend contract alignment",
+            "outcome": (
+                "A product surface that is easier to change safely and easier for teams to reason about during delivery."
+            ),
         },
         "seo_title": "Frontend architecture for enterprise booking workflows",
         "seo_description": "Case study on building resilient frontend architecture for workflow-heavy enterprise applications.",
@@ -274,6 +320,18 @@ The platform uses a same-origin proxy pattern:
         "extra": {
             "read_time": "7 min",
             "system_area": "frontend/backend coordination",
+            "challenge": (
+                "As products grow, auth, backend URLs, timeout handling, and API coordination can leak too much "
+                "complexity into the browser layer."
+            ),
+            "decision": (
+                "Use a same-origin proxy pattern so the web app owns browser-facing integration while the API keeps "
+                "retrieval, validation, and backend orchestration concerns."
+            ),
+            "operations": "Route handlers as BFF layer · typed contracts · assistant requests through one public endpoint",
+            "outcome": (
+                "Cleaner browser integration and a more intentional split between public UX and backend behavior."
+            ),
         },
         "seo_title": "Same-origin coordination between Next.js and FastAPI",
         "seo_description": "Case study on using a BFF-style same-origin proxy to simplify a modern web and API stack.",
@@ -310,6 +368,19 @@ That experience translates directly into later work on semantic retrieval and AI
         "extra": {
             "read_time": "7 min",
             "system_area": "search workflows",
+            "challenge": (
+                "Search-heavy enterprise tooling becomes difficult to trust when filters feel inconsistent, result states "
+                "are unclear, or users cannot tell whether a problem is in the query or the underlying data."
+            ),
+            "decision": (
+                "Treat search and filtering as a product workflow with explicit state, backend alignment, and clear user "
+                "feedback rather than just a set of table controls."
+            ),
+            "operations": "Search flows · filtering semantics · data-quality-aware UI behavior",
+            "outcome": (
+                "A more trustworthy enterprise tool where operational users can reason about results instead of guessing "
+                "what the system is doing."
+            ),
         },
         "seo_title": "Search and filtering for enterprise product tooling",
         "seo_description": "Case study on building trustworthy search and filtering experiences in enterprise product tooling.",

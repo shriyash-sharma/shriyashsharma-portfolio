@@ -67,7 +67,18 @@ function mapProject(item: ApiContentItem): Project {
   };
 }
 
-/** Returns all projects, sorted by featured first. */
+function sortProjects(projects: Project[]): Project[] {
+  return [...projects].sort((a, b) => {
+    if (a.featured !== b.featured) {
+      return a.featured ? -1 : 1;
+    }
+    return (
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+    );
+  });
+}
+
+/** Returns all published projects, sorted featured first then newest. */
 export async function getProjects(): Promise<Project[]> {
   if (!hasBackendUrl()) {
     return [];
@@ -75,7 +86,7 @@ export async function getProjects(): Promise<Project[]> {
 
   try {
     const response = await listContent({ type: "project", limit: 50 });
-    return response.items.map(mapProject);
+    return sortProjects(response.items.map(mapProject));
   } catch (error) {
     if (process.env.NODE_ENV === "production") {
       console.error("[getProjects] failed to load from API:", error);
