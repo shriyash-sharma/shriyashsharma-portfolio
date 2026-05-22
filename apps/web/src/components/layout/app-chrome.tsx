@@ -35,7 +35,7 @@ export function AppChrome({ children }: AppChromeProps) {
       <div className="flex min-h-dvh flex-col">
         <Navbar />
         <div className="flex-1 pt-[58px]">{children}</div>
-        <Footer />
+        <Footer reserveLauncherSpace={showLauncher} />
       </div>
       {showLauncher ? <AssistantLauncher /> : null}
       <AssistantDrawer />

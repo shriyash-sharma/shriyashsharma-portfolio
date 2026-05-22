@@ -47,7 +47,9 @@ export function AssistantLauncher({ className }: { className?: string }) {
           transition={{ duration: 0.18, ease: "easeOut" }}
           data-assistant-launcher
           className={cn(
-            "fixed bottom-5 right-5 z-40 sm:bottom-6 sm:right-6",
+            "fixed z-40",
+            "bottom-[max(1.25rem,env(safe-area-inset-bottom,0px))] right-5",
+            "sm:bottom-6 sm:right-6",
             "pointer-events-none transition-opacity duration-200",
             className
           )}

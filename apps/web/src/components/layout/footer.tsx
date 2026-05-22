@@ -4,11 +4,23 @@ import { siteConfig } from "@/lib/constants/site";
 import { MaxWidthWrapper } from "./max-width-wrapper";
 import { cn } from "@/lib/utils/cn";
 
-export function Footer() {
+type FooterProps = {
+  /** Reserve space for the fixed Ask AI launcher (bottom-right). */
+  reserveLauncherSpace?: boolean;
+};
+
+export function Footer({ reserveLauncherSpace = false }: FooterProps) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-[var(--color-border)] py-8">
+    <footer
+      className={cn(
+        "border-t border-[var(--color-border)]",
+        reserveLauncherSpace
+          ? "pt-8 pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] sm:py-8"
+          : "py-8"
+      )}
+    >
       <MaxWidthWrapper>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
@@ -22,7 +34,12 @@ export function Footer() {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <div
+            className={cn(
+              "flex flex-wrap items-center gap-x-5 gap-y-2",
+              reserveLauncherSpace && "pe-[7.5rem] sm:pe-44"
+            )}
+          >
             <Link
               href={siteConfig.links.github}
               target="_blank"
