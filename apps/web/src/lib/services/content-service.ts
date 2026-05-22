@@ -64,6 +64,13 @@ function mapPublicContentEntry(item: ApiContentItem): PublicContentEntry {
   };
 }
 
+function sortByPublishedDesc<T extends { publishedAt: string }>(items: T[]): T[] {
+  return [...items].sort(
+    (a, b) =>
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  );
+}
+
 /** Filesystem implementation – returns empty arrays until content is added. */
 export async function getBlogPosts(): Promise<BlogPost[]> {
   if (!hasBackendUrl()) {
@@ -72,7 +79,7 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
 
   try {
     const response = await listContent({ type: "article", limit: 50 });
-    return response.items.map(mapPublicContentEntry);
+    return sortByPublishedDesc(response.items.map(mapPublicContentEntry));
   } catch {
     return [];
   }
@@ -98,7 +105,7 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
 
   try {
     const response = await listContent({ type: "case-study", limit: 50 });
-    return response.items.map(mapPublicContentEntry);
+    return sortByPublishedDesc(response.items.map(mapPublicContentEntry));
   } catch {
     return [];
   }
@@ -124,7 +131,7 @@ export async function getArchitectureNotes(): Promise<ArchitectureNote[]> {
 
   try {
     const response = await listContent({ type: "architecture-note", limit: 50 });
-    return response.items.map(mapPublicContentEntry);
+    return sortByPublishedDesc(response.items.map(mapPublicContentEntry));
   } catch {
     return [];
   }

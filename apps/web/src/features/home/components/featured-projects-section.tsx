@@ -4,6 +4,7 @@ import { Section } from "@/components/layout/section";
 import { MaxWidthWrapper } from "@/components/layout/max-width-wrapper";
 import { FadeIn } from "@/components/shared/motion/fade-in";
 import { Stagger, StaggerItem } from "@/components/shared/motion/stagger";
+import type { HomeProjectCard } from "@/lib/content/home-cards";
 import { cn } from "@/lib/utils/cn";
 
 // ─── SVG color constants (match design tokens exactly) ─────────────
@@ -247,76 +248,17 @@ const VISUALS = {
   "deployment-topology": DeploymentTopologySvg,
 } as const;
 
-// ─── Project data ──────────────────────────────────────────────────
-type ProjectVisualKey = keyof typeof VISUALS;
-
-type Project = {
-  id: string;
-  title: string;
-  description: string;
-  /** The single most important architectural tradeoff */
-  keyDecision: string;
-  architecture: string;
-  systemDetail: string;
-  stack: string[];
-  href: string;
-  label: string;
-  visual: ProjectVisualKey;
-  visualLabel: string;
+type FeaturedProjectsSectionProps = {
+  /** From getProjects() → mapFeaturedProjectsToHomeCards (featured metadata first). */
+  projects: HomeProjectCard[];
+  backendConfigured?: boolean;
 };
 
-// Home-page project cards — static highlights that mirror CMS seed slugs.
-// Keep hrefs in sync with apps/api/scripts/seed_content.py.
-const PROJECTS: Project[] = [
-  {
-    id: "1",
-    title: "AI-powered engineering portfolio platform",
-    description:
-      "A portfolio platform built as a small product system with CMS-backed content, architecture docs, and a grounded assistant over indexed engineering knowledge.",
-    keyDecision:
-      "Keep identity and branding static, keep projects and writing in the content system, and use markdown plus pgvector retrieval to make the portfolio explorable instead of purely presentational.",
-    architecture: "Next.js App Router · FastAPI · PostgreSQL · pgvector · monorepo",
-    systemDetail: "CMS content + docs ingestion + grounded assistant + recruiter-oriented UX",
-    stack: ["Next.js", "TypeScript", "FastAPI", "pgvector"],
-    href: "/projects/ai-engineering-portfolio-platform",
-    label: "Public Platform",
-    visual: "retrieval-pipeline",
-    visualLabel: "Retrieval pipeline diagram showing indexed content flowing into a grounded assistant experience.",
-  },
-  {
-    id: "2",
-    title: "Enterprise booking frontend systems",
-    description:
-      "Frontend architecture work across booking-style enterprise workflows where reliability, incremental change, and backend coordination mattered more than novelty.",
-    keyDecision:
-      "Prefer explicit workflow boundaries, predictable state transitions, and backend-aware UI decisions over large rewrites or fragile shared abstractions.",
-    architecture: "React · TypeScript · REST APIs · workflow-heavy frontend systems",
-    systemDetail: "Validation, error handling, and release-safe UI evolution across customer-facing flows",
-    stack: ["React", "TypeScript", "REST APIs"],
-    href: "/projects/enterprise-booking-frontend-systems",
-    label: "Enterprise Delivery",
-    visual: "rendering-pipeline",
-    visualLabel: "Architecture fragment representing structured frontend delivery and runtime coordination.",
-  },
-  {
-    id: "3",
-    title: "Search and data-quality tooling for enterprise product data",
-    description:
-      "Search, filtering, and data-quality workflows built for enterprise product information systems where UI behavior and backend semantics had to stay aligned.",
-    keyDecision:
-      "Build search and filtering as explicit product workflows so users can understand what the system is doing instead of treating complex data views as generic table controls.",
-    architecture: "React · JavaScript · Node.js · Python · enterprise search workflows",
-    systemDetail: "Filtering behavior, backend-aligned queries, and UI support for data-quality-heavy systems",
-    stack: ["React", "Node.js", "Python", "MySQL"],
-    href: "/projects/search-and-data-quality-tooling",
-    label: "Enterprise Product",
-    visual: "cms-workflow",
-    visualLabel: "Structured workflow diagram representing coordinated search, filtering, and data quality processes.",
-  },
-];
-
 // ─── Component ─────────────────────────────────────────────────────
-export function FeaturedProjectsSection() {
+export function FeaturedProjectsSection({
+  projects,
+  backendConfigured = true,
+}: FeaturedProjectsSectionProps) {
   return (
     <Section
       aria-labelledby="projects-heading"
@@ -356,8 +298,24 @@ export function FeaturedProjectsSection() {
         </div>
       </FadeIn>
 
+      {projects.length === 0 ? (
+        <FadeIn>
+          <div className="rounded-xl border border-dashed border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-12 text-[14px] leading-relaxed text-[var(--color-muted)]">
+            {!backendConfigured ? (
+              <>
+                Content API is not configured. Set{" "}
+                <code className="text-[13px]">NEXT_PUBLIC_API_URL</code> and{" "}
+                <code className="text-[13px]">API_INTERNAL_URL</code>, then
+                redeploy.
+              </>
+            ) : (
+              "No published projects yet. Mark items as featured in the CMS metadata to highlight them here."
+            )}
+          </div>
+        </FadeIn>
+      ) : (
       <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {PROJECTS.map((project) => {
+        {projects.map((project) => {
           const Visual = VISUALS[project.visual];
           return (
             <StaggerItem key={project.id}>
@@ -462,6 +420,7 @@ export function FeaturedProjectsSection() {
           );
         })}
       </Stagger>
+      )}
 
       <FadeIn delay={0.12}>
         <div className="mt-7 sm:hidden">
