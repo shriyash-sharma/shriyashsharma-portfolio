@@ -12,7 +12,7 @@ type SectionProps = {
 
 /**
  * Canonical section wrapper.
- * Spacing: mobile 64px → tablet 80px → desktop 96px → xl 112px.
+ * Spacing (Tailwind py-*): 64px → 80px → 60px (lg) → 112px (xl).
  * Never use ad-hoc py-* on sections — always go through this component
  * so vertical rhythm stays consistent across the page.
  */
@@ -28,7 +28,7 @@ export function Section({
   return (
     <Tag
       id={id}
-      className={cn("py-16 sm:py-20 lg:py-24 xl:py-28", className)}
+      className={cn("py-16 sm:py-20 lg:py-15 xl:py-28", className)}
       {...props}
     >
       {fullWidth ? (
