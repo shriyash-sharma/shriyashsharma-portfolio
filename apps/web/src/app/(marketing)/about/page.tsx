@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
+import { EmailLink } from "@/components/shared/email-link";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
@@ -86,7 +87,9 @@ export default function AboutPage() {
                   I am also spending a lot of time on practical AI integration. For me, that means
                   building grounded workflows with semantic retrieval and RAG, understanding where
                   they help, and being honest about where they still need clear product and system
-                  boundaries.
+                  boundaries. I have also completed a Gen AI Leadership Certification as part of
+                  that learning, mainly to strengthen how I think about modern AI workflows and
+                  practical product adoption.
                 </p>
               </div>
             </section>
@@ -107,7 +110,7 @@ export default function AboutPage() {
 
           <section className="mt-12 rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 sm:p-8">
             <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
-              Current work
+              Professional experience
             </p>
             <div className="mt-6 grid gap-8">
               <div className="grid gap-2 border-l border-[var(--color-border)] pl-5">
@@ -127,21 +130,6 @@ export default function AboutPage() {
 
               <div className="grid gap-2 border-l border-[var(--color-border)] pl-5">
                 <p className="text-[12px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
-                  Ongoing
-                </p>
-                <h2 className="text-[22px] font-medium tracking-[-0.03em] text-[var(--color-foreground)]">
-                  TeamShastra · Field workforce operations platform
-                </h2>
-                <p className="text-[15px] leading-8 text-[var(--color-secondary)]">
-                  I am building TeamShastra as a practical operational SaaS product for field
-                  workforce management. It is the kind of system that brings together frontend
-                  product thinking, backend workflows, operational clarity, and measured use of
-                  AI-assisted features where they can actually support users.
-                </p>
-              </div>
-
-              <div className="grid gap-2 border-l border-[var(--color-border)] pl-5">
-                <p className="text-[12px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
                   Jun 2018 — Mar 2022
                 </p>
                 <h2 className="text-[22px] font-medium tracking-[-0.03em] text-[var(--color-foreground)]">
@@ -153,6 +141,81 @@ export default function AboutPage() {
                   experience gave me a solid base in search-heavy interfaces, data workflows,
                   frontend and backend integration, and reusable product functionality.
                 </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="mt-12 rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 sm:p-8">
+            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
+              Building
+            </p>
+            <div className="mt-4 max-w-3xl text-[15px] leading-8 text-[var(--color-secondary)]">
+              Independent products and systems I am actively building alongside my professional
+              engineering work.
+            </div>
+            <div className="mt-6 grid gap-8">
+              <div className="grid gap-3 border-l border-[var(--color-border)] pl-5">
+                <p className="text-[12px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
+                  Ongoing product
+                </p>
+                <h2 className="text-[22px] font-medium tracking-[-0.03em] text-[var(--color-foreground)]">
+                  TeamShastra · Field workforce operations platform
+                </h2>
+                <p className="text-[15px] leading-8 text-[var(--color-secondary)]">
+                  TeamShastra is a real ongoing product focused on field workforce operations. It
+                  is being built around practical coordination needs such as task visibility,
+                  attendance, team movement, and day-to-day execution in environments where
+                  reliability matters more than presentation.
+                </p>
+                <p className="text-[15px] leading-8 text-[var(--color-secondary)]">
+                  The product direction is offline-first and operations-focused, with workflow
+                  design shaped by real field conditions, practical backend coordination, and
+                  modern product-focused engineering. AI-assisted tooling is used where it can
+                  support operational follow-up and reduce manual work without turning the product
+                  into a demo.
+                </p>
+                <div className="pt-1">
+                  <Link
+                    href="https://app.teamshastra.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-[14px] text-[var(--color-foreground)] underline underline-offset-4 transition-colors hover:text-[var(--color-secondary)]"
+                  >
+                    <span>View Product</span>
+                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
+                </div>
+              </div>
+
+              <div className="grid gap-3 border-l border-[var(--color-border)] pl-5">
+                <p className="text-[12px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
+                  Active platform build
+                </p>
+                <h2 className="text-[22px] font-medium tracking-[-0.03em] text-[var(--color-foreground)]">
+                  AI portfolio platform · Full-stack engineering system
+                </h2>
+                <p className="text-[15px] leading-8 text-[var(--color-secondary)]">
+                  This portfolio is also an active product build, not a simple static site. It is
+                  designed as a full-stack platform for publishing projects, case studies, and
+                  architecture notes in a way that stays structured, searchable, and useful.
+                </p>
+                <p className="text-[15px] leading-8 text-[var(--color-secondary)]">
+                  Technically, it brings together Next.js, FastAPI, PostgreSQL, CMS-backed
+                  content, multilingual architecture, semantic retrieval, RAG workflows, and
+                  AI-assisted search. I use it as a practical system for exploring content
+                  modeling, retrieval quality, and product-grade frontend and backend coordination.
+                </p>
+                <div className="pt-1">
+                  <Link
+                    href="https://shriyashsharma.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-[14px] text-[var(--color-foreground)] underline underline-offset-4 transition-colors hover:text-[var(--color-secondary)]"
+                  >
+                    <span>View Product</span>
+                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
+                </div>
               </div>
             </div>
           </section>
@@ -194,7 +257,7 @@ export default function AboutPage() {
           <div className="mt-12 grid gap-8 py-4 sm:py-5 xl:grid-cols-[minmax(0,1fr)_320px]">
             <section className="rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 sm:p-8">
               <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
-                Education
+                Education and professional development
               </p>
               <h2 className="mt-4 text-[22px] font-medium tracking-[-0.03em] text-[var(--color-foreground)]">
                 Master of Computer Applications
@@ -203,6 +266,19 @@ export default function AboutPage() {
                 Shri Ramdeobaba College of Engineering &amp; Management, Nagpur, Maharashtra,
                 India · CGPA 9.06
               </p>
+              <div className="mt-6 border-t border-[var(--color-border)] pt-6">
+                <p className="text-[12px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
+                  Certification
+                </p>
+                <h3 className="mt-2 text-[18px] font-medium tracking-[-0.02em] text-[var(--color-foreground)]">
+                  Gen AI Leadership Certification
+                </h3>
+                <p className="mt-2 text-[15px] leading-8 text-[var(--color-secondary)]">
+                  Completed as part of my ongoing learning in AI-assisted systems, semantic
+                  retrieval, operational AI workflows, and practical Gen AI integration alongside
+                  frontend and full-stack engineering work.
+                </p>
+              </div>
             </section>
 
             <section className="rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
@@ -213,12 +289,7 @@ export default function AboutPage() {
                 If you are hiring for frontend or full-stack engineering roles, or building
                 products that need practical frontend, backend, or AI-assisted systems, feel free
                 to reach out at{" "}
-                <a
-                  href={`mailto:${siteConfig.author.email}`}
-                  className="text-[var(--color-foreground)] underline underline-offset-4"
-                >
-                  {siteConfig.author.email}
-                </a>
+                <EmailLink className="inline-flex items-center whitespace-nowrap rounded-full border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-1 align-middle text-[14px] font-medium text-[var(--color-foreground)] shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface)] hover:text-[var(--color-foreground)]" />
                 .
               </p>
               <p className="mt-4 text-[15px] leading-8 text-[var(--color-secondary)]">

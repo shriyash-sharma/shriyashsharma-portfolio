@@ -21,14 +21,14 @@ export function PublicProjectList({
     <div className="grid gap-10">
       <div className="max-w-3xl">
         <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--color-muted)]">
-          Work
+          Building
         </p>
         <h1 className="mt-3 text-[36px] font-semibold tracking-[-0.05em] text-[var(--color-foreground)] sm:text-[46px]">
           Projects
         </h1>
         <p className="mt-4 text-[15px] leading-8 text-[var(--color-secondary)]">
-          Published projects from the content system, including shipped work,
-          architecture context, and linked case studies.
+          Independent products, platform work, and selected engineering builds,
+          with architecture context and linked case studies.
         </p>
       </div>
 

@@ -25,7 +25,7 @@ export const pageSeo = {
   projects: {
     title: "Projects",
     description:
-      "Selected software projects — React, Next.js, FastAPI, and production system design.",
+      "Independent products and engineering systems — Next.js, FastAPI, PostgreSQL, semantic retrieval, and production system design.",
     path: "/projects",
   },
   caseStudies: {

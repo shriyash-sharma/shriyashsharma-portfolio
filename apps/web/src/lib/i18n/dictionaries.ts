@@ -63,7 +63,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       currentLanguage: "Current language",
     },
     home: {
-      status: "Available for selected consulting collaborations",
+      status: "Open to engineering roles, platform-focused product work, and selected consulting collaborations",
       heading:
         "Building scalable systems with modern web architecture, AI-assisted workflows, and practical backend infrastructure.",
       headingAccent: "",

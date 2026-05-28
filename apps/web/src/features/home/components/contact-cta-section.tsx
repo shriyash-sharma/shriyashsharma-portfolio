@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowRight } from "lucide-react";
+import { EmailLink } from "@/components/shared/email-link";
 import { Section } from "@/components/layout/section";
 import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/shared/motion/fade-in";
 import { cn } from "@/lib/utils/cn";
-import { siteConfig } from "@/lib/constants/site";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { getPathLocale, localizePath } from "@/lib/i18n/config";
 
@@ -81,9 +81,7 @@ export function ContactCtaSection() {
               </Link>
             </Button>
             <Button asChild variant="secondary" size="lg" className="w-full justify-center sm:w-auto">
-              <a href={`mailto:${siteConfig.author.email}`}>
-                {siteConfig.author.email}
-              </a>
+              <EmailLink />
             </Button>
           </div>
         </div>
