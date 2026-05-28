@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { AppChrome } from "@/components/layout/app-chrome";
+import { AnalyticsPageTracker } from "@/components/analytics/analytics-page-tracker";
 import { DocumentLocaleSync } from "@/components/layout/document-locale-sync";
 import { SkipLink } from "@/components/layout/skip-link";
 import { localeConfigs } from "@/lib/i18n/config";
@@ -38,6 +40,8 @@ const localeRuntimeConfig = Object.fromEntries(
   ])
 );
 
+const googleAnalyticsId = process.env.NEXT_PUBLIC_GA_ID;
+
 export default function RootLayout({
   children,
 }: {
@@ -55,10 +59,12 @@ export default function RootLayout({
             __html: `(()=>{try{const c=${JSON.stringify(localeRuntimeConfig)};const p=location.pathname.split('/')[1];const l=c[p]?p:'en';document.documentElement.lang=c[l].languageTag;document.documentElement.dir=c[l].direction;document.documentElement.dataset.locale=l;}catch(e){}})();`,
           }}
         />
+        <AnalyticsPageTracker />
         <DocumentLocaleSync />
         <SkipLink />
         <AppChrome>{children}</AppChrome>
       </body>
+      {googleAnalyticsId ? <GoogleAnalytics gaId={googleAnalyticsId} /> : null}
     </html>
   );
 }

@@ -34,3 +34,11 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Analytics (GA4)
+
+- GA is initialized globally in `src/app/layout.tsx` via `GoogleAnalytics` from `@next/third-parties/google`.
+- App Router page tracking runs in `src/components/analytics/analytics-page-tracker.tsx`.
+- The tracker configures GA with `send_page_view: false` and sends a single `page_view` on each pathname/search change.
+- GA Measurement ID is configured via `NEXT_PUBLIC_GA_ID` (see `.env.example`).
+- For future events, use `trackEvent()` from `src/lib/analytics/ga.ts` from any client component.
