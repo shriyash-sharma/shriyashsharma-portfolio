@@ -1,5 +1,7 @@
 import Link from "next/link";
+
 import { BrandMark } from "@/components/brand/brand-mark";
+import { EmailLink } from "@/components/shared/email-link";
 import { siteConfig } from "@/lib/constants/site";
 import { MaxWidthWrapper } from "./max-width-wrapper";
 import { cn } from "@/lib/utils/cn";
@@ -64,16 +66,16 @@ export function Footer({ reserveLauncherSpace = false }: FooterProps) {
             >
               LinkedIn
             </Link>
-            <a
-              href={`mailto:${siteConfig.author.email}`}
+            <EmailLink
               aria-label={`Email ${siteConfig.author.name}`}
               className={cn(
                 "inline-flex min-h-9 items-center text-[12px] text-[var(--color-muted)]",
-                "transition-colors duration-[140ms] hover:text-[var(--color-secondary)]"
+                "underline decoration-[color:color-mix(in_srgb,var(--color-muted)_45%,transparent)] decoration-[1.25px] underline-offset-4",
+                "hover:text-[var(--color-secondary)] hover:decoration-current"
               )}
             >
               {siteConfig.author.email}
-            </a>
+            </EmailLink>
           </div>
         </div>
       </MaxWidthWrapper>

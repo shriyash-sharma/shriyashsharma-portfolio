@@ -13,8 +13,10 @@
 
 "use client";
 
+import * as Dialog from "@radix-ui/react-dialog";
 import Link from "next/link";
 import { startTransition, useDeferredValue, useEffect, useMemo, useState } from "react";
+import { AlertTriangle, X } from "lucide-react";
 import type { AdminContentOverviewResponse } from "@/lib/api/contracts/admin";
 import type {
   ApiContentItem,
@@ -57,6 +59,7 @@ export function ContentWorkspace() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [deleteCandidate, setDeleteCandidate] = useState<ApiContentItem | null>(null);
 
   useEffect(() => {
     let isCancelled = false;
@@ -135,26 +138,138 @@ export function ContentWorkspace() {
   async function handleDelete(itemId: string) {
     const previousItems = items;
     setPendingDeleteId(itemId);
+    setDeleteCandidate(null);
     setItems((current) => current.filter((item) => item.id !== itemId));
     setTotal((current) => Math.max(0, current - 1));
 
     startTransition(async () => {
-      const response = await fetch(`/api/dashboard/content/items/${itemId}`, {
-        method: "DELETE",
-      });
+      try {
+        const response = await fetch(`/api/dashboard/content/items/${itemId}`, {
+          method: "DELETE",
+        });
 
-      if (!response.ok) {
+        if (!response.ok) {
+          setItems(previousItems);
+          setTotal(previousItems.length);
+          setError("Delete failed. The item has been restored locally.");
+        }
+      } catch {
         setItems(previousItems);
         setTotal(previousItems.length);
         setError("Delete failed. The item has been restored locally.");
+      } finally {
+        setPendingDeleteId(null);
       }
-
-      setPendingDeleteId(null);
     });
   }
 
+  function handleRequestDelete(item: ApiContentItem) {
+    if (pendingDeleteId) {
+      return;
+    }
+
+    setDeleteCandidate(item);
+  }
+
+  function handleDeleteDialogChange(nextOpen: boolean) {
+    if (pendingDeleteId) {
+      return;
+    }
+
+    if (!nextOpen) {
+      setDeleteCandidate(null);
+    }
+  }
+
+  async function handleConfirmDelete() {
+    if (!deleteCandidate || pendingDeleteId) {
+      return;
+    }
+
+    await handleDelete(deleteCandidate.id);
+  }
+
   return (
-    <div className="grid gap-6">
+    <>
+      <Dialog.Root
+        open={Boolean(deleteCandidate)}
+        onOpenChange={handleDeleteDialogChange}
+      >
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-[2px]" />
+          <Dialog.Content
+            className="fixed left-1/2 top-1/2 z-[71] w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-[28px] border border-red-500/25 bg-[var(--color-surface)] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.45)] outline-none"
+            onPointerDownOutside={(event) => {
+              if (pendingDeleteId) {
+                event.preventDefault();
+              }
+            }}
+            onEscapeKeyDown={(event) => {
+              if (pendingDeleteId) {
+                event.preventDefault();
+              }
+            }}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-full border border-red-500/25 bg-red-500/12 text-red-200">
+                  <AlertTriangle className="h-5 w-5" aria-hidden="true" />
+                </div>
+                <div>
+                  <Dialog.Title className="text-[18px] font-medium tracking-[-0.02em] text-[var(--color-foreground)]">
+                    Confirm delete
+                  </Dialog.Title>
+                  <Dialog.Description className="mt-2 text-[14px] leading-7 text-[var(--color-secondary)]">
+                    Are you sure you want to delete this data? This action cannot be undone.
+                  </Dialog.Description>
+                </div>
+              </div>
+              <Dialog.Close
+                aria-label="Close delete confirmation"
+                disabled={Boolean(pendingDeleteId)}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[var(--color-muted)] transition-colors hover:bg-[var(--color-surface-2)] hover:text-[var(--color-secondary)] disabled:pointer-events-none disabled:opacity-35"
+              >
+                <X className="h-4 w-4" aria-hidden="true" />
+              </Dialog.Close>
+            </div>
+
+            {deleteCandidate ? (
+              <div className="mt-5 rounded-2xl border border-red-500/15 bg-red-500/8 px-4 py-3">
+                <p className="text-[12px] uppercase tracking-[0.12em] text-red-200/80">
+                  Selected entry
+                </p>
+                <p className="mt-2 text-[14px] text-[var(--color-foreground)]">
+                  {deleteCandidate.title}
+                </p>
+                <p className="mt-1 text-[12px] text-[var(--color-muted)]">
+                  /{deleteCandidate.slug}
+                </p>
+              </div>
+            ) : null}
+
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setDeleteCandidate(null)}
+                disabled={Boolean(pendingDeleteId)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={() => void handleConfirmDelete()}
+                disabled={!deleteCandidate || Boolean(pendingDeleteId)}
+                className="border border-red-500/30 bg-red-500 text-white hover:bg-red-400 disabled:border-red-500/20 disabled:bg-red-500/70 !text-white"
+              >
+                {pendingDeleteId ? "Deleting..." : "Confirm Delete"}
+              </Button>
+            </div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+
+      <div className="grid gap-6">
       <section className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--color-muted-2)]">
@@ -296,8 +411,9 @@ export function ContentWorkspace() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      disabled={pendingDeleteId === item.id}
-                      onClick={() => void handleDelete(item.id)}
+                      disabled={Boolean(pendingDeleteId)}
+                      onClick={() => handleRequestDelete(item)}
+                      className="text-red-200 hover:bg-red-500/10 hover:text-red-100"
                     >
                       {pendingDeleteId === item.id ? "Deleting..." : "Delete"}
                     </Button>
@@ -344,6 +460,7 @@ export function ContentWorkspace() {
           ))}
         </aside>
       </section>
-    </div>
+      </div>
+    </>
   );
 }
