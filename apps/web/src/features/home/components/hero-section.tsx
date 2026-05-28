@@ -192,7 +192,7 @@ function HeroPortraitCard({ compact = false }: { compact?: boolean }) {
       >
         <div className={cn("relative aspect-[5/6]", compact && "aspect-[4/5]") }>
           <Image
-            src="/ShriyashProfilePhoto.png"
+            src="/ShriyashProfilePhotoV3.png"
             alt="Portrait of Shriyash Sharma"
             fill
             priority

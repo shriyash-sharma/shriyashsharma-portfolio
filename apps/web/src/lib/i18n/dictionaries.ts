@@ -64,16 +64,17 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     home: {
       status: "Available for selected consulting collaborations",
-      heading: "Senior software engineer",
-      headingAccent: "building scalable web and AI-assisted systems",
+      heading:
+        "Building scalable systems with modern web architecture, AI-assisted workflows, and practical backend infrastructure.",
+      headingAccent: "",
       intro:
-        "I build scalable frontend and full-stack systems with a bias toward maintainability, clear delivery boundaries, and practical architecture. Most of my work sits at the intersection of React, Next.js, TypeScript, backend collaboration, and the careful adoption of AI where it improves the product instead of complicating it.",
+        "I build scalable frontend and full-stack systems focused on modern web architecture, operational platforms, and practical AI integration. My recent work includes Next.js applications, FastAPI backend services, semantic search systems, PostgreSQL infrastructure, and AI-powered workflows for real-world use cases.",
       primaryCta: "View work",
       secondaryCta: "About me",
       meta: [
         "7+ years building production software",
         "React · Next.js · FastAPI · RAG",
-        "Pune, India · Remote-first",
+        "Pune, India",
       ],
       contactHeading: "Open to senior engineering roles and consulting collaborations.",
       contactCopy:
