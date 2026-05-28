@@ -49,7 +49,7 @@ export const pageSeo = {
   about: {
     title: "About",
     description:
-      "About Shriyash Sharma — Senior Software Engineer at Globant, speaker, and engineering mentor.",
+      "About Shriyash Sharma — Senior Software Engineer at Globant building React, Next.js, TypeScript, FastAPI, and practical AI-assisted systems.",
     path: "/about",
   },
   speaking: {
