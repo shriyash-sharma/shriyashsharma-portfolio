@@ -116,7 +116,8 @@ class ContentRepository:
             content_type=content_type,
             status=status,
             locale=locale,
-        ).where(ContentItem.slug == slug)
+            query=None,
+        ).where(ContentItem.slug == _normalize_slug(slug))
         result = await self.session.execute(statement)
         return result.scalar_one_or_none()
 

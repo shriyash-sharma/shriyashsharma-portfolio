@@ -37,7 +37,7 @@ export function PublicProjectList({
           {projects.map((project) => (
             <Link
               key={project.id}
-              href={`/projects/${project.slug}`}
+              href={`/projects/${encodeURIComponent(project.slug)}`}
               className="group rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 transition-colors hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-2)]"
             >
               <div className="flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">

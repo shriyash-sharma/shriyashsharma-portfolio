@@ -1,4 +1,5 @@
 import { httpClient } from "@/lib/api/http-client";
+import type { RequestOptions } from "@/lib/api/http-client";
 import type {
   ApiContentItem,
   ApiContentListResponse,
@@ -18,14 +19,17 @@ export async function listContent({
   locale = "en",
   limit = 20,
   offset = 0,
-}: ListContentOptions) {
+}: ListContentOptions, requestOptions?: RequestOptions) {
   const params = new URLSearchParams({
     locale,
     limit: String(limit),
     offset: String(offset),
   });
 
-  return httpClient.get<ApiContentListResponse>(`/content/${type}?${params}`);
+  return httpClient.get<ApiContentListResponse>(
+    `/content/${type}?${params}`,
+    requestOptions
+  );
 }
 
 export async function getContentItem({
@@ -36,7 +40,10 @@ export async function getContentItem({
   type: ContentType;
   slug: string;
   locale?: Locale;
-}) {
+}, requestOptions?: RequestOptions) {
   const params = new URLSearchParams({ locale });
-  return httpClient.get<ApiContentItem>(`/content/${type}/${slug}?${params}`);
+  return httpClient.get<ApiContentItem>(
+    `/content/${type}/${slug}?${params}`,
+    requestOptions
+  );
 }
