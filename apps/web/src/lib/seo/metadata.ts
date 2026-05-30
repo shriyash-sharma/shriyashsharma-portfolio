@@ -15,6 +15,7 @@ export type MetadataOverrides = {
   description?: string;
   image?: string;
   path?: string;
+  canonicalUrl?: string;
   noIndex?: boolean;
   locale?: Locale;
   openGraphType?: "website" | "article";
@@ -82,7 +83,7 @@ export function buildMetadata(overrides: MetadataOverrides = {}): Metadata {
   const description = overrides.description ?? dictionary.meta.description;
   const image = overrides.image ?? siteConfig.ogImage;
   const path = overrides.path ?? "/";
-  const canonical = absoluteUrl(path);
+  const canonical = overrides.canonicalUrl ?? absoluteUrl(path);
 
   const languageAlternates = Object.fromEntries(
     locales.map((item) => [

@@ -201,3 +201,42 @@ img, video, svg {
   background: var(--color-surface-4);
   color: var(--color-foreground);
 }
+
+/* ─── Markdown + code highlighting ──────────────────────────────── */
+.markdown-content .hljs {
+  display: block;
+  overflow-x: auto;
+  background: transparent;
+  color: #d8d8d8;
+}
+
+.markdown-content .hljs-comment,
+.markdown-content .hljs-quote {
+  color: #7b7b7b;
+}
+
+.markdown-content .hljs-keyword,
+.markdown-content .hljs-selector-tag,
+.markdown-content .hljs-literal {
+  color: #d7ba7d;
+}
+
+.markdown-content .hljs-string,
+.markdown-content .hljs-attr,
+.markdown-content .hljs-title,
+.markdown-content .hljs-section {
+  color: #9fd4a3;
+}
+
+.markdown-content .hljs-number,
+.markdown-content .hljs-symbol,
+.markdown-content .hljs-bullet {
+  color: #d8a0a0;
+}
+
+.markdown-content .hljs-variable,
+.markdown-content .hljs-template-variable,
+.markdown-content .hljs-type,
+.markdown-content .hljs-selector-class {
+  color: #9ab7ff;
+}

@@ -24,7 +24,7 @@ export class ApiError extends Error {
   }
 }
 
-type RequestOptions = RequestInit & {
+export type RequestOptions = RequestInit & {
   timeoutMs?: number;
   token?: string;
 };

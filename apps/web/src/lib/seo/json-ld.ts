@@ -137,6 +137,55 @@ export function creativeWorkJsonLd({
   };
 }
 
+export function projectJsonLd({
+  title,
+  description,
+  path,
+  datePublished,
+  dateModified,
+  github,
+  live,
+  stack,
+  applicationCategory,
+}: {
+  title: string;
+  description: string;
+  path: string;
+  datePublished: string;
+  dateModified?: string;
+  github?: string;
+  live?: string;
+  stack?: string[];
+  applicationCategory?: string;
+}): JsonLd {
+  if (live || applicationCategory) {
+    return {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: title,
+      description,
+      url: absoluteUrl(path),
+      datePublished,
+      dateModified: dateModified ?? datePublished,
+      applicationCategory: applicationCategory ?? "WebApplication",
+      operatingSystem: "Any",
+      author: { "@id": absoluteUrl("/#person") },
+      creator: { "@id": absoluteUrl("/#person") },
+      softwareRequirements: stack?.join(", "),
+      sameAs: [github, live].filter(Boolean),
+    };
+  }
+
+  return creativeWorkJsonLd({
+    title,
+    description,
+    path,
+    datePublished,
+    github,
+    live,
+  });
+}
+
 export function homePageJsonLdGraph(): JsonLd[] {
   return [
     { "@context": "https://schema.org", ...personEntity() },
