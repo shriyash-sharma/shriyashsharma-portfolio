@@ -5,7 +5,7 @@ import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
 import { pageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = pageMetadata("assistant");
+export const metadata: Metadata = pageMetadata("assistant", { noIndex: true });
 
 export default function AssistantPage() {
   return (
