@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 type MarkdownContentProps = {
   value: string;
   className?: string;
+  emptyMessage?: string;
 };
 
 function isExternalHref(href: string): boolean {
@@ -21,13 +22,17 @@ function languageLabel(className?: string): string | null {
   return match?.[1] ?? null;
 }
 
-export function MarkdownContent({ value, className }: MarkdownContentProps) {
+export function MarkdownContent({
+  value,
+  className,
+  emptyMessage = "No markdown content has been published yet.",
+}: MarkdownContentProps) {
   const trimmed = value.trim();
 
   if (!trimmed) {
     return (
       <div className="rounded-[24px] border border-dashed border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-8 text-[14px] text-[var(--color-muted)]">
-        No implementation notes have been published for this project yet.
+        {emptyMessage}
       </div>
     );
   }
@@ -68,12 +73,38 @@ export function MarkdownContent({ value, className }: MarkdownContentProps) {
               {children}
             </ol>
           ),
-          li: ({ children }) => <li className="list-disc">{children}</li>,
+          li: ({ className, children }) => {
+            const isTaskItem = className?.includes("task-list-item");
+
+            return (
+              <li
+                className={isTaskItem ? "list-none pl-0" : "list-disc"}
+              >
+                {children}
+              </li>
+            );
+          },
+          input: ({ type, checked, disabled }) => {
+            if (type !== "checkbox") {
+              return null;
+            }
+
+            return (
+              <input
+                type="checkbox"
+                checked={checked}
+                disabled={disabled}
+                readOnly
+                className="mr-3 h-4 w-4 rounded border border-[var(--color-border)] bg-[var(--color-surface-2)] align-middle accent-[var(--color-foreground)]"
+              />
+            );
+          },
           blockquote: ({ children }) => (
             <blockquote className="rounded-r-[20px] border-l-2 border-[var(--color-border-strong)] bg-[var(--color-surface-2)] px-5 py-4 text-[15px] italic leading-8 text-[var(--color-secondary)]">
               {children}
             </blockquote>
           ),
+          hr: () => <hr className="border-t border-[var(--color-border)]" />,
           table: ({ children }) => (
             <div className="overflow-x-auto rounded-[20px] border border-[var(--color-border)] bg-[var(--color-surface)]">
               <table className="min-w-full border-collapse text-left text-[14px] text-[var(--color-secondary)]">
@@ -95,6 +126,13 @@ export function MarkdownContent({ value, className }: MarkdownContentProps) {
             <td className="border-t border-[var(--color-border)] px-4 py-3 align-top">
               {children}
             </td>
+          ),
+          img: ({ src, alt }) => (
+            <img
+              src={src ?? ""}
+              alt={alt ?? ""}
+              className="rounded-[20px] border border-[var(--color-border)] bg-[var(--color-surface)]"
+            />
           ),
           a: ({ href, children }) => {
             const linkHref = href ?? "#";

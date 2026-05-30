@@ -68,6 +68,7 @@ export type Project = {
   heroImage?: string;
   ogImage?: string;
   applicationCategory?: string;
+  intro?: string;
   seoTitle?: string | null;
   seoDescription?: string | null;
   canonicalUrl?: string | null;
@@ -155,6 +156,7 @@ function mapProject(item: ApiContentItem): Project {
       "application_category",
       "applicationCategory"
     ),
+    intro: metadataString(item.metadata, "intro"),
     seoTitle: item.seo_title,
     seoDescription: item.seo_description,
     canonicalUrl: item.canonical_url,

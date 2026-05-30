@@ -68,7 +68,6 @@ export default async function ArchitectureNotePage({ params }: RouteContext) {
           />
           <ContextualAssistantCta
             eyebrow="Explain architecture decisions"
-            title={note.title}
             prompts={[
               `Explain the architecture note "${note.title}".`,
               `What decisions and trade-offs does "${note.title}" cover?`,

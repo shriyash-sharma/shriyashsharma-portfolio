@@ -316,106 +316,92 @@ export function FeaturedProjectsSection({
       ) : (
       <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {projects.map((project) => {
-          const Visual = VISUALS[project.visual];
           return (
             <StaggerItem key={project.id}>
-              <Link
-                href={project.href}
+              <div
                 className={cn(
                   "group flex h-full flex-col overflow-hidden rounded-xl",
                   "border border-[var(--color-border)] bg-[var(--color-surface)]",
-                  // Lift + color — physical, snappy
                   "transition-[transform,border-color,background-color] duration-[150ms] ease-out",
                   "hover:-translate-y-[3px]",
                   "hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-2)]"
                 )}
               >
-                {/* Architecture visual */}
-                <div
-                  className={cn(
-                    "relative h-[112px] overflow-hidden border-b border-[var(--color-border)]",
-                    "bg-[var(--color-surface-2)] p-4",
-                    "transition-colors duration-[200ms] group-hover:bg-[var(--color-surface-3)]"
-                  )}
-                >
-                  <span className="sr-only">{project.visualLabel}</span>
-                  <Visual />
-                  {/* Signature interaction — scan shimmer sweeps across the diagram on hover */}
-                  <div
-                    aria-hidden="true"
-                    className={cn(
-                      "pointer-events-none absolute inset-y-0 left-0 w-[55%]",
-                      "-translate-x-full transition-[transform] duration-[650ms] ease-in-out",
-                      "group-hover:translate-x-[200%]",
-                      "bg-gradient-to-r from-transparent via-white/[0.05] to-transparent"
-                    )}
-                  />
-                </div>
-
-                {/* Card body */}
+                {/* Card body — minimal: title, short description, tags, optional live link */}
                 <div className="flex flex-1 flex-col gap-4 p-5">
                   {/* Title + status */}
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-[14px] font-medium leading-snug tracking-[-0.01em] text-[var(--color-foreground)]">
+                    <Link
+                      href={project.href}
+                      className="text-[15px] font-medium leading-snug tracking-[-0.01em] text-[var(--color-foreground)] transition-colors hover:text-white"
+                    >
                       {project.title}
-                    </h3>
-                    <span className={cn(
-                      "shrink-0 rounded-full border border-[var(--color-border)] px-2 py-0.5",
-                      "text-[10.5px] font-medium uppercase tracking-[0.07em] text-[var(--color-muted)]"
-                    )}>
+                    </Link>
+                    <span
+                      className={cn(
+                        "shrink-0 rounded-full border border-[var(--color-border)] px-2 py-0.5",
+                        "text-[10.5px] font-medium uppercase tracking-[0.07em] text-[var(--color-muted)]"
+                      )}
+                    >
                       {project.label}
                     </span>
                   </div>
 
-                  {/* Short description */}
-                  <p className="text-[14px] leading-[1.68] text-[var(--color-muted)]">
+                  {/* Short description (~5-7 lines, ellipsised) */}
+                  <p className="line-clamp-6 text-[14px] leading-[1.68] text-[var(--color-muted)]">
                     {project.description}
                   </p>
 
-                  {/* Key decision — left-border callout */}
-                  <div className="border-l-2 border-[var(--color-border-strong)] pl-3">
-                    <p className="text-[13px] leading-[1.62] text-[var(--color-secondary)]">
-                      {project.keyDecision}
-                    </p>
-                  </div>
-
-                  {/* Operational detail */}
-                  <div className="rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-surface)] px-3 py-2.5">
-                    <span className="mb-1 block font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--color-muted-2)]">
-                      runtime note
-                    </span>
-                    <p className="font-mono text-[12px] leading-relaxed text-[var(--color-muted)]">
-                      {project.systemDetail}
-                    </p>
-                  </div>
-
-                  {/* Architecture annotation */}
-                  <div className="rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-surface-2)] px-3 py-2.5">
-                    <p className="font-mono text-[12px] leading-relaxed text-[var(--color-muted-2)] transition-colors duration-[140ms] group-hover:text-[var(--color-muted)]">
-                      {project.architecture}
-                    </p>
-                  </div>
-
-                  {/* Footer: stack + arrow */}
-                  <div className="mt-auto flex items-center justify-between pt-1">
-                    <div className="flex flex-wrap gap-x-3 gap-y-1">
-                      {project.stack.map((tech) => (
+                  {/* Tags */}
+                  {project.tags.length ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {project.tags.slice(0, 6).map((tag) => (
                         <span
-                          key={tech}
-                          className="text-[12px] tracking-wide text-[var(--color-muted-2)]"
+                          key={tag}
+                          className={cn(
+                            "rounded-full border border-[var(--color-border)] px-2.5 py-0.5",
+                            "text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--color-muted-2)]"
+                          )}
                         >
-                          {tech}
+                          {tag}
                         </span>
                       ))}
                     </div>
-                    <ArrowRight
-                      size={13}
-                      strokeWidth={1.75}
-                      className="shrink-0 text-[var(--color-muted-2)] transition-[transform,color] duration-[120ms] ease-out group-hover:translate-x-1 group-hover:text-[var(--color-secondary)]"
-                    />
+                  ) : null}
+
+                  {/* Footer: live link (if any) + read-more arrow */}
+                  <div className="mt-auto flex items-center justify-between pt-1">
+                    {project.liveUrl ? (
+                      <a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={cn(
+                          "inline-flex items-center gap-1.5 text-[12px] text-[var(--color-secondary)]",
+                          "transition-colors hover:text-white"
+                        )}
+                      >
+                        Live product
+                        <ArrowRight size={12} strokeWidth={1.75} />
+                      </a>
+                    ) : (
+                      <span />
+                    )}
+                    <Link
+                      href={project.href}
+                      aria-label={`Read about ${project.title}`}
+                      className="inline-flex items-center gap-1 text-[12px] text-[var(--color-muted-2)] transition-colors hover:text-[var(--color-secondary)]"
+                    >
+                      Read more
+                      <ArrowRight
+                        size={12}
+                        strokeWidth={1.75}
+                        className="transition-transform duration-[120ms] ease-out group-hover:translate-x-0.5"
+                      />
+                    </Link>
                   </div>
                 </div>
-              </Link>
+              </div>
             </StaggerItem>
           );
         })}

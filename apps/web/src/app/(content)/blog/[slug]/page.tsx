@@ -68,7 +68,6 @@ export default async function BlogPostPage({ params }: RouteContext) {
           />
           <ContextualAssistantCta
             eyebrow="Explore with AI"
-            title={post.title}
             prompts={[
               `Summarize the blog post "${post.title}".`,
               `What are the key takeaways from "${post.title}"?`,

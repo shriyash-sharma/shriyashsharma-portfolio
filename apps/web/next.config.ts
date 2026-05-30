@@ -19,7 +19,8 @@ function lanDevOrigins(): string[] | undefined {
 const nextConfig: NextConfig = {
   ...(lanDevOrigins() ? { allowedDevOrigins: lanDevOrigins() } : {}),
   turbopack: {
-    root: path.resolve(__dirname),
+    // pnpm hoists `next` to the monorepo root; Turbopack must resolve from there.
+    root: path.resolve(__dirname, "../.."),
   },
 };
 

@@ -4,15 +4,13 @@
  * Contextual assistant CTA.
  *
  * Compact block rendered at the bottom of a content detail page (project,
- * case study, architecture note, blog post). Surfaces 2–3 page-specific
- * questions so visitors can ask the assistant about *this* piece of content
- * without ever leaving the page.
+ * case study). Surfaces author-defined questions so visitors can ask the
+ * assistant about *this* piece of content without leaving the page.
  *
  * Server pages can render this safely — it is a client component but takes
  * only serializable props.
  */
 
-import * as React from "react";
 import { Sparkles } from "lucide-react";
 
 import { AssistantPromptChip } from "@/features/assistant/components/assistant-prompt-chip";
@@ -21,10 +19,8 @@ import { cn } from "@/lib/utils/cn";
 type ContextualAssistantCtaProps = {
   /** Eyebrow label, e.g. "Ask AI about this project". */
   eyebrow?: string;
-  /** Title of the surrounding content. Used to build natural prompts. */
-  title: string;
-  /** Override the default prompt set. */
-  prompts?: readonly string[];
+  /** Author-defined prompts entered in the CMS. */
+  prompts: readonly string[];
   /** Headline text. */
   heading?: string;
   /** Supporting copy. */
@@ -34,22 +30,18 @@ type ContextualAssistantCtaProps = {
 
 export function ContextualAssistantCta({
   eyebrow = "Ask AI",
-  title,
   prompts,
   heading,
   description,
   className,
 }: ContextualAssistantCtaProps) {
-  const defaultPrompts = React.useMemo(
-    () => [
-      `Summarize "${title}" in a paragraph.`,
-      `What architecture decisions stand out in "${title}"?`,
-      `What technologies are used in "${title}"?`,
-    ],
-    [title]
-  );
+  const resolvedPrompts = prompts
+    .map((prompt) => prompt.trim())
+    .filter(Boolean);
 
-  const resolvedPrompts = prompts && prompts.length > 0 ? prompts : defaultPrompts;
+  if (resolvedPrompts.length === 0) {
+    return null;
+  }
 
   return (
     <aside

@@ -5,6 +5,7 @@ import { PublicProjectDetail } from "@/components/content/public-project-detail"
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
 import { ContextualAssistantCta } from "@/features/assistant";
+import { metadataAssistantQuestions } from "@/lib/content/metadata-helpers";
 import { buildContentMetadata } from "@/lib/seo/content-metadata";
 import { breadcrumbJsonLd, projectJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -83,6 +84,7 @@ export default async function ProjectPage({ params }: RouteContext) {
   }
 
   const { project } = result;
+  const assistantQuestions = metadataAssistantQuestions(project.metadata);
 
   const path = `/projects/${project.slug}`;
   return (
@@ -111,12 +113,7 @@ export default async function ProjectPage({ params }: RouteContext) {
           <PublicProjectDetail project={project} />
           <ContextualAssistantCta
             eyebrow="Ask AI about this project"
-            title={project.title}
-            prompts={[
-              `Summarize "${project.title}" in a paragraph.`,
-              `What technical decisions stand out in "${project.title}"?`,
-              `Which technologies were used to build "${project.title}"?`,
-            ]}
+            prompts={assistantQuestions}
           />
         </Section>
       </PageShell>
