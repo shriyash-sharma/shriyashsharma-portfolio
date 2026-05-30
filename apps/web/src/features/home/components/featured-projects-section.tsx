@@ -269,10 +269,6 @@ export function FeaturedProjectsSection({
       <FadeIn>
         <div className="mb-8 flex items-end justify-between gap-4 sm:mb-12">
           <div className="flex flex-col gap-1.5 sm:gap-2">
-            <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-[var(--color-muted)]">
-              <span className="mr-2 font-mono text-[var(--color-muted-2)]">01</span>
-              Selected work
-            </span>
             <h2
               id="projects-heading"
               className="text-xl font-semibold tracking-[-0.02em] text-[var(--color-foreground)] sm:text-2xl lg:text-3xl"
