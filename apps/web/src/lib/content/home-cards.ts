@@ -35,6 +35,8 @@ export type HomeProjectCard = {
   architecture: string;
   systemDetail: string;
   stack: string[];
+  tags: string[];
+  liveUrl: string | null;
   href: string;
   label: string;
   visual: ProjectVisualKey;
@@ -104,6 +106,8 @@ export function projectToHomeCard(project: Project): HomeProjectCard {
     architecture,
     systemDetail,
     stack,
+    tags: project.tags,
+    liveUrl: project.links.live ?? null,
     href: `/projects/${project.slug}`,
     label,
     visual,
@@ -115,8 +119,13 @@ export function caseStudyToHomeCard(study: CaseStudy): HomeCaseStudyCard {
   const { metadata } = study;
 
   const challenge =
-    metadataString(metadata, "challenge", "home_challenge", "homeChallenge") ??
-    study.description;
+    metadataString(
+      metadata,
+      "problem",
+      "challenge",
+      "home_challenge",
+      "homeChallenge"
+    ) ?? study.description;
 
   const decision =
     metadataString(metadata, "decision", "home_decision", "homeDecision") ??
@@ -149,9 +158,12 @@ export function caseStudyToHomeCard(study: CaseStudy): HomeCaseStudyCard {
 export function mapFeaturedProjectsToHomeCards(
   projects: Project[]
 ): HomeProjectCard[] {
-  const featured = projects.filter((p) => p.featured);
-  const source = featured.length > 0 ? featured : projects;
-  return source.map(projectToHomeCard);
+  // Show all published projects, with featured ones first so they get top-left placement.
+  const sorted = [...projects].sort((a, b) => {
+    if (a.featured === b.featured) return 0;
+    return a.featured ? -1 : 1;
+  });
+  return sorted.map(projectToHomeCard);
 }
 
 export function mapCaseStudiesToHomeCards(studies: CaseStudy[]): HomeCaseStudyCard[] {

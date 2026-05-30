@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, Boxes, CircuitBoard, GitBranch, Globe, Layers3 } from "lucide-react";
 import { MarkdownContent } from "@/components/content/markdown-content";
+import { getProjectAdditionalMetadata } from "@/lib/content/project-metadata";
 import type { Project } from "@/lib/services/project-service";
 
 function formatDate(value: string) {
@@ -88,6 +89,7 @@ type PublicProjectDetailProps = {
 
 export function PublicProjectDetail({ project }: PublicProjectDetailProps) {
   const projectBody = project.body.trim() ? project.body : project.description;
+  const additionalMetadata = getProjectAdditionalMetadata(project.metadata);
   const projectLinks = [
     project.links.github
       ? {
@@ -137,9 +139,11 @@ export function PublicProjectDetail({ project }: PublicProjectDetailProps) {
             <h1 className="mt-5 max-w-4xl text-[36px] font-semibold tracking-[-0.05em] text-[var(--color-foreground)] sm:text-[52px]">
               {project.title}
             </h1>
-            <p className="mt-5 max-w-3xl text-[17px] leading-8 text-[var(--color-secondary)]">
-              {project.description}
-            </p>
+            {project.intro ? (
+              <p className="mt-5 max-w-3xl text-[17px] leading-8 text-[var(--color-secondary)]">
+                {project.intro}
+              </p>
+            ) : null}
 
             <div className="mt-6 flex flex-wrap gap-2">
               {project.tags.map((tag) => (
@@ -272,6 +276,20 @@ export function PublicProjectDetail({ project }: PublicProjectDetailProps) {
             </section>
           ) : null}
 
+          {additionalMetadata.map((entry) => (
+            <section
+              key={`${entry.heading}-${entry.description}`}
+              className="rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 sm:p-8"
+            >
+              <h2 className="text-[26px] font-semibold tracking-[-0.04em] text-[var(--color-foreground)]">
+                {entry.heading}
+              </h2>
+              <p className="mt-5 whitespace-pre-wrap text-[15px] leading-8 text-[var(--color-secondary)]">
+                {entry.description}
+              </p>
+            </section>
+          ))}
+
           <section className="rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 sm:p-8">
             <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
               Full writeup
@@ -286,22 +304,22 @@ export function PublicProjectDetail({ project }: PublicProjectDetailProps) {
         </div>
 
         <aside className="grid gap-6 xl:sticky xl:top-24">
-          <section className="rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-            <div className="flex items-center gap-3">
-              <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-secondary)]">
-                <Boxes className="h-4 w-4" aria-hidden="true" />
+          {project.stack.length ? (
+            <section className="rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+              <div className="flex items-center gap-3">
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-surface-2)] text-[var(--color-secondary)]">
+                  <Boxes className="h-4 w-4" aria-hidden="true" />
+                </div>
+                <div>
+                  <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
+                    Tech stack
+                  </p>
+                  <h3 className="mt-1 text-[18px] font-medium text-[var(--color-foreground)]">
+                    Tooling and runtime choices
+                  </h3>
+                </div>
               </div>
-              <div>
-                <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
-                  Tech stack
-                </p>
-                <h3 className="mt-1 text-[18px] font-medium text-[var(--color-foreground)]">
-                  Tooling and runtime choices
-                </h3>
-              </div>
-            </div>
 
-            {project.stack.length ? (
               <ul className="mt-5 grid gap-3">
                 {project.stack.map((technology) => (
                   <li
@@ -312,12 +330,8 @@ export function PublicProjectDetail({ project }: PublicProjectDetailProps) {
                   </li>
                 ))}
               </ul>
-            ) : (
-              <p className="mt-5 rounded-[18px] border border-dashed border-[var(--color-border)] bg-[var(--color-background)] px-4 py-4 text-[14px] text-[var(--color-muted)]">
-                Stack metadata has not been filled for this project yet.
-              </p>
-            )}
-          </section>
+            </section>
+          ) : null}
 
           <section className="rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
             <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">

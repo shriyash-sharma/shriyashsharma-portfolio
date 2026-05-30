@@ -5,6 +5,7 @@ import { PublicContentDetail } from "@/components/content/public-content-detail"
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
 import { ContextualAssistantCta } from "@/features/assistant";
+import { metadataAssistantQuestions } from "@/lib/content/metadata-helpers";
 import { buildContentMetadata } from "@/lib/seo/content-metadata";
 import { breadcrumbJsonLd, techArticleJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -41,6 +42,7 @@ export default async function CaseStudyPage({ params }: RouteContext) {
   }
 
   const path = `/case-studies/${caseStudy.slug}`;
+  const assistantQuestions = metadataAssistantQuestions(caseStudy.metadata);
 
   return (
     <>
@@ -68,12 +70,7 @@ export default async function CaseStudyPage({ params }: RouteContext) {
           />
           <ContextualAssistantCta
             eyebrow="Ask AI about this case study"
-            title={caseStudy.title}
-            prompts={[
-              `Summarize the case study "${caseStudy.title}".`,
-              `What problem and solution does "${caseStudy.title}" describe?`,
-              `What were the trade-offs in "${caseStudy.title}"?`,
-            ]}
+            prompts={assistantQuestions}
           />
         </Section>
       </PageShell>

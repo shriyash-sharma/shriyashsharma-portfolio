@@ -6,6 +6,12 @@ import { startTransition, useEffect, useMemo, useState } from "react";
 import type { ApiContentItem, ContentStatus, ContentType } from "@/lib/api/contracts/content";
 import { Button } from "@/components/ui/button";
 import { MarkdownPreview } from "@/components/dashboard/markdown-preview";
+import { getMetadataFieldSpecs } from "@/lib/content/project-metadata";
+import {
+  ASSISTANT_QUESTIONS_METADATA_KEY,
+  metadataAssistantQuestions,
+  metadataString,
+} from "@/lib/content/metadata-helpers";
 import { contentCollections } from "@/lib/content/registry";
 import { localeConfigs, type Locale } from "@/lib/i18n/config";
 
@@ -33,6 +39,7 @@ type EditorFormState = {
   title: string;
   slug: string;
   description: string;
+  intro: string;
   body: string;
   seoTitle: string;
   seoDescription: string;
@@ -40,8 +47,14 @@ type EditorFormState = {
   tags: string;
   categories: string;
   aiIndexable: boolean;
+  assistantQuestions: string;
   metadata: MetadataEntry[];
   publishedAt: string;
+};
+
+type StoredDraft = {
+  form: EditorFormState;
+  savedAt: string | null;
 };
 
 const emptyFormState: EditorFormState = {
@@ -51,6 +64,7 @@ const emptyFormState: EditorFormState = {
   title: "",
   slug: "",
   description: "",
+  intro: "",
   body: "",
   seoTitle: "",
   seoDescription: "",
@@ -58,9 +72,55 @@ const emptyFormState: EditorFormState = {
   tags: "",
   categories: "",
   aiIndexable: true,
+  assistantQuestions: "",
   metadata: [],
   publishedAt: "",
 };
+
+const assistantQuestionContentTypes: ContentType[] = ["project", "case-study"];
+
+function isAssistantQuestionsMetadataKey(key: string): boolean {
+  const normalized = key.trim().toLowerCase();
+  return normalized === "assistant_questions" || normalized === "assistantquestions";
+}
+
+function isIntroMetadataKey(key: string): boolean {
+  return key.trim().toLowerCase() === "intro";
+}
+
+function supportsProjectIntro(type: ContentType): boolean {
+  return type === "project" || type === "case-study";
+}
+
+function isReservedMetadataKey(key: string): boolean {
+  return isAssistantQuestionsMetadataKey(key) || isIntroMetadataKey(key);
+}
+
+function supportsAssistantQuestions(type: ContentType): boolean {
+  return assistantQuestionContentTypes.includes(type);
+}
+
+const markdownEnabledContentTypes: ContentType[] = [
+  "project",
+  "case-study",
+  "architecture-note",
+  "article",
+];
+
+const markdownSyntaxExamples = [
+  "# Heading",
+  "## Subheading",
+  "**Bold**",
+  "*Italic*",
+  "`Inline Code`",
+  "```ts\nconst answer = 42;\n```",
+  "- Bullet Lists",
+  "1. Numbered Lists",
+  "| Column | Value |",
+  "> Blockquotes",
+  "[Links](https://example.com)",
+  "![Images](future support)",
+];
 
 function createMetadataEntry(key = "", value = ""): MetadataEntry {
   return {
@@ -87,6 +147,8 @@ function splitCsv(value: string) {
 }
 
 function mapItemToForm(item: ApiContentItem): EditorFormState {
+  const assistantQuestions = metadataAssistantQuestions(item.metadata ?? {});
+
   return {
     type: item.type,
     status: item.status,
@@ -101,14 +163,80 @@ function mapItemToForm(item: ApiContentItem): EditorFormState {
     tags: item.tags.join(", "),
     categories: item.categories.join(", "),
     aiIndexable: item.ai_indexable,
-    metadata: Object.entries(item.metadata ?? {}).map(([key, value]) =>
-      createMetadataEntry(key, String(value ?? ""))
-    ),
+    assistantQuestions: assistantQuestions.join("\n"),
+    intro: metadataString(item.metadata ?? {}, "intro") ?? "",
+    metadata: Object.entries(item.metadata ?? {})
+      .filter(([key]) => !isReservedMetadataKey(key))
+      .map(([key, value]) => createMetadataEntry(key, String(value ?? ""))),
     publishedAt: item.published_at ?? "",
   };
 }
 
-function readDraftFromStorage(key: string) {
+function applyMetadataDefaults(
+  type: ContentType,
+  metadata: MetadataEntry[]
+): MetadataEntry[] {
+  const supportedFields = getMetadataFieldSpecs(type).filter(
+    (field) => !isReservedMetadataKey(field.key)
+  );
+  if (!supportedFields.length) {
+    return metadata;
+  }
+
+  const remainingEntries = [...metadata];
+  const defaultEntries = supportedFields.map((field) => {
+    const candidateKeys = [field.key, ...(field.aliases ?? [])].map((key) =>
+      key.trim().toLowerCase()
+    );
+    const matchIndex = remainingEntries.findIndex((entry) =>
+      candidateKeys.includes(entry.key.trim().toLowerCase())
+    );
+
+    if (matchIndex >= 0) {
+      return remainingEntries.splice(matchIndex, 1)[0];
+    }
+
+    return createMetadataEntry(field.key, "");
+  });
+
+  return [...defaultEntries, ...remainingEntries];
+}
+
+function withMetadataDefaults(form: EditorFormState): EditorFormState {
+  return {
+    ...form,
+    metadata: applyMetadataDefaults(form.type, form.metadata),
+  };
+}
+
+function isEditorFormState(value: unknown): value is EditorFormState {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Partial<EditorFormState>;
+  return (
+    typeof candidate.type === "string" &&
+    typeof candidate.status === "string" &&
+    typeof candidate.locale === "string" &&
+    typeof candidate.title === "string" &&
+    typeof candidate.slug === "string" &&
+    typeof candidate.description === "string" &&
+    typeof candidate.intro === "string" &&
+    typeof candidate.body === "string" &&
+    typeof candidate.seoTitle === "string" &&
+    typeof candidate.seoDescription === "string" &&
+    typeof candidate.canonicalUrl === "string" &&
+    typeof candidate.tags === "string" &&
+    typeof candidate.categories === "string" &&
+    typeof candidate.aiIndexable === "boolean" &&
+    typeof candidate.assistantQuestions === "string" &&
+    Array.isArray(candidate.metadata) &&
+    typeof candidate.publishedAt === "string"
+  );
+}
+
+function readDraftFromStorage(key: string): StoredDraft | null {
   if (typeof window === "undefined") {
     return null;
   }
@@ -119,11 +247,50 @@ function readDraftFromStorage(key: string) {
   }
 
   try {
-    return JSON.parse(savedDraft) as EditorFormState;
+    const parsed = JSON.parse(savedDraft) as unknown;
+
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      "form" in parsed &&
+      isEditorFormState((parsed as { form?: unknown }).form)
+    ) {
+      const storedDraft = parsed as { form: EditorFormState; savedAt?: unknown };
+      const savedAt =
+        typeof storedDraft.savedAt === "string"
+          ? storedDraft.savedAt
+          : null;
+
+      return {
+        form: storedDraft.form,
+        savedAt,
+      };
+    }
+
+    if (isEditorFormState(parsed)) {
+      return { form: parsed, savedAt: null };
+    }
+
+    localStorage.removeItem(key);
+    return null;
   } catch {
     localStorage.removeItem(key);
     return null;
   }
+}
+
+function writeDraftToStorage(key: string, form: EditorFormState) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  localStorage.setItem(
+    key,
+    JSON.stringify({
+      form,
+      savedAt: new Date().toISOString(),
+    })
+  );
 }
 
 function getApiErrorMessage(payload: ApiErrorPayload | null) {
@@ -154,20 +321,25 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
   const initialContentType =
     contentCollections.find((item) => item.type === initialType)?.type ??
     emptyFormState.type;
+  const initialDraft =
+    mode === "create" ? readDraftFromStorage(`dashboard:draft:new:${initialContentType}`) : null;
   const initialStorageKey = itemId
     ? `dashboard:draft:${itemId}`
     : `dashboard:draft:new:${initialContentType}`;
-  const [form, setForm] = useState<EditorFormState>(() => ({
-    ...(readDraftFromStorage(initialStorageKey) ?? emptyFormState),
-    type: (readDraftFromStorage(initialStorageKey)?.type ?? initialContentType) as ContentType,
-  }));
+  const [form, setForm] = useState<EditorFormState>(() =>
+    withMetadataDefaults({
+      ...(initialDraft?.form ?? emptyFormState),
+      type: (initialDraft?.form.type ?? initialContentType) as ContentType,
+    })
+  );
   const [isLoading, setIsLoading] = useState(mode === "edit");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<"edit" | "preview">("edit");
   const [slugTouched, setSlugTouched] = useState(mode === "edit");
-  const [localDraftAt, setLocalDraftAt] = useState<string | null>(null);
+  const [localDraftAt, setLocalDraftAt] = useState<string | null>(initialDraft?.savedAt ?? null);
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
+  const [recoverableDraft, setRecoverableDraft] = useState<StoredDraft | null>(null);
 
   const storageKey = useMemo(() => {
     return itemId ? `dashboard:draft:${itemId}` : `dashboard:draft:new:${form.type}`;
@@ -182,13 +354,23 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
 
     async function loadItem() {
       setIsLoading(true);
+      setRecoverableDraft(null);
       const response = await fetch(`/api/dashboard/content/items/${itemId}`, {
         cache: "no-store",
       });
 
       if (!response.ok) {
         if (!cancelled) {
-          setError("Unable to load content item.");
+          const savedDraft = readDraftFromStorage(`dashboard:draft:${itemId}`);
+
+          if (savedDraft) {
+            setForm(withMetadataDefaults(savedDraft.form));
+            setLocalDraftAt(savedDraft.savedAt ?? new Date().toISOString());
+            setError("Unable to load the saved CMS entry. Loaded your local draft instead.");
+          } else {
+            setError("Unable to load content item.");
+          }
+
           setIsLoading(false);
         }
         return;
@@ -196,19 +378,14 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
 
       const payload = (await response.json()) as ApiContentItem;
       if (!cancelled) {
-        setForm(mapItemToForm(payload));
+        setForm(withMetadataDefaults(mapItemToForm(payload)));
+        setLocalDraftAt(null);
         setIsLoading(false);
       }
 
-      const savedDraft = localStorage.getItem(`dashboard:draft:${itemId}`);
+      const savedDraft = readDraftFromStorage(`dashboard:draft:${itemId}`);
       if (savedDraft && !cancelled) {
-        try {
-          const parsed = JSON.parse(savedDraft) as EditorFormState;
-          setForm(parsed);
-          setLocalDraftAt(new Date().toISOString());
-        } catch {
-          localStorage.removeItem(`dashboard:draft:${itemId}`);
-        }
+        setRecoverableDraft(savedDraft);
       }
     }
 
@@ -220,7 +397,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      localStorage.setItem(storageKey, JSON.stringify(form));
+      writeDraftToStorage(storageKey, form);
       setLocalDraftAt(new Date().toISOString());
     }, 900);
 
@@ -230,15 +407,73 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
   }, [form, storageKey]);
 
   const metadataObject = useMemo(() => {
-    return Object.fromEntries(
+    const entries = Object.fromEntries(
       form.metadata
-        .filter((item) => item.key.trim())
+        .filter(
+          (item) =>
+            item.key.trim() &&
+            item.value.trim() &&
+            !isReservedMetadataKey(item.key)
+        )
         .map((item) => [item.key.trim(), item.value.trim()])
     );
-  }, [form.metadata]);
+
+    const assistantQuestions = form.assistantQuestions
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    if (supportsAssistantQuestions(form.type) && assistantQuestions.length > 0) {
+      entries[ASSISTANT_QUESTIONS_METADATA_KEY] = assistantQuestions.join("\n");
+    }
+
+    const intro = form.intro.trim();
+    if (supportsProjectIntro(form.type) && intro) {
+      entries.intro = intro;
+    }
+
+    return entries;
+  }, [form.assistantQuestions, form.intro, form.metadata, form.type]);
+  const previewTags = useMemo(() => splitCsv(form.tags), [form.tags]);
+  const previewCategories = useMemo(() => splitCsv(form.categories), [form.categories]);
+  const previewMetadata = useMemo(
+    () =>
+      form.metadata.filter(
+        (entry) => entry.key.trim() && entry.value.trim()
+      ),
+    [form.metadata]
+  );
+  const supportedMetadataFields = useMemo(
+    () =>
+      getMetadataFieldSpecs(form.type).filter(
+        (field) => !isReservedMetadataKey(field.key)
+      ),
+    [form.type]
+  );
+  const hasStructuredMetadataGuide = supportedMetadataFields.length > 0;
+  const metadataValueUsesTextarea =
+    form.type === "project" || form.type === "case-study";
+  const supportsMarkdownBody = markdownEnabledContentTypes.includes(form.type);
+  const showAssistantQuestions = supportsAssistantQuestions(form.type);
+  const showProjectIntro = supportsProjectIntro(form.type);
 
   function updateForm<K extends keyof EditorFormState>(key: K, value: EditorFormState[K]) {
     setForm((current) => ({ ...current, [key]: value }));
+  }
+
+  function handleRestoreDraft() {
+    if (!recoverableDraft) {
+      return;
+    }
+
+    setForm(withMetadataDefaults(recoverableDraft.form));
+    setLocalDraftAt(recoverableDraft.savedAt ?? new Date().toISOString());
+    setRecoverableDraft(null);
+    setError(null);
+  }
+
+  function handleDismissDraft() {
+    setRecoverableDraft(null);
   }
 
   async function handleSave() {
@@ -294,7 +529,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
             return;
           }
 
-          setForm(mapItemToForm(item));
+          setForm(withMetadataDefaults(mapItemToForm(item)));
           setSlugTouched(true);
         } catch (saveError) {
           setError(
@@ -340,6 +575,28 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
         </p>
       ) : null}
 
+      {recoverableDraft ? (
+        <div className="rounded-2xl border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-4 py-4 text-[13px] text-[var(--color-secondary)]">
+          <p className="text-[var(--color-foreground)]">
+            A local draft is available for this item.
+            {recoverableDraft.savedAt
+              ? ` Saved ${new Intl.DateTimeFormat("en", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                }).format(new Date(recoverableDraft.savedAt))}.`
+              : ""}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Button type="button" size="sm" onClick={handleRestoreDraft}>
+              Restore local draft
+            </Button>
+            <Button type="button" variant="secondary" size="sm" onClick={handleDismissDraft}>
+              Keep CMS version
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
       {localDraftAt ? (
         <p className="text-[12px] text-[var(--color-muted)]">
           Local draft updated {new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short" }).format(new Date(localDraftAt))}
@@ -368,122 +625,263 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
               </Button>
             </div>
 
-            <div className="grid gap-3 md:grid-cols-3">
-              <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
-                Type
-                <select
-                  className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
-                  value={form.type}
-                  onChange={(event) =>
-                    updateForm("type", event.target.value as ContentType)
-                  }
-                  disabled={mode === "edit"}
-                >
-                  {contentCollections.map((collection) => (
-                    <option key={collection.type} value={collection.type}>
-                      {collection.type}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
-                Status
-                <select
-                  className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
-                  value={form.status}
-                  onChange={(event) =>
-                    updateForm("status", event.target.value as ContentStatus)
-                  }
-                >
-                  {(["draft", "review", "published", "archived"] as ContentStatus[]).map((status) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
-                Locale
-                <select
-                  className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
-                  value={form.locale}
-                  onChange={(event) => updateForm("locale", event.target.value as Locale)}
-                >
-                  {Object.values(localeConfigs).map((locale) => (
-                    <option key={locale.code} value={locale.code}>
-                      {locale.nativeLabel}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-
-            <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
-              Title
-              <input
-                className="h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[15px] outline-none"
-                value={form.title}
-                onChange={(event) => {
-                  const title = event.target.value;
-                  updateForm("title", title);
-                  if (!slugTouched) {
-                    updateForm("slug", slugify(title));
-                  }
-                }}
-                placeholder="Designing a preview-safe publishing pipeline"
-              />
-            </label>
-
-            <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_180px]">
-              <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
-                Slug
-                <input
-                  className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
-                  value={form.slug}
-                  onChange={(event) => {
-                    setSlugTouched(true);
-                    updateForm("slug", slugify(event.target.value));
-                  }}
-                  placeholder="preview-safe-publishing"
-                />
-              </label>
-
-              <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
-                Published at
-                <input
-                  className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
-                  value={form.publishedAt}
-                  onChange={(event) => updateForm("publishedAt", event.target.value)}
-                  placeholder="2026-05-08T10:00:00Z"
-                />
-              </label>
-            </div>
-
-            <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
-              Description
-              <textarea
-                className="min-h-28 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-3 text-[14px] outline-none"
-                value={form.description}
-                onChange={(event) => updateForm("description", event.target.value)}
-                placeholder="One crisp summary for list views, cards, and search previews."
-              />
-            </label>
-
             {view === "edit" ? (
-              <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
-                Body
-                <textarea
-                  className="min-h-[420px] rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-4 font-mono text-[13px] leading-7 text-[var(--color-foreground)] outline-none"
-                  value={form.body}
-                  onChange={(event) => updateForm("body", event.target.value)}
-                  placeholder="# Heading\n\nWrite in markdown or MDX-compatible text."
-                />
-              </label>
+              <>
+                <div className="grid gap-3 md:grid-cols-3">
+                  <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                    Type
+                    <select
+                      className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
+                      value={form.type}
+                      onChange={(event) => {
+                        const nextType = event.target.value as ContentType;
+                        setForm((current) =>
+                          withMetadataDefaults({
+                            ...current,
+                            type: nextType,
+                          })
+                        );
+                      }}
+                      disabled={mode === "edit"}
+                    >
+                      {contentCollections.map((collection) => (
+                        <option key={collection.type} value={collection.type}>
+                          {collection.type}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                    Status
+                    <select
+                      className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
+                      value={form.status}
+                      onChange={(event) =>
+                        updateForm("status", event.target.value as ContentStatus)
+                      }
+                    >
+                      {(["draft", "review", "published", "archived"] as ContentStatus[]).map((status) => (
+                        <option key={status} value={status}>
+                          {status}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                    Locale
+                    <select
+                      className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
+                      value={form.locale}
+                      onChange={(event) => updateForm("locale", event.target.value as Locale)}
+                    >
+                      {Object.values(localeConfigs).map((locale) => (
+                        <option key={locale.code} value={locale.code}>
+                          {locale.nativeLabel}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+
+                <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                  Title
+                  <input
+                    className="h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[15px] outline-none"
+                    value={form.title}
+                    onChange={(event) => {
+                      const title = event.target.value;
+                      updateForm("title", title);
+                      if (!slugTouched) {
+                        updateForm("slug", slugify(title));
+                      }
+                    }}
+                    placeholder="Designing a preview-safe publishing pipeline"
+                  />
+                </label>
+
+                <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_180px]">
+                  <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                    Slug
+                    <input
+                      className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
+                      value={form.slug}
+                      onChange={(event) => {
+                        setSlugTouched(true);
+                        updateForm("slug", slugify(event.target.value));
+                      }}
+                      placeholder="preview-safe-publishing"
+                    />
+                  </label>
+
+                  <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                    Published at
+                    <input
+                      className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
+                      value={form.publishedAt}
+                      onChange={(event) => updateForm("publishedAt", event.target.value)}
+                      placeholder="2026-05-08T10:00:00Z"
+                    />
+                  </label>
+                </div>
+
+                <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                  Description
+                  <textarea
+                    className="min-h-28 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-3 text-[14px] outline-none"
+                    value={form.description}
+                    onChange={(event) => updateForm("description", event.target.value)}
+                    placeholder="One crisp summary for list views, cards, and search previews."
+                  />
+                </label>
+
+                {showProjectIntro ? (
+                  <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                    Intro
+                    <textarea
+                      className="min-h-28 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-3 text-[14px] outline-none"
+                      value={form.intro}
+                      onChange={(event) => updateForm("intro", event.target.value)}
+                      placeholder="Lead paragraph shown under the project title on the detail page."
+                    />
+                    <span className="text-[12px] leading-6 text-[var(--color-muted)]">
+                      Separate from Description. Used only on the project detail hero, not on cards or SEO.
+                    </span>
+                  </label>
+                ) : null}
+
+                <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                  {supportsMarkdownBody ? "Body (Markdown)" : "Body"}
+                  <textarea
+                    className="min-h-[420px] rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-4 font-mono text-[13px] leading-7 text-[var(--color-foreground)] outline-none"
+                    value={form.body}
+                    onChange={(event) => updateForm("body", event.target.value)}
+                    placeholder="# Heading\n\nWrite in markdown or MDX-compatible text."
+                  />
+                </label>
+
+                {supportsMarkdownBody ? (
+                  <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-2)] p-4">
+                    <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
+                      Markdown help
+                    </p>
+                    <p className="mt-3 text-[13px] leading-6 text-[var(--color-muted)]">
+                      Supported syntax uses GitHub Flavored Markdown. Raw markdown is stored in the CMS and rendered on the frontend. HTML editing and arbitrary scripts are not supported.
+                    </p>
+                    <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                      {markdownSyntaxExamples.map((example) => (
+                        <div
+                          key={example}
+                          className="rounded-[16px] border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-[12px] text-[var(--color-secondary)]"
+                        >
+                          {example}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+              </>
             ) : (
-              <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)] p-5">
-                <MarkdownPreview value={form.body} />
+              <div className="grid gap-5">
+                <div className="rounded-[24px] border border-[var(--color-border)] bg-[var(--color-background)] p-6">
+                  <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
+                    <span>{form.type}</span>
+                    <span>·</span>
+                    <span>{form.status}</span>
+                    <span>·</span>
+                    <span>{form.locale}</span>
+                    {form.publishedAt ? (
+                      <>
+                        <span>·</span>
+                        <span>{form.publishedAt}</span>
+                      </>
+                    ) : null}
+                  </div>
+                  <h2 className="mt-4 text-[34px] font-semibold tracking-[-0.05em] text-[var(--color-foreground)]">
+                    {form.title || "Untitled entry"}
+                  </h2>
+                  <p className="mt-3 font-mono text-[12px] text-[var(--color-muted)]">
+                    /{form.slug || "draft-slug"}
+                  </p>
+                  <p className="mt-5 text-[16px] leading-8 text-[var(--color-secondary)]">
+                    {form.description || "Description preview will appear here once you add one."}
+                  </p>
+
+                  {previewTags.length || previewCategories.length ? (
+                    <div className="mt-6 grid gap-4 md:grid-cols-2">
+                      <div>
+                        <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
+                          Tags
+                        </p>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {previewTags.length ? previewTags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="rounded-full border border-[var(--color-border)] px-3 py-1 text-[11px] text-[var(--color-muted)]"
+                            >
+                              {tag}
+                            </span>
+                          )) : <span className="text-[13px] text-[var(--color-muted)]">No tags</span>}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
+                          Categories
+                        </p>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {previewCategories.length ? previewCategories.map((category) => (
+                            <span
+                              key={category}
+                              className="rounded-full border border-[var(--color-border)] px-3 py-1 text-[11px] text-[var(--color-muted)]"
+                            >
+                              {category}
+                            </span>
+                          )) : <span className="text-[13px] text-[var(--color-muted)]">No categories</span>}
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="rounded-[24px] border border-[var(--color-border)] bg-[var(--color-background)] p-6">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
+                        Body preview
+                      </p>
+                      <h3 className="mt-2 text-[20px] font-medium text-[var(--color-foreground)]">
+                        Rendered content
+                      </h3>
+                    </div>
+                  </div>
+                  <div className="mt-5">
+                    <MarkdownPreview value={form.body || form.description} />
+                  </div>
+                </div>
+
+                {previewMetadata.length ? (
+                  <div className="rounded-[24px] border border-[var(--color-border)] bg-[var(--color-background)] p-6">
+                    <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
+                      Structured metadata preview
+                    </p>
+                    <div className="mt-5 grid gap-4">
+                      {previewMetadata.map((entry) => (
+                        <article
+                          key={entry.id}
+                          className="rounded-[20px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4"
+                        >
+                          <h3 className="text-[16px] font-medium text-[var(--color-foreground)]">
+                            {entry.key}
+                          </h3>
+                          <p className="mt-3 whitespace-pre-wrap text-[14px] leading-7 text-[var(--color-secondary)]">
+                            {entry.value}
+                          </p>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             )}
           </section>
@@ -555,6 +953,25 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
               Future AI indexing eligible
             </label>
 
+            {showAssistantQuestions ? (
+              <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                AI assistant questions
+                <textarea
+                  className="min-h-32 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-3 text-[14px] leading-7 outline-none"
+                  value={form.assistantQuestions}
+                  onChange={(event) =>
+                    updateForm("assistantQuestions", event.target.value)
+                  }
+                  placeholder={
+                    "One question per line.\nWhat problem does this project solve?\nHow is the backend structured?"
+                  }
+                />
+                <span className="text-[12px] leading-6 text-[var(--color-muted)]">
+                  These prompts appear in the Ask AI block on the public detail page. Only the questions you enter here are shown.
+                </span>
+              </label>
+            ) : null}
+
             <div className="grid gap-3">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-[13px] text-[var(--color-secondary)]">Structured metadata</p>
@@ -585,23 +1002,49 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
                         )
                       )
                     }
-                    placeholder="heroImageUrl"
+                    placeholder={hasStructuredMetadataGuide ? "Known key or custom heading" : "metadata key"}
                   />
-                  <input
-                    className="h-10 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 text-[13px] outline-none"
-                    value={entry.value}
-                    onChange={(event) =>
-                      updateForm(
-                        "metadata",
-                        form.metadata.map((item) =>
-                          item.id === entry.id
-                            ? { ...item, value: event.target.value }
-                            : item
+                  {metadataValueUsesTextarea ? (
+                    <textarea
+                      className="min-h-28 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-3 text-[13px] leading-7 outline-none"
+                      value={entry.value}
+                      onChange={(event) =>
+                        updateForm(
+                          "metadata",
+                          form.metadata.map((item) =>
+                            item.id === entry.id
+                              ? { ...item, value: event.target.value }
+                              : item
+                          )
                         )
-                      )
-                    }
-                    placeholder="/media/2026/05/hero-asset.png"
-                  />
+                      }
+                      placeholder={
+                        hasStructuredMetadataGuide
+                          ? "Description, markdown, or multiline value"
+                          : "metadata value"
+                      }
+                    />
+                  ) : (
+                    <input
+                      className="h-10 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 text-[13px] outline-none"
+                      value={entry.value}
+                      onChange={(event) =>
+                        updateForm(
+                          "metadata",
+                          form.metadata.map((item) =>
+                            item.id === entry.id
+                              ? { ...item, value: event.target.value }
+                              : item
+                          )
+                        )
+                      }
+                      placeholder={
+                        hasStructuredMetadataGuide
+                          ? "Description, markdown, URL, or short value"
+                          : "metadata value"
+                      }
+                    />
+                  )}
                   <Button
                     type="button"
                     variant="ghost"
@@ -619,8 +1062,43 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
               ))}
 
               <p className="text-[12px] leading-6 text-[var(--color-muted)]">
-                Use metadata rows for cover images, social images, diagram references, or other collection-specific fields without changing the editor structure.
+                {hasStructuredMetadataGuide
+                  ? "Known keys render in their built-in page slots. Any other key/value pair becomes a standalone section on the public detail page, using the first field as the heading and the second as the description. Empty fields stay in the editor for guidance but are not saved or rendered publicly."
+                  : "Use metadata rows for cover images, social images, diagram references, or other collection-specific fields without changing the editor structure."}
               </p>
+
+              {hasStructuredMetadataGuide ? (
+                <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)] p-4">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
+                    Supported metadata keys
+                  </p>
+                  <div className="mt-4 grid gap-3">
+                    {supportedMetadataFields.map((field) => (
+                      <div
+                        key={field.key}
+                        className="rounded-[18px] border border-[var(--color-border)] bg-[var(--color-surface)] p-3"
+                      >
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="rounded-full border border-[var(--color-border)] px-2 py-1 font-mono text-[11px] text-[var(--color-foreground)]">
+                            {field.key}
+                          </span>
+                          {field.aliases?.length ? (
+                            <span className="text-[11px] text-[var(--color-muted)]">
+                              Aliases: {field.aliases.join(", ")}
+                            </span>
+                          ) : null}
+                        </div>
+                        <p className="mt-3 text-[13px] text-[var(--color-foreground)]">
+                          {field.label}
+                        </p>
+                        <p className="mt-1 text-[12px] leading-6 text-[var(--color-muted)]">
+                          {field.description}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </div>
           </aside>
         </div>
