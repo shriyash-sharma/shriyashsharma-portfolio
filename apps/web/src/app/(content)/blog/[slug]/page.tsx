@@ -8,11 +8,19 @@ import { ContextualAssistantCta } from "@/features/assistant";
 import { buildContentMetadata } from "@/lib/seo/content-metadata";
 import { blogPostingJsonLd, breadcrumbJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
-import { getBlogPost } from "@/lib/services/content-service";
+import { getBlogPost, getBlogPosts } from "@/lib/services/content-service";
 
 type RouteContext = {
   params: Promise<{ slug: string }>;
 };
+
+export const revalidate = 300;
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const posts = await getBlogPosts();
+  return posts.map((post) => ({ slug: post.slug }));
+}
 
 export async function generateMetadata(
   context: RouteContext
@@ -28,6 +36,7 @@ export async function generateMetadata(
     title: post.seoTitle ?? post.title,
     description: post.seoDescription ?? post.description,
     path: `/blog/${post.slug}`,
+    canonicalUrl: post.canonicalUrl ?? undefined,
     openGraphType: "article",
   });
 }

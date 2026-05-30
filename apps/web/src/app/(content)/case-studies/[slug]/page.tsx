@@ -9,11 +9,19 @@ import { metadataAssistantQuestions } from "@/lib/content/metadata-helpers";
 import { buildContentMetadata } from "@/lib/seo/content-metadata";
 import { breadcrumbJsonLd, techArticleJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
-import { getCaseStudy } from "@/lib/services/content-service";
+import { getCaseStudies, getCaseStudy } from "@/lib/services/content-service";
 
 type RouteContext = {
   params: Promise<{ slug: string }>;
 };
+
+export const revalidate = 300;
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const caseStudies = await getCaseStudies();
+  return caseStudies.map((entry) => ({ slug: entry.slug }));
+}
 
 export async function generateMetadata(
   context: RouteContext
@@ -29,6 +37,7 @@ export async function generateMetadata(
     title: caseStudy.seoTitle ?? caseStudy.title,
     description: caseStudy.seoDescription ?? caseStudy.description,
     path: `/case-studies/${caseStudy.slug}`,
+    canonicalUrl: caseStudy.canonicalUrl ?? undefined,
     openGraphType: "article",
   });
 }

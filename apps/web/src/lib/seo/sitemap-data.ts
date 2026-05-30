@@ -1,5 +1,10 @@
 import type { MetadataRoute } from "next";
-import { defaultLocale, locales, localizePath } from "@/lib/i18n/config";
+import {
+  defaultLocale,
+  locales,
+  localeLanguageTags,
+  localizePath,
+} from "@/lib/i18n/config";
 import { pageSeo } from "@/lib/seo/metadata";
 import { absoluteUrl } from "@/lib/seo/urls";
 import { getArchitectureNotes, getBlogPosts, getCaseStudies } from "@/lib/services/content-service";
@@ -11,35 +16,55 @@ type StaticRoute = {
   priority: number;
 };
 
+/** Routes that should not appear in the public sitemap. */
+const EXCLUDED_PATHS = new Set<string>([
+  // Interactive tool with no indexable content; better discovered via internal links.
+  "/assistant",
+]);
+
 const staticRoutes: StaticRoute[] = [
   { path: "/", changeFrequency: "weekly", priority: 1 },
   ...(
     Object.values(pageSeo) as Array<{ path: string }>
-  ).map((page) => ({
-    path: page.path,
-    changeFrequency: "monthly" as const,
-    priority: page.path === "/projects" || page.path === "/case-studies" ? 0.9 : 0.75,
-  })),
+  )
+    .filter((page) => !EXCLUDED_PATHS.has(page.path))
+    .map((page) => ({
+      path: page.path,
+      changeFrequency: "monthly" as const,
+      priority: page.path === "/projects" || page.path === "/case-studies" ? 0.9 : 0.75,
+    })),
 ];
+
+/** Build the hreflang map for a canonical path across all supported locales. */
+function buildLanguageAlternates(path: string): Record<string, string> {
+  const languages: Record<string, string> = {};
+  for (const locale of locales) {
+    languages[localeLanguageTags[locale]] = absoluteUrl(localizePath(path, locale));
+  }
+  languages["x-default"] = absoluteUrl(localizePath(path, defaultLocale));
+  return languages;
+}
 
 function localizedEntries(
   path: string,
-  lastModified: Date,
+  lastModified: Date | undefined,
   changeFrequency: StaticRoute["changeFrequency"],
   priority: number
 ): MetadataRoute.Sitemap {
+  const alternates = { languages: buildLanguageAlternates(path) };
   return locales.map((locale) => ({
     url: absoluteUrl(localizePath(path, locale)),
-    lastModified,
+    ...(lastModified ? { lastModified } : {}),
     changeFrequency,
     priority: locale === defaultLocale ? priority : Math.max(priority - 0.05, 0.5),
+    alternates,
   }));
 }
 
 export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
+  // Static routes: omit lastModified so crawlers don't see fake per-request churn.
   const entries: MetadataRoute.Sitemap = staticRoutes.flatMap((route) =>
-    localizedEntries(route.path, now, route.changeFrequency, route.priority)
+    localizedEntries(route.path, undefined, route.changeFrequency, route.priority)
   );
 
   const [projects, posts, caseStudies, architectureNotes] = await Promise.all([

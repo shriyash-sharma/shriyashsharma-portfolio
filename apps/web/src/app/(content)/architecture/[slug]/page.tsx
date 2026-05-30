@@ -8,11 +8,22 @@ import { ContextualAssistantCta } from "@/features/assistant";
 import { buildContentMetadata } from "@/lib/seo/content-metadata";
 import { breadcrumbJsonLd, techArticleJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
-import { getArchitectureNote } from "@/lib/services/content-service";
+import {
+  getArchitectureNote,
+  getArchitectureNotes,
+} from "@/lib/services/content-service";
 
 type RouteContext = {
   params: Promise<{ slug: string }>;
 };
+
+export const revalidate = 300;
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const notes = await getArchitectureNotes();
+  return notes.map((note) => ({ slug: note.slug }));
+}
 
 export async function generateMetadata(
   context: RouteContext
@@ -28,6 +39,7 @@ export async function generateMetadata(
     title: note.seoTitle ?? note.title,
     description: note.seoDescription ?? note.description,
     path: `/architecture/${note.slug}`,
+    canonicalUrl: note.canonicalUrl ?? undefined,
     openGraphType: "article",
   });
 }
