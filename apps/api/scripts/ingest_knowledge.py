@@ -33,6 +33,9 @@ from sqlalchemy import select
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from app.ai.embeddings.factory import get_embedding_provider  # noqa: E402
+from app.ai.ingestion.content_source import (  # noqa: E402
+    content_item_to_source_document,
+)
 from app.ai.ingestion.pipeline import (  # noqa: E402
     KnowledgeIngestionService,
     SourceDocument,
@@ -47,12 +50,19 @@ from app.db.session import AsyncSessionLocal  # noqa: E402
 logger = logging.getLogger("ingest_knowledge")
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+# Repository markdown sources. Deliberately scoped to *curated* architecture
+# writeups and ADRs only. We exclude:
+#   - top-level README files (setup / dev-environment instructions)
+#   - apps/api/README.md, apps/web/README.md (engineer-facing)
+#   - docs/local-development.md, docs/*walkthrough*.{md,txt} (internal notes)
+#   - docs/platform-engineering-summary.txt (internal notes)
+# These were polluting the index — semantic search ranked phrases like
+# "seed_content.py" and "Projects, case studies, articles..." over actual
+# portfolio prose. Anything you want the assistant to discuss should live as
+# a published CMS architecture-note instead.
 DOCS_GLOBS = (
-    "docs/**/*.md",
-    "docs/**/*.mdx",
-    "README.md",
-    "apps/api/README.md",
-    "apps/web/README.md",
+    "docs/architecture/*.md",
+    "docs/architecture/adrs/*.md",
 )
 MAX_FILE_SIZE_BYTES = 200_000  # Skip oversized files; not portfolio prose.
 _HEADING_RE = re.compile(r"^#\s+(.*?)\s*$", re.MULTILINE)
@@ -71,24 +81,7 @@ async def ingest_cms(service: KnowledgeIngestionService) -> int:
 
     written = 0
     for row in rows:
-        body = row.body or ""
-        canonical = "\n\n".join(
-            block for block in (row.title, row.description, body) if block
-        )
-        document = SourceDocument(
-            source_type=KnowledgeSourceType.CONTENT_ITEM,
-            source_id=str(row.id),
-            title=row.title,
-            text=canonical,
-            summary=row.description,
-            url=row.canonical_url,
-            tags=list(row.tags or []),
-            extra={
-                "content_type": row.type.value,
-                "locale": row.locale,
-                "slug": row.slug,
-            },
-        )
+        document = content_item_to_source_document(row)
         result = await service.ingest(document)
         status = "skipped" if result.skipped else f"{result.chunks_written} chunks"
         logger.info("cms[%s] %s — %s", row.type.value, row.slug, status)
@@ -127,7 +120,11 @@ async def ingest_docs(service: KnowledgeIngestionService) -> int:
             summary=None,
             url=None,
             tags=[],
-            extra={"path": relative},
+            # ``content_type`` here mirrors how CMS items are tagged so the
+            # retrieval / intent-routing layer can treat curated ADRs as
+            # first-class architecture sources without confusing them with
+            # CMS-managed architecture notes.
+            extra={"path": relative, "content_type": "architecture-doc"},
         )
         result = await service.ingest(document)
         status = "skipped" if result.skipped else f"{result.chunks_written} chunks"

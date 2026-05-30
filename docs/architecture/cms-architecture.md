@@ -171,9 +171,10 @@ about keeping operational rules consistent across public and admin surfaces.
 ## Current Limitations
 
 - media remains local-first and process-served
-- publishing does not trigger background processing
+- publishing triggers inline (not background/queued) reindexing
 - no dedicated preview system is described beyond current dashboard workflows
-- no indexing or retrieval pipeline runs as part of content writes
+- content writes reindex the knowledge base inline: publishing or editing an
+  `ai_indexable` item re-embeds it, and unpublishing or deleting removes it
 
 ## Future Readiness
 

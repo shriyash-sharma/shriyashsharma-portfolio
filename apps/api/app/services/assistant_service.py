@@ -18,6 +18,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.ai.embeddings.factory import get_embedding_provider
 from app.ai.llm.factory import get_llm_provider
 from app.ai.prompts.portfolio_assistant import build_chat_messages
+from app.ai.retrieval.catalog import fetch_catalog, render_catalog_block
+from app.ai.retrieval.intent import detect_intent
 from app.ai.retrieval.service import RetrievalService, RetrievedChunk
 from app.core.config import get_settings
 from app.schemas.assistant import AssistantRequest, AssistantResponse
@@ -58,11 +60,32 @@ async def answer_assistant_query(
 
     retrieval = RetrievalService(session, embeddings)
 
+    # Intent routing: cheap regex classifier distinguishes "explain X" from
+    # "list/enumerate" questions. Catalog intent gets a deterministic CMS
+    # listing prepended; scoped intent narrows vector search to the relevant
+    # content types. Both can fire together (e.g. "list your case studies").
+    intent = detect_intent(payload.query)
+
+    catalog_block: str | None = None
+    if intent.is_catalog:
+        try:
+            catalog_items = await fetch_catalog(
+                session, content_types=intent.content_types
+            )
+            catalog_block = render_catalog_block(catalog_items) or None
+        except Exception:
+            logger.exception("Catalog fetch failed; falling back to vector-only")
+            catalog_block = None
+
     try:
         chunks = await retrieval.search(
             payload.query,
             top_k=settings.rag_top_k,
             min_similarity=settings.rag_min_similarity,
+            max_per_document=settings.rag_max_chunks_per_document,
+            candidate_multiplier=settings.rag_candidate_multiplier,
+            ef_search=settings.rag_hnsw_ef_search,
+            content_types=intent.content_types,
         )
     except Exception:
         logger.exception("Semantic retrieval failed for assistant query")
@@ -79,6 +102,7 @@ async def answer_assistant_query(
         question=payload.query,
         chunks=chunks,
         max_context_chars=settings.rag_max_context_chars,
+        catalog_block=catalog_block,
     )
 
     try:

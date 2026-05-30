@@ -42,30 +42,36 @@ That complexity is deferred until the platform has a stronger need for it.
 
 ## Data and Retrieval Limits
 
-### Retrieval exists, but ingestion is still manual
+### Retrieval and live indexing exist; orchestration is intentionally simple
 
-The platform now includes live semantic retrieval through pgvector and a
-grounded assistant route. The limitation is not the existence of retrieval. The
-limitation is the operational shape around it.
+The platform includes live semantic retrieval through pgvector and a grounded
+assistant route, and CMS writes now reindex automatically: publishing or
+editing an `ai_indexable` item re-embeds it into the knowledge base in the same
+request, and unpublishing or deleting removes it. A bulk `ingest_knowledge.py`
+script and an admin reindex endpoint cover backfill and recovery.
 
 Current constraints:
 
-- content changes do not automatically trigger reindexing
-- embeddings are refreshed through an explicit ingestion command
+- reindexing happens inline on the content-write request rather than through a
+  background queue, so a save waits on the embedding call
+- repository markdown (docs, ADRs) is still refreshed via the explicit
+  ingestion command, not on file change
 - retrieval quality depends on editorial discipline and curated knowledge sources
 
-This keeps the system understandable, but it is not yet a continuously updated
-indexing pipeline.
+This keeps the system understandable, but it is not yet a queue-backed,
+continuously orchestrated indexing pipeline.
 
 ### No background AI indexing workers
 
-Content items carry `ai_indexable` and `indexed_at`, but there is still no
-queue-backed indexing worker or async processing layer behind content writes.
+Content items carry `ai_indexable` and `indexed_at`, and writes index inline,
+but there is still no queue-backed indexing worker or async processing layer
+behind content writes.
 
 That means:
 
-- no automatic embedding refresh after publish
-- no distributed retry strategy for ingestion failures
+- embedding refresh runs on the request thread, not off-request
+- no distributed retry strategy for ingestion failures (failures are logged and
+  the item can be re-indexed via the reindex endpoint or CLI)
 - no off-request orchestration for large indexing jobs
 
 This is a conscious decision to keep the runtime topology compact.

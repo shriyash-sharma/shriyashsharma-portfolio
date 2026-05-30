@@ -74,19 +74,42 @@ def build_context_block(
 
 
 def build_chat_messages(
-    *, question: str, chunks: list[RetrievedChunk], max_context_chars: int
+    *,
+    question: str,
+    chunks: list[RetrievedChunk],
+    max_context_chars: int,
+    catalog_block: str | None = None,
 ) -> tuple[list[ChatMessage], list[RetrievedChunk]]:
-    """Assemble the final system+user message list for the LLM call."""
+    """Assemble the final system+user message list for the LLM call.
+
+    ``catalog_block`` (when provided) is a pre-rendered authoritative list of
+    CMS items, prepended ahead of the retrieved chunks. Intent routing uses
+    this for enumeration questions where pure vector search would return
+    incomplete or off-topic answers.
+    """
 
     context_block, used_chunks = build_context_block(
         chunks, max_chars=max_context_chars
     )
 
+    # Combine catalog (deterministic, authoritative) with retrieved context
+    # (semantic, illustrative). The catalog is the source of truth for
+    # "what items exist"; the context provides depth for "explain X".
+    combined_parts: list[str] = []
+    if catalog_block:
+        combined_parts.append(catalog_block)
     if context_block:
+        combined_parts.append(context_block)
+
+    if combined_parts:
+        combined = "\n\n---\n\n".join(combined_parts)
         user_content = (
-            f"{context_block}\n\n"
+            f"{combined}\n\n"
             f"USER QUESTION:\n{question.strip()}\n\n"
-            "Answer using only the CONTEXT above. Cite sources as [n]."
+            "Answer using only the information above. When you reference a "
+            "retrieved CONTEXT block, cite it as [n]. When you reference an "
+            "item from the CATALOG, name it directly — the catalog is "
+            "authoritative for what exists on this portfolio."
         )
     else:
         user_content = (
