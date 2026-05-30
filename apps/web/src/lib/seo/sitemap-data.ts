@@ -52,13 +52,19 @@ function localizedEntries(
   priority: number
 ): MetadataRoute.Sitemap {
   const alternates = { languages: buildLanguageAlternates(path) };
-  return locales.map((locale) => ({
-    url: absoluteUrl(localizePath(path, locale)),
-    ...(lastModified ? { lastModified } : {}),
-    changeFrequency,
-    priority: locale === defaultLocale ? priority : Math.max(priority - 0.05, 0.5),
-    alternates,
-  }));
+  return locales.map((locale) => {
+    const rawPriority =
+      locale === defaultLocale ? priority : Math.max(priority - 0.05, 0.5);
+    // Round to 2 decimals to avoid IEEE-754 artifacts like 0.7999999999999999.
+    const cleanPriority = Math.round(rawPriority * 100) / 100;
+    return {
+      url: absoluteUrl(localizePath(path, locale)),
+      ...(lastModified ? { lastModified } : {}),
+      changeFrequency,
+      priority: cleanPriority,
+      alternates,
+    };
+  });
 }
 
 export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
