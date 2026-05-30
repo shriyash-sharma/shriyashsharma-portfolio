@@ -21,13 +21,21 @@ from app.api.dependencies.database import DbSessionDep
 from app.db.repositories.content_repository import ContentRepository, to_content_read
 from app.schemas.content import (
     AdminContentOverviewResponse,
+    ContentIndexPurgeResponse,
     ContentItemCreate,
     ContentItemRead,
     ContentItemUpdate,
-    ContentStatusCount,
     ContentListResponse,
+    ContentReindexResponse,
+    ContentStatusCount,
     ContentType,
     PublishingStatus,
+)
+from app.services.content_indexing import (
+    purge_orphan_index_documents,
+    reindex_all_content,
+    remove_content_item_index,
+    sync_content_item_index,
 )
 
 router = APIRouter(prefix="/admin/content", tags=["admin-content"])
@@ -106,6 +114,8 @@ async def admin_content_create(
             status_code=409,
             detail="Content item already exists for this type, locale, and slug",
         ) from exc
+    # Reflect the new item in the assistant's retrieval index immediately.
+    await sync_content_item_index(session, item)
     return to_content_read(item)
 
 
@@ -134,7 +144,44 @@ async def admin_content_update(
     if not item:
         raise HTTPException(status_code=404, detail="Content item not found")
     updated = await repository.update(item, payload)
+    # Re-embed (or remove, if unpublished / not indexable) on every edit so the
+    # assistant always answers from the latest published content.
+    await sync_content_item_index(session, updated)
     return to_content_read(updated)
+
+
+@router.post("/index/reindex", response_model=ContentReindexResponse)
+async def admin_content_reindex(
+    _: CurrentAdminUser,
+    session: DbSessionDep,
+) -> ContentReindexResponse:
+    """Rebuild the CMS portion of the knowledge index from current content rows.
+
+    Useful for first-time backfill or recovering from a failed live index.
+    """
+    try:
+        summary = await reindex_all_content(session)
+    except RuntimeError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Embedding provider not configured: {exc}",
+        ) from exc
+    return ContentReindexResponse(**summary)
+
+
+@router.post("/index/purge", response_model=ContentIndexPurgeResponse)
+async def admin_content_purge_index(
+    _: CurrentAdminUser,
+    session: DbSessionDep,
+) -> ContentIndexPurgeResponse:
+    """Remove stale/orphaned knowledge documents from the index.
+
+    Use after deleting CMS items while indexing was offline, or after
+    narrowing the ingestion script's document scope (e.g. dropping README
+    files from the corpus). Safe to run repeatedly — idempotent.
+    """
+    summary = await purge_orphan_index_documents(session)
+    return ContentIndexPurgeResponse(**summary)
 
 
 @router.delete("/items/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -147,4 +194,6 @@ async def admin_content_delete(
     item = await repository.get(item_id)
     if not item:
         raise HTTPException(status_code=404, detail="Content item not found")
+    # Drop it from the retrieval index before the row disappears.
+    await remove_content_item_index(session, item.id)
     await repository.delete(item)

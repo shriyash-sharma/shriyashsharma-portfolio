@@ -97,3 +97,17 @@ class ContentStatusCount(BaseModel):
 class AdminContentOverviewResponse(BaseModel):
     counts: list[ContentStatusCount]
     total: int
+
+
+class ContentReindexResponse(BaseModel):
+    total: int
+    indexed: int
+    unchanged: int
+    removed: int
+
+
+class ContentIndexPurgeResponse(BaseModel):
+    """Result of purging orphaned/stale knowledge-index documents."""
+
+    removed_cms_orphans: int
+    removed_doc_sources: int

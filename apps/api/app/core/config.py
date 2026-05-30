@@ -43,11 +43,24 @@ class Settings(BaseSettings):
     groq_base_url: str = "https://api.groq.com/openai/v1"
 
     # Retrieval / prompting
-    rag_top_k: int = 5
-    rag_min_similarity: float = 0.15
+    rag_top_k: int = 6
+    # Reject loosely-similar chunks. 0.15 was too permissive — almost every
+    # cosine-similar chunk passed, including off-topic dev docs. 0.25 keeps
+    # only chunks that are meaningfully related to the question.
+    rag_min_similarity: float = 0.25
     rag_max_context_chars: int = 6000
     rag_chunk_size: int = 800
     rag_chunk_overlap: int = 120
+    # Over-fetch this many candidate chunks per requested result before applying
+    # the per-document cap, so a single long document cannot crowd out the
+    # final top-k. Pool size = rag_top_k * rag_candidate_multiplier.
+    rag_candidate_multiplier: int = 6
+    # Maximum chunks contributed by any single document to one answer. Keeps
+    # the context diverse across sources instead of quoting one document.
+    rag_max_chunks_per_document: int = 3
+    # HNSW search breadth. Higher = better recall, slightly slower. The corpus
+    # is small, so we can afford a high value for near-exact recall.
+    rag_hnsw_ef_search: int = 200
 
     model_config = SettingsConfigDict(
         env_file=".env",
