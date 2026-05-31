@@ -97,17 +97,17 @@ export function MediaManager() {
         <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--color-muted-2)]">
           Media foundation
         </p>
-        <h1 className="mt-2 text-[30px] font-semibold tracking-[-0.05em] text-[var(--color-foreground)]">
+        <h1 className="mt-2 text-[24px] font-semibold tracking-[-0.05em] text-[var(--color-foreground)] sm:text-[30px]">
           Asset workspace
         </h1>
-        <p className="mt-3 max-w-3xl text-[15px] leading-8 text-[var(--color-secondary)]">
+        <p className="mt-3 max-w-3xl text-[14px] leading-7 text-[var(--color-secondary)] sm:text-[15px] sm:leading-8">
           Local image storage with metadata, authenticated upload boundaries, and a shape that can be swapped to cloud storage later.
         </p>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
-        <div className="grid gap-4 rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-          <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+      <section className="grid items-start gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
+        <div className="grid w-full content-start gap-4 self-start rounded-[20px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 sm:rounded-[24px] sm:p-5">
+          <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
             Image file
             <input
               className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-3 text-[14px]"
@@ -117,7 +117,7 @@ export function MediaManager() {
             />
           </label>
 
-          <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+          <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
             Alt text
             <input
               className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
@@ -133,12 +133,16 @@ export function MediaManager() {
             </p>
           ) : null}
 
-          <Button onClick={() => void handleUpload()} disabled={!file || isUploading}>
+          <Button
+            onClick={() => void handleUpload()}
+            disabled={!file || isUploading}
+            className="w-full sm:w-auto"
+          >
             {isUploading ? "Uploading..." : "Upload image"}
           </Button>
         </div>
 
-        <div className="grid gap-3">
+        <div className="grid w-full gap-3">
           {isLoading ? (
             <div className="rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-8 text-center text-[14px] text-[var(--color-muted)]">
               Loading media assets…
@@ -148,7 +152,7 @@ export function MediaManager() {
           {items.map((item) => (
             <article
               key={item.id}
-              className="grid gap-4 rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 md:grid-cols-[160px_minmax(0,1fr)]"
+              className="grid gap-4 rounded-[20px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 sm:rounded-[24px] md:grid-cols-[160px_minmax(0,1fr)]"
             >
               <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)]">
                 <Image
@@ -162,9 +166,9 @@ export function MediaManager() {
               </div>
 
               <div className="min-w-0">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h2 className="text-[16px] font-medium text-[var(--color-foreground)]">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0">
+                    <h2 className="break-all text-[16px] font-medium text-[var(--color-foreground)]">
                       {item.filename}
                     </h2>
                     <p className="mt-1 text-[13px] text-[var(--color-muted)]">
@@ -175,6 +179,7 @@ export function MediaManager() {
                   <Button
                     variant="secondary"
                     size="sm"
+                    className="w-full shrink-0 sm:w-auto"
                     onClick={() => void navigator.clipboard.writeText(item.url)}
                   >
                     Copy URL
@@ -187,7 +192,7 @@ export function MediaManager() {
                   <span>{formatDate(item.created_at)}</span>
                 </div>
 
-                <p className="mt-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-[12px] text-[var(--color-secondary)]">
+                <p className="mt-3 break-all rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-2 font-mono text-[12px] text-[var(--color-secondary)]">
                   {item.url}
                 </p>
               </div>

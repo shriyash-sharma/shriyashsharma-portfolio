@@ -547,23 +547,27 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
   return (
     <div className="grid gap-6">
       <section className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
+        <div className="min-w-0">
           <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--color-muted-2)]">
             Editorial flow
           </p>
-          <h1 className="mt-2 text-[30px] font-semibold tracking-[-0.05em] text-[var(--color-foreground)]">
+          <h1 className="mt-2 text-[24px] font-semibold tracking-[-0.05em] text-[var(--color-foreground)] sm:text-[30px]">
             {mode === "create" ? "Create content" : "Edit content"}
           </h1>
-          <p className="mt-3 max-w-3xl text-[15px] leading-8 text-[var(--color-secondary)]">
+          <p className="mt-3 max-w-3xl text-[14px] leading-7 text-[var(--color-secondary)] sm:text-[15px] sm:leading-8">
             Markdown-first editing with preview, locale-aware metadata, and local draft persistence so autosave can evolve without reworking the editor surface.
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          <Button asChild variant="secondary">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <Button asChild variant="secondary" className="w-full sm:w-auto">
             <Link href="/dashboard/content">Back to list</Link>
           </Button>
-          <Button onClick={() => void handleSave()} disabled={isSaving || isLoading}>
+          <Button
+            onClick={() => void handleSave()}
+            disabled={isSaving || isLoading}
+            className="w-full sm:w-auto"
+          >
             {isSaving ? "Saving..." : mode === "create" ? "Create entry" : "Save changes"}
           </Button>
         </div>
@@ -615,7 +619,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
         </div>
       ) : (
         <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-          <section className="grid w-full content-start gap-4 self-start rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+          <section className="grid w-full content-start gap-4 self-start rounded-[20px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 sm:rounded-[24px] sm:p-5">
             <div className="flex flex-wrap gap-2">
               <Button variant={view === "edit" ? "primary" : "secondary"} size="sm" onClick={() => setView("edit")}>
                 Edit
@@ -627,7 +631,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
 
             {view === "edit" ? (
               <>
-                <div className="grid items-start gap-3 md:grid-cols-3">
+                <div className="grid items-start gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
                     Type
                     <select
@@ -701,7 +705,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
                   />
                 </label>
 
-                <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_180px]">
+                <div className="grid items-start gap-3 sm:grid-cols-[minmax(0,1fr)_180px]">
                   <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
                     Slug
                     <input
@@ -754,7 +758,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
                 <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
                   {supportsMarkdownBody ? "Body (Markdown)" : "Body"}
                   <textarea
-                    className="min-h-[420px] rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-4 font-mono text-[13px] leading-7 text-[var(--color-foreground)] outline-none"
+                    className="min-h-[240px] rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)] px-3 py-3 font-mono text-[13px] leading-7 text-[var(--color-foreground)] outline-none sm:min-h-[320px] sm:px-4 sm:py-4 lg:min-h-[420px]"
                     value={form.body}
                     onChange={(event) => updateForm("body", event.target.value)}
                     placeholder="# Heading\n\nWrite in markdown or MDX-compatible text."
@@ -798,7 +802,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
                       </>
                     ) : null}
                   </div>
-                  <h2 className="mt-4 text-[34px] font-semibold tracking-[-0.05em] text-[var(--color-foreground)]">
+                  <h2 className="mt-4 text-[24px] font-semibold tracking-[-0.05em] text-[var(--color-foreground)] sm:text-[34px]">
                     {form.title || "Untitled entry"}
                   </h2>
                   <p className="mt-3 font-mono text-[12px] text-[var(--color-muted)]">
@@ -886,7 +890,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
             )}
           </section>
 
-          <aside className="grid w-full content-start gap-4 self-start rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+          <aside className="grid w-full content-start gap-4 self-start rounded-[20px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 sm:rounded-[24px] sm:p-5">
             <div>
               <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
                 Metadata
