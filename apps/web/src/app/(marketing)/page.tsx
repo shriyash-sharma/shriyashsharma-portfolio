@@ -18,6 +18,9 @@ import { getProjects } from "@/lib/services/project-service";
 
 export const metadata: Metadata = buildMetadata({ path: "/" });
 
+/** Match other CMS pages: refresh home sections after deploy / API cold starts. */
+export const revalidate = 300;
+
 /** Homepage sections load published CMS content server-side (single source of truth). */
 export default async function HomePage() {
   const backendConfigured = hasBackendUrl();
