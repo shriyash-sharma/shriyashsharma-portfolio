@@ -184,7 +184,7 @@ function applyMetadataDefaults(
   }
 
   const remainingEntries = [...metadata];
-  const defaultEntries = supportedFields.map((field) => {
+  const defaultEntries = supportedFields.flatMap((field) => {
     const candidateKeys = [field.key, ...(field.aliases ?? [])].map((key) =>
       key.trim().toLowerCase()
     );
@@ -193,10 +193,10 @@ function applyMetadataDefaults(
     );
 
     if (matchIndex >= 0) {
-      return remainingEntries.splice(matchIndex, 1)[0];
+      return [remainingEntries.splice(matchIndex, 1)[0]];
     }
 
-    return createMetadataEntry(field.key, "");
+    return [];
   });
 
   return [...defaultEntries, ...remainingEntries];
@@ -614,8 +614,8 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
           Loading editor…
         </div>
       ) : (
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-          <section className="grid gap-4 rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+        <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+          <section className="grid w-full content-start gap-4 self-start rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
             <div className="flex flex-wrap gap-2">
               <Button variant={view === "edit" ? "primary" : "secondary"} size="sm" onClick={() => setView("edit")}>
                 Edit
@@ -627,8 +627,8 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
 
             {view === "edit" ? (
               <>
-                <div className="grid gap-3 md:grid-cols-3">
-                  <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                <div className="grid items-start gap-3 md:grid-cols-3">
+                  <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
                     Type
                     <select
                       className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
@@ -652,7 +652,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
                     </select>
                   </label>
 
-                  <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                  <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
                     Status
                     <select
                       className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
@@ -669,7 +669,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
                     </select>
                   </label>
 
-                  <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                  <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
                     Locale
                     <select
                       className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
@@ -685,7 +685,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
                   </label>
                 </div>
 
-                <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
                   Title
                   <input
                     className="h-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[15px] outline-none"
@@ -702,7 +702,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
                 </label>
 
                 <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_180px]">
-                  <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                  <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
                     Slug
                     <input
                       className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
@@ -715,7 +715,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
                     />
                   </label>
 
-                  <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                  <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
                     Published at
                     <input
                       className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
@@ -726,7 +726,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
                   </label>
                 </div>
 
-                <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
                   Description
                   <textarea
                     className="min-h-28 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-3 text-[14px] outline-none"
@@ -737,7 +737,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
                 </label>
 
                 {showProjectIntro ? (
-                  <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                  <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
                     Intro
                     <textarea
                       className="min-h-28 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-3 text-[14px] outline-none"
@@ -751,7 +751,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
                   </label>
                 ) : null}
 
-                <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+                <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
                   {supportsMarkdownBody ? "Body (Markdown)" : "Body"}
                   <textarea
                     className="min-h-[420px] rounded-2xl border border-[var(--color-border)] bg-[var(--color-background)] px-4 py-4 font-mono text-[13px] leading-7 text-[var(--color-foreground)] outline-none"
@@ -886,7 +886,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
             )}
           </section>
 
-          <aside className="grid gap-4 rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+          <aside className="grid w-full content-start gap-4 self-start rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
             <div>
               <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
                 Metadata
@@ -896,7 +896,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
               </h2>
             </div>
 
-            <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+            <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
               SEO title
               <input
                 className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
@@ -905,7 +905,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
               />
             </label>
 
-            <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+            <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
               SEO description
               <textarea
                 className="min-h-24 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-3 text-[14px] outline-none"
@@ -914,7 +914,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
               />
             </label>
 
-            <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+            <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
               Canonical URL
               <input
                 className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
@@ -924,7 +924,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
               />
             </label>
 
-            <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+            <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
               Tags
               <input
                 className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
@@ -934,7 +934,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
               />
             </label>
 
-            <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+            <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
               Categories
               <input
                 className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] outline-none"
@@ -954,7 +954,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
             </label>
 
             {showAssistantQuestions ? (
-              <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+              <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
                 AI assistant questions
                 <textarea
                   className="min-h-32 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-3 text-[14px] leading-7 outline-none"
@@ -988,7 +988,7 @@ export function ContentEditor({ mode }: { mode: EditorMode }) {
               </div>
 
               {form.metadata.map((entry) => (
-                <div key={entry.id} className="grid gap-2 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3">
+                <div key={entry.id} className="flex flex-col gap-2 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3">
                   <input
                     className="h-10 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] px-3 text-[13px] outline-none"
                     value={entry.key}
