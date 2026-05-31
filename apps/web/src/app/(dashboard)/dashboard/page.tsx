@@ -39,16 +39,16 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="grid gap-8">
-      <section className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_320px]">
+    <div className="grid gap-6 sm:gap-8">
+      <section className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.4fr)_320px]">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--color-muted-2)]">
             Operational surface
           </p>
-          <h1 className="mt-2 text-[30px] font-semibold tracking-[-0.05em] text-[var(--color-foreground)]">
+          <h1 className="mt-2 text-[24px] font-semibold tracking-[-0.05em] text-[var(--color-foreground)] sm:text-[30px]">
             Publishing control, not placeholder chrome.
           </h1>
-          <p className="mt-4 max-w-3xl text-[15px] leading-8 text-[var(--color-secondary)]">
+          <p className="mt-4 max-w-3xl text-[14px] leading-7 text-[var(--color-secondary)] sm:text-[15px] sm:leading-8">
             The dashboard now operates as a protected authoring system: session-aware routes, authenticated admin APIs, live content CRUD, markdown editing, and media upload boundaries ready for future platform expansion.
           </p>
         </div>
@@ -74,7 +74,7 @@ export default async function DashboardPage() {
         </div>
       </section>
 
-      <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {overviewItems.map(({ collection, total, published }) => (
           <article
             key={collection.type}

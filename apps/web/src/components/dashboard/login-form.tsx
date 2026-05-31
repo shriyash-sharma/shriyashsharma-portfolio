@@ -41,7 +41,7 @@ export function LoginForm() {
         });
       }}
     >
-      <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+      <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
         Email
         <input
           className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-[14px] text-[var(--color-foreground)] outline-none transition-colors focus:border-[var(--color-border-strong)]"
@@ -54,7 +54,7 @@ export function LoginForm() {
         />
       </label>
 
-      <label className="grid gap-2 text-[13px] text-[var(--color-secondary)]">
+      <label className="flex flex-col gap-2 text-[13px] text-[var(--color-secondary)]">
         Password
         <input
           className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-[14px] text-[var(--color-foreground)] outline-none transition-colors focus:border-[var(--color-border-strong)]"
@@ -72,7 +72,7 @@ export function LoginForm() {
         </p>
       ) : null}
 
-      <Button type="submit" size="lg" disabled={isPending}>
+      <Button type="submit" size="lg" disabled={isPending} className="w-full sm:w-auto">
         {isPending ? "Signing in..." : "Sign in to dashboard"}
       </Button>
     </form>

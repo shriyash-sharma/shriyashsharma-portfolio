@@ -275,24 +275,24 @@ export function ContentWorkspace() {
           <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--color-muted-2)]">
             Content operations
           </p>
-          <h1 className="mt-2 text-[30px] font-semibold tracking-[-0.05em] text-[var(--color-foreground)]">
+          <h1 className="mt-2 text-[24px] font-semibold tracking-[-0.05em] text-[var(--color-foreground)] sm:text-[30px]">
             Editorial workspace
           </h1>
-          <p className="mt-3 max-w-3xl text-[15px] leading-8 text-[var(--color-secondary)]">
+          <p className="mt-3 max-w-3xl text-[14px] leading-7 text-[var(--color-secondary)] sm:text-[15px] sm:leading-8">
             Browse, filter, and operate on persisted content across all platform
             collections. Search stays scoped and calm, with publish state visible at a glance.
           </p>
         </div>
 
-        <Button asChild size="lg">
+        <Button asChild size="lg" className="w-full sm:w-auto">
           <Link href={`/dashboard/content/new?type=${selectedType}`}>Create entry</Link>
         </Button>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
-        <div className="grid gap-4 rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 sm:p-5">
-          <div className="grid gap-3 md:grid-cols-4">
-            <label className="grid gap-2 text-[12px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
+      <section className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
+        <div className="grid w-full content-start gap-4 self-start rounded-[20px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 sm:rounded-[24px] sm:p-5">
+          <div className="grid items-start gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <label className="flex flex-col gap-2 text-[12px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
               Collection
               <select
                 className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] text-[var(--color-foreground)] outline-none"
@@ -307,7 +307,7 @@ export function ContentWorkspace() {
               </select>
             </label>
 
-            <label className="grid gap-2 text-[12px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
+            <label className="flex flex-col gap-2 text-[12px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
               Locale
               <select
                 className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] text-[var(--color-foreground)] outline-none"
@@ -322,7 +322,7 @@ export function ContentWorkspace() {
               </select>
             </label>
 
-            <label className="grid gap-2 text-[12px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
+            <label className="flex flex-col gap-2 text-[12px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
               Status
               <select
                 className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] text-[var(--color-foreground)] outline-none"
@@ -339,7 +339,7 @@ export function ContentWorkspace() {
               </select>
             </label>
 
-            <label className="grid gap-2 text-[12px] uppercase tracking-[0.12em] text-[var(--color-muted-2)]">
+            <label className="flex flex-col gap-2 text-[12px] uppercase tracking-[0.12em] text-[var(--color-muted-2)] sm:col-span-2 xl:col-span-1">
               Search
               <input
                 className="h-11 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 text-[14px] text-[var(--color-foreground)] outline-none"
@@ -404,8 +404,8 @@ export function ContentWorkspace() {
                     </div>
                   </div>
 
-                  <div className="flex shrink-0 flex-wrap gap-2 lg:justify-end">
-                    <Button asChild variant="secondary" size="sm">
+                  <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap lg:justify-end">
+                    <Button asChild variant="secondary" size="sm" className="w-full sm:w-auto">
                       <Link href={`/dashboard/content/${item.id}`}>Edit</Link>
                     </Button>
                     <Button
@@ -413,7 +413,7 @@ export function ContentWorkspace() {
                       size="sm"
                       disabled={Boolean(pendingDeleteId)}
                       onClick={() => handleRequestDelete(item)}
-                      className="text-red-200 hover:bg-red-500/10 hover:text-red-100"
+                      className="w-full text-red-200 hover:bg-red-500/10 hover:text-red-100 sm:w-auto"
                     >
                       {pendingDeleteId === item.id ? "Deleting..." : "Delete"}
                     </Button>
@@ -433,7 +433,7 @@ export function ContentWorkspace() {
           </div>
         </div>
 
-        <aside className="grid gap-3 rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 sm:p-5">
+        <aside className="grid w-full content-start gap-3 self-start rounded-[20px] border border-[var(--color-border)] bg-[var(--color-surface)] p-4 sm:rounded-[24px] sm:p-5">
           <div>
             <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--color-muted-2)]">
               Publish state
