@@ -184,20 +184,20 @@ async function fetchProjects(): Promise<Project[]> {
   return sortProjects(response.items.map(mapProject));
 }
 
-/** Returns all published projects, sorted featured first then newest. */
+/** Returns all published projects, sorted featured first then newest.
+ *
+ * IMPORTANT: We intentionally do NOT swallow transient backend failures here.
+ * Returning `[]` on error would let Next.js ISR cache an "empty homepage" for
+ * the full revalidate window after a backend cold start. Throwing instead
+ * causes ISR regeneration to fail, so Next.js keeps serving the previous
+ * good cached page until the backend recovers.
+ */
 export async function getProjects(): Promise<Project[]> {
   if (!hasBackendUrl()) {
     return [];
   }
 
-  try {
-    return await fetchProjects();
-  } catch (error) {
-    if (process.env.NODE_ENV === "production") {
-      console.error("[getProjects] failed to load from API:", error);
-    }
-    return [];
-  }
+  return fetchProjects();
 }
 
 export async function getFeaturedProjects(): Promise<Project[]> {
@@ -224,23 +224,14 @@ export async function getProjectDetail(
     );
     return { kind: "found", project: mapProject(item) };
   } catch (error) {
-    if (!(error instanceof ApiError) || error.status !== 404) {
-      if (process.env.NODE_ENV === "production") {
-        console.error("[getProjectDetail] failed to load project:", error);
-      }
-      return { kind: "unavailable" };
+    // Real 404 → genuinely missing; render not-found.
+    if (error instanceof ApiError && error.status === 404) {
+      return { kind: "missing" };
     }
-  }
-
-  try {
-    const projects = await fetchProjects();
-    const project = projects.find((entry) => entry.slug === normalizedSlug);
-    return project ? { kind: "found", project } : { kind: "missing" };
-  } catch (error) {
-    if (process.env.NODE_ENV === "production") {
-      console.error("[getProjectDetail] fallback lookup failed:", error);
-    }
-    return { kind: "unavailable" };
+    // Any other error (network, 5xx, cold start) is a transient failure.
+    // Re-throw so ISR keeps the previous good cached detail page instead
+    // of replacing it with an "unavailable" render.
+    throw error;
   }
 }
 
