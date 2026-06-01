@@ -11,6 +11,7 @@ import type {
   ContentType,
 } from "@/lib/api/contracts/content";
 import { hasBackendUrl } from "@/lib/api/backend-url";
+import { ApiError } from "@/lib/api/http-client";
 import { getContentItem, listContent } from "@/lib/api/endpoints/content-api";
 import { contentCollections } from "@/lib/content/registry";
 
@@ -71,18 +72,20 @@ function sortByPublishedDesc<T extends { publishedAt: string }>(items: T[]): T[]
   );
 }
 
-/** Filesystem implementation – returns empty arrays until content is added. */
+/** Filesystem implementation – returns empty arrays until content is added.
+ *
+ * NOTE: We deliberately do NOT catch fetch errors here. Returning `[]` on a
+ * transient backend failure would let Next.js ISR cache an empty page for the
+ * full revalidate window. By letting the error propagate, ISR regeneration
+ * fails and Next.js keeps serving the previous good cached page.
+ */
 export async function getBlogPosts(): Promise<BlogPost[]> {
   if (!hasBackendUrl()) {
     return [];
   }
 
-  try {
-    const response = await listContent({ type: "article", limit: 50 });
-    return sortByPublishedDesc(response.items.map(mapPublicContentEntry));
-  } catch {
-    return [];
-  }
+  const response = await listContent({ type: "article", limit: 50 });
+  return sortByPublishedDesc(response.items.map(mapPublicContentEntry));
 }
 
 export async function getBlogPost(slug: string): Promise<BlogPost | null> {
@@ -93,8 +96,11 @@ export async function getBlogPost(slug: string): Promise<BlogPost | null> {
   try {
     const item = await getContentItem({ type: "article", slug });
     return mapPublicContentEntry(item);
-  } catch {
-    return null;
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return null;
+    }
+    throw error;
   }
 }
 
@@ -103,12 +109,8 @@ export async function getCaseStudies(): Promise<CaseStudy[]> {
     return [];
   }
 
-  try {
-    const response = await listContent({ type: "case-study", limit: 50 });
-    return sortByPublishedDesc(response.items.map(mapPublicContentEntry));
-  } catch {
-    return [];
-  }
+  const response = await listContent({ type: "case-study", limit: 50 });
+  return sortByPublishedDesc(response.items.map(mapPublicContentEntry));
 }
 
 export async function getCaseStudy(slug: string): Promise<CaseStudy | null> {
@@ -119,8 +121,11 @@ export async function getCaseStudy(slug: string): Promise<CaseStudy | null> {
   try {
     const item = await getContentItem({ type: "case-study", slug });
     return mapPublicContentEntry(item);
-  } catch {
-    return null;
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return null;
+    }
+    throw error;
   }
 }
 
@@ -129,12 +134,8 @@ export async function getArchitectureNotes(): Promise<ArchitectureNote[]> {
     return [];
   }
 
-  try {
-    const response = await listContent({ type: "architecture-note", limit: 50 });
-    return sortByPublishedDesc(response.items.map(mapPublicContentEntry));
-  } catch {
-    return [];
-  }
+  const response = await listContent({ type: "architecture-note", limit: 50 });
+  return sortByPublishedDesc(response.items.map(mapPublicContentEntry));
 }
 
 export async function getArchitectureNote(
@@ -147,8 +148,11 @@ export async function getArchitectureNote(
   try {
     const item = await getContentItem({ type: "architecture-note", slug });
     return mapPublicContentEntry(item);
-  } catch {
-    return null;
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return null;
+    }
+    throw error;
   }
 }
 
