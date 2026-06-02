@@ -40,6 +40,34 @@ type ProjectLinks = {
   caseStudy?: string;
 };
 
+function normalizeCaseStudyLink(value: string | undefined): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+
+  if (trimmed.startsWith("/")) {
+    return trimmed;
+  }
+
+  try {
+    const url = new URL(trimmed);
+    // Case study links are internal site routes.
+    // If an absolute URL is entered in CMS, keep only path/query/hash so
+    // navigation always resolves against the active site origin.
+    const internalPath = `${url.pathname}${url.search}${url.hash}`;
+    return internalPath.startsWith("/") ? internalPath : `/${internalPath}`;
+  } catch {
+    // Keep non-URL values as-is for backward compatibility.
+  }
+
+  return trimmed;
+}
+
 export type ProjectLookupResult =
   | { kind: "found"; project: Project }
   | { kind: "missing" }
@@ -104,7 +132,9 @@ function resolveProjectLinks(metadata: ApiContentItem["metadata"]): ProjectLinks
   return {
     github: metadataString(metadata, "github", "github_url", "githubUrl"),
     live: metadataString(metadata, "live", "live_url", "liveUrl"),
-    caseStudy: metadataString(metadata, "caseStudy", "case_study", "caseStudyUrl"),
+    caseStudy: normalizeCaseStudyLink(
+      metadataString(metadata, "caseStudy", "case_study", "caseStudyUrl")
+    ),
   };
 }
 
