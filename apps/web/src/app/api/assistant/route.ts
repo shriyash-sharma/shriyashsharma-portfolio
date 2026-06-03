@@ -13,6 +13,10 @@
 
 import { createBackendUrl } from "@/lib/api/backend-url";
 import type { AssistantRequest } from "@/lib/api/contracts/ai";
+import {
+  checkAssistantRateLimit,
+  getRequestClientIp,
+} from "@/lib/api/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -37,13 +41,33 @@ export async function POST(request: Request) {
     );
   }
 
+  const clientIp = getRequestClientIp(request);
+  const rateLimit = checkAssistantRateLimit(clientIp);
+  if (!rateLimit.allowed) {
+    return Response.json(
+      {
+        error:
+          "Too many assistant requests. Please wait before trying again.",
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateLimit.retryAfterSeconds),
+        },
+      }
+    );
+  }
+
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
     const upstream = await fetch(createBackendUrl("/assistant"), {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Forwarded-For": clientIp,
+      },
       body: JSON.stringify({
         query: payload.query,
         session_id: payload.sessionId ?? null,
