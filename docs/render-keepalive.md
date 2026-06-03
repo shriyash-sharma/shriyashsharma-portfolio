@@ -35,7 +35,7 @@ Do **not** point keep-alive at `/health/ready` — that route checks the databas
 | Item | Value |
 |------|--------|
 | File | `.github/workflows/render-keepalive.yml` |
-| Schedule | Every 10 minutes (`*/10 * * * *`, UTC) |
+| Schedule | Every ~10 minutes (`3,13,23,33,43,53 * * * *`, UTC) |
 | Runner | `ubuntu-latest` (GitHub-hosted) |
 | Tool | `curl` (single request, no retries) |
 
@@ -63,6 +63,15 @@ On failure (non-200, timeout, or DNS error) the job logs a warning and exits suc
 6. In GitHub: **Actions → Render API keep-alive** — use **Run workflow** once, or wait for the next scheduled run. Logs should show `HTTP status: 200`.
 
 No GitHub secrets are required when the health URL is public (same as browser-accessible `GET /health`).
+
+## Scheduled runs not appearing?
+
+GitHub only runs `schedule` on the **default branch** (`main`). Manual **Run workflow** working does not prove cron is registered.
+
+1. **Actions** tab — if you see *“Scheduled workflows are disabled”*, click **Enable workflow** (happens after ~60 days repo inactivity until a new push).
+2. Confirm **Settings → Actions → General** allows workflows (not “Disable actions”).
+3. Wait for a run whose event is **`schedule`** (not “Manually run”). First run after adding/changing cron can take up to ~1 hour; GitHub also delays or skips runs at `:00` / `:10` UTC under load.
+4. After changing `.github/workflows/render-keepalive.yml`, push to `main` so the scheduler picks up the new cron.
 
 ## Disable
 
