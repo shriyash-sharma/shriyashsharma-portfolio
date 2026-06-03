@@ -21,7 +21,11 @@ def _sanitize_db_error(exc: Exception) -> str:
     return f"{type(exc).__name__}: {message[:240]}"
 
 
-@router.get("/health", response_model=HealthResponse)
+@router.api_route(
+    "/health",
+    methods=["GET", "HEAD"],
+    response_model=HealthResponse,
+)
 async def health(settings: SettingsDep) -> HealthResponse:
     """Liveness probe — does not require database connectivity."""
     return HealthResponse(
