@@ -53,6 +53,8 @@ The API refuses to start in `production` / `staging` if JWT secret, bootstrap pa
 
 **Media:** uploads use local disk on Render (ephemeral). Treat uploads as non-durable until object storage is wired.
 
+**Free-tier cold starts (optional):** a scheduled GitHub Actions workflow can ping `GET /health` every 10 minutes. Set repository variable `RENDER_HEALTH_URL` to `https://<your-render-host>/health`. See [docs/render-keepalive.md](../../docs/render-keepalive.md).
+
 ## 3. Vercel (web)
 
 1. Import the GitHub repo.
