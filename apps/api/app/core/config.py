@@ -62,6 +62,10 @@ class Settings(BaseSettings):
     # is small, so we can afford a high value for near-exact recall.
     rag_hnsw_ef_search: int = 200
 
+    # Public assistant abuse guard — per client IP, sliding 60s window.
+    # Set to 0 to disable. Disabled automatically when app_env is "test".
+    assistant_rate_limit_per_minute: int = 10
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
