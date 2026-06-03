@@ -8,6 +8,7 @@ import { ContextualAssistantCta } from "@/features/assistant";
 import { buildContentMetadata } from "@/lib/seo/content-metadata";
 import { blogPostingJsonLd, breadcrumbJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { contentStaticParams } from "@/lib/build/static-generation";
 import { getBlogPost, getBlogPosts } from "@/lib/services/content-service";
 
 type RouteContext = {
@@ -18,8 +19,7 @@ export const revalidate = 300;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const posts = await getBlogPosts();
-  return posts.map((post) => ({ slug: post.slug }));
+  return contentStaticParams(getBlogPosts, (post) => post.slug);
 }
 
 export async function generateMetadata(
