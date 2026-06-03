@@ -30,10 +30,10 @@ jobs:
             exit 0
           fi
 
-          echo "GET ${HEALTH_URL}"
+          echo "HEAD ${HEALTH_URL}"
 
           http_code="000"
-          if ! http_code=$(curl -sS -o /tmp/keepalive-body.txt -w "%{http_code}" \
+          if ! http_code=$(curl -sS -o /dev/null -w "%{http_code}" -X HEAD \
             --connect-timeout 10 \
             --max-time 30 \
             "${HEALTH_URL}"); then
@@ -42,11 +42,6 @@ jobs:
           fi
 
           echo "HTTP status: ${http_code}"
-          if [ -f /tmp/keepalive-body.txt ]; then
-            echo "Response body (truncated):"
-            head -c 512 /tmp/keepalive-body.txt || true
-            echo
-          fi
 
           if [ "${http_code}" = "200" ]; then
             echo "Keep-alive succeeded."

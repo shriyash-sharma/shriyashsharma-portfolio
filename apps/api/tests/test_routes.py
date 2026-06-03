@@ -5,11 +5,18 @@ from app.main import app
 client = TestClient(app)
 
 
-def test_health_route() -> None:
+def test_health_route_get() -> None:
     response = client.get("/health")
 
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
+
+
+def test_health_route_head() -> None:
+    response = client.head("/health")
+
+    assert response.status_code == 200
+    assert response.content == b""
 
 
 def test_platform_route() -> None:

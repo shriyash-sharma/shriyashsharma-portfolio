@@ -73,7 +73,7 @@ async function request<T>(
       throw new ApiError(response.status, response.statusText, message);
     }
 
-    if (response.status === 204) {
+    if (response.status === 204 || init.method === "HEAD") {
       return undefined as T;
     }
 
@@ -86,6 +86,9 @@ async function request<T>(
 export const httpClient = {
   get: <T>(path: string, options?: RequestOptions) =>
     request<T>(path, { method: "GET", ...options }),
+
+  head: <T = void>(path: string, options?: RequestOptions) =>
+    request<T>(path, { method: "HEAD", ...options }),
 
   post: <T>(path: string, body: unknown, options?: RequestOptions) =>
     request<T>(path, {
