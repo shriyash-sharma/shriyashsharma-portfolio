@@ -4,6 +4,7 @@
  * Swap implementation for API-backed data without changing callers.
  */
 
+import { contentStaticParams } from "@/lib/build/static-generation";
 import { ApiError } from "@/lib/api/http-client";
 import { hasBackendUrl } from "@/lib/api/backend-url";
 import { listContent, getContentItem } from "@/lib/api/endpoints/content-api";
@@ -271,6 +272,5 @@ export async function getProject(slug: string): Promise<Project | null> {
 }
 
 export async function getProjectStaticParams(): Promise<Array<{ slug: string }>> {
-  const projects = await getProjects();
-  return projects.map((project) => ({ slug: project.slug }));
+  return contentStaticParams(getProjects, (project) => project.slug);
 }

@@ -8,6 +8,7 @@ import { ContextualAssistantCta } from "@/features/assistant";
 import { buildContentMetadata } from "@/lib/seo/content-metadata";
 import { breadcrumbJsonLd, techArticleJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { contentStaticParams } from "@/lib/build/static-generation";
 import {
   getArchitectureNote,
   getArchitectureNotes,
@@ -21,8 +22,7 @@ export const revalidate = 300;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const notes = await getArchitectureNotes();
-  return notes.map((note) => ({ slug: note.slug }));
+  return contentStaticParams(getArchitectureNotes, (note) => note.slug);
 }
 
 export async function generateMetadata(

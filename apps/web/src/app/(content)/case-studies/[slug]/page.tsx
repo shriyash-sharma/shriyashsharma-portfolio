@@ -9,6 +9,7 @@ import { metadataAssistantQuestions } from "@/lib/content/metadata-helpers";
 import { buildContentMetadata } from "@/lib/seo/content-metadata";
 import { breadcrumbJsonLd, techArticleJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { contentStaticParams } from "@/lib/build/static-generation";
 import { getCaseStudies, getCaseStudy } from "@/lib/services/content-service";
 
 type RouteContext = {
@@ -19,8 +20,7 @@ export const revalidate = 300;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const caseStudies = await getCaseStudies();
-  return caseStudies.map((entry) => ({ slug: entry.slug }));
+  return contentStaticParams(getCaseStudies, (entry) => entry.slug);
 }
 
 export async function generateMetadata(

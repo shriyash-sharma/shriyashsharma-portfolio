@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { isProductionBuildPhase } from "@/lib/build/static-generation";
 import {
   defaultLocale,
   locales,
@@ -73,12 +74,25 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     localizedEntries(route.path, undefined, route.changeFrequency, route.priority)
   );
 
-  const [projects, posts, caseStudies, architectureNotes] = await Promise.all([
-    getProjects(),
-    getBlogPosts(),
-    getCaseStudies(),
-    getArchitectureNotes(),
-  ]);
+  let projects: Awaited<ReturnType<typeof getProjects>> = [];
+  let posts: Awaited<ReturnType<typeof getBlogPosts>> = [];
+  let caseStudies: Awaited<ReturnType<typeof getCaseStudies>> = [];
+  let architectureNotes: Awaited<ReturnType<typeof getArchitectureNotes>> = [];
+
+  try {
+    [projects, posts, caseStudies, architectureNotes] = await Promise.all([
+      getProjects(),
+      getBlogPosts(),
+      getCaseStudies(),
+      getArchitectureNotes(),
+    ]);
+  } catch (error) {
+    // During deploy the backend may be cold; static routes are enough to pass
+    // the build. Runtime ISR revalidation will retry with the full sitemap.
+    if (!isProductionBuildPhase()) {
+      throw error;
+    }
+  }
 
   const dynamicRoutes = [
     ...projects.map((item) => ({
