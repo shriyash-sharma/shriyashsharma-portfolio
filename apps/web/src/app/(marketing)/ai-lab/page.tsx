@@ -3,7 +3,7 @@ import { FlaskConical } from "lucide-react";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
-import { ToolGrid } from "@/features/ai-lab";
+import { ToolGrid, AiLabConcepts } from "@/features/ai-lab";
 import { aiLabTools } from "@/lib/ai-lab/tools";
 import {
   breadcrumbJsonLd,
@@ -70,6 +70,9 @@ export default function AiLabPage() {
               </div>
               <ToolGrid />
             </div>
+
+            {/* Educational overview — crawlable concepts for SEO/GEO */}
+            <AiLabConcepts />
           </div>
         </Section>
       </PageShell>

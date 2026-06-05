@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { BrandMark } from "@/components/brand/brand-mark";
+import { FooterNav } from "@/components/layout/footer-nav";
 import { EmailLink } from "@/components/shared/email-link";
 import { siteConfig } from "@/lib/constants/site";
 import { MaxWidthWrapper } from "./max-width-wrapper";
@@ -24,8 +25,10 @@ export function Footer({ reserveLauncherSpace = false }: FooterProps) {
       )}
     >
       <MaxWidthWrapper>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-6">
+          <FooterNav />
+          <div className="flex flex-col gap-4 border-t border-[var(--color-border)] pt-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
             <BrandMark
               showWordmark={false}
               iconClassName="h-6"
@@ -76,6 +79,7 @@ export function Footer({ reserveLauncherSpace = false }: FooterProps) {
             >
               {siteConfig.author.email}
             </EmailLink>
+          </div>
           </div>
         </div>
       </MaxWidthWrapper>

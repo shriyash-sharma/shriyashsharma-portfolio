@@ -106,8 +106,10 @@ export function buildMetadata(overrides: MetadataOverrides = {}): Metadata {
 
   return {
     title: {
-      default: title,
-      template: `%s — ${siteConfig.name}`,
+      // `absolute` renders this exact string and ignores any ancestor
+      // `title.template`, preventing the brand suffix from being appended twice
+      // (root layout + page both build a fully-branded title).
+      absolute: title,
     },
     description,
     applicationName: siteConfig.name,

@@ -41,9 +41,10 @@ type Dictionary = {
 export const dictionaries: Record<Locale, Dictionary> = {
   en: {
     meta: {
-      title: "Shriyash Sharma — Senior Software Engineer",
+      title:
+        "Shriyash Sharma | Senior Software Engineer | Next.js, FastAPI & AI Systems",
       description:
-        "Senior Software Engineer building scalable web applications and evolving AI-powered engineering systems.",
+        "Senior Software Engineer specializing in Next.js, FastAPI, AI-powered systems, semantic search, PostgreSQL, and Retrieval-Augmented Generation (RAG).",
     },
     nav: {
       projects: "Projects",
