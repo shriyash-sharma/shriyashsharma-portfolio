@@ -1,4 +1,5 @@
 import { Section } from "@/components/layout/section";
+import { RAG_EXPLORER_FAQ } from "@/lib/ai-lab/faq";
 
 /**
  * Substantial, crawlable educational content rendered below the interactive
@@ -147,6 +148,24 @@ export function RagSeoContent() {
             all of it happen on your own text.
           </p>
         </Topic>
+
+        <section className="flex flex-col gap-5" aria-label="Frequently asked questions">
+          <h3 className="text-[18px] font-medium tracking-[-0.01em] text-[var(--color-foreground)]">
+            Frequently asked questions
+          </h3>
+          <dl className="flex flex-col gap-5">
+            {RAG_EXPLORER_FAQ.map((item) => (
+              <div key={item.question} className="flex flex-col gap-1.5">
+                <dt className="text-[14.5px] font-medium text-[var(--color-foreground)]">
+                  {item.question}
+                </dt>
+                <dd className="text-[14px] leading-relaxed text-[var(--color-secondary)]">
+                  {item.answer}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
       </div>
     </Section>
   );

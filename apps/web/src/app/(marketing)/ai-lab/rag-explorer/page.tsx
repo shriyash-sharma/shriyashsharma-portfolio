@@ -5,9 +5,11 @@ import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
 import { RagExplorer, RagSeoContent } from "@/features/ai-lab";
+import { RAG_EXPLORER_FAQ } from "@/lib/ai-lab/faq";
 import { RAG_EXPLORER_KEYWORDS } from "@/lib/ai-lab/tools";
 import {
   breadcrumbJsonLd,
+  faqPageJsonLd,
   learningResourceJsonLd,
   techArticleJsonLd,
 } from "@/lib/seo/json-ld";
@@ -45,6 +47,7 @@ export default function RagExplorerPage() {
             { name: "AI Lab", path: "/ai-lab" },
             { name: "RAG Explorer", path: "/ai-lab/rag-explorer" },
           ]),
+          faqPageJsonLd(RAG_EXPLORER_FAQ),
         ]}
       />
       <PageShell>
