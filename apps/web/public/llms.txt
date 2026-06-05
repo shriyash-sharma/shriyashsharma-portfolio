@@ -1,0 +1,24 @@
+# Shriyash Sharma
+
+> Senior Software Engineer specializing in Next.js, FastAPI, AI-powered systems, semantic search, PostgreSQL, and Retrieval-Augmented Generation (RAG). This site is a personal engineering portfolio covering production projects, technical case studies, writing, and interactive AI engineering tools.
+
+Shriyash Sharma is a full-stack software engineer with a focus on modern web architecture (Next.js, React, TypeScript), backend systems (FastAPI, Python, PostgreSQL), and applied AI engineering (RAG pipelines, embeddings, vector search, and semantic retrieval).
+
+## Projects
+- [Projects](https://shriyashsharma.com/projects): Independent products and engineering systems built with Next.js, FastAPI, PostgreSQL, and semantic retrieval, with production system design.
+
+## Case Studies
+- [Case Studies](https://shriyashsharma.com/case-studies): In-depth engineering case studies covering architecture decisions, delivery, and measurable outcomes.
+
+## Blog
+- [Blog](https://shriyashsharma.com/blog): Technical writing on modern web development, AI integration, and platform engineering.
+
+## AI Lab
+- [AI Lab](https://shriyashsharma.com/ai-lab): Interactive tools and visualizations that explain how modern AI systems work, from retrieval pipelines and embeddings to search and system design.
+- [RAG Explorer](https://shriyashsharma.com/ai-lab/rag-explorer): Step-by-step visualization of a full Retrieval-Augmented Generation pipeline — chunking, embeddings, vector search, retrieval, prompt construction, and grounded answer generation.
+
+## About
+- [About](https://shriyashsharma.com/about): Background on Shriyash Sharma — Senior Software Engineer building React, Next.js, TypeScript, FastAPI, and practical AI-assisted systems.
+
+## Contact
+- [Contact](https://shriyashsharma.com/contact): Reach out for engineering roles, speaking, and collaboration.

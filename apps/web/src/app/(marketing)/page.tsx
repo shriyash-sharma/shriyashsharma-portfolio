@@ -12,6 +12,7 @@ import { HeroSection } from "@/features/home/components/hero-section";
 import { FeaturedProjectsSection } from "@/features/home/components/featured-projects-section";
 import { CaseStudiesSection } from "@/features/home/components/case-studies-section";
 import { AssistantSection } from "@/features/home/components/assistant-section";
+import { TechnologiesSection } from "@/features/home/components/technologies-section";
 import { ContactCtaSection } from "@/features/home/components/contact-cta-section";
 import { getCaseStudies } from "@/lib/services/content-service";
 import { getProjects } from "@/lib/services/project-service";
@@ -43,6 +44,7 @@ export default async function HomePage() {
           backendConfigured={backendConfigured}
         />
         <AssistantSection />
+        <TechnologiesSection />
         <ContactCtaSection />
       </PageShell>
     </>

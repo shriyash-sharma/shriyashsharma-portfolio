@@ -66,7 +66,7 @@ export default function RagExplorerPage() {
                 RAG Explorer
               </span>
               <h1 className="max-w-3xl text-[28px] font-medium leading-[1.12] tracking-[-0.02em] text-[var(--color-foreground)] sm:text-[36px]">
-                Learn Retrieval-Augmented Generation, step by step
+                Learn Retrieval-Augmented Generation (Vector RAG), Step by Step
               </h1>
               <p className="max-w-3xl text-[14.5px] leading-relaxed text-[var(--color-secondary)] sm:text-[15.5px]">
                 Paste your own content, ask a question, and watch a complete RAG
