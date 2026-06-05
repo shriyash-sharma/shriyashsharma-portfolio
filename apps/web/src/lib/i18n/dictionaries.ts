@@ -8,6 +8,7 @@ type Dictionary = {
   nav: {
     projects: string;
     caseStudies: string;
+    aiLab: string;
     blog: string;
     speaking: string;
     about: string;
@@ -47,6 +48,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     nav: {
       projects: "Projects",
       caseStudies: "Case Studies",
+      aiLab: "AI Lab",
       blog: "Blog",
       speaking: "Speaking",
       about: "About",
@@ -91,6 +93,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     nav: {
       projects: "Proyectos",
       caseStudies: "Casos",
+      aiLab: "AI Lab",
       blog: "Blog",
       speaking: "Charlas",
       about: "Perfil",
@@ -134,6 +137,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     nav: {
       projects: "المشاريع",
       caseStudies: "دراسات الحالة",
+      aiLab: "AI Lab",
       blog: "المدونة",
       speaking: "محاضرات",
       about: "نبذة",
@@ -177,6 +181,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     nav: {
       projects: "प्रोजेक्ट्स",
       caseStudies: "केस स्टडीज़",
+      aiLab: "AI Lab",
       blog: "ब्लॉग",
       speaking: "वार्ता",
       about: "परिचय",
@@ -220,6 +225,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     nav: {
       projects: "Projetos",
       caseStudies: "Estudos",
+      aiLab: "AI Lab",
       blog: "Blog",
       speaking: "Palestras",
       about: "Sobre",
@@ -263,6 +269,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     nav: {
       projects: "Projekte",
       caseStudies: "Fallstudien",
+      aiLab: "AI Lab",
       blog: "Blog",
       speaking: "Vorträge",
       about: "Profil",
@@ -306,6 +313,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     nav: {
       projects: "Projets",
       caseStudies: "Études",
+      aiLab: "AI Lab",
       blog: "Blog",
       speaking: "Conférences",
       about: "Profil",

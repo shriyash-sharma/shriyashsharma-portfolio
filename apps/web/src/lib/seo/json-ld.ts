@@ -186,6 +186,35 @@ export function projectJsonLd({
   });
 }
 
+export function learningResourceJsonLd({
+  title,
+  description,
+  path,
+  keywords,
+  educationalLevel = "Beginner",
+}: {
+  title: string;
+  description: string;
+  path: string;
+  keywords?: string[];
+  educationalLevel?: string;
+}): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "LearningResource",
+    name: title,
+    description,
+    url: absoluteUrl(path),
+    learningResourceType: "Interactive tool",
+    educationalLevel,
+    inLanguage: "en",
+    keywords: keywords?.join(", "),
+    author: { "@id": absoluteUrl("/#person") },
+    publisher: { "@id": absoluteUrl("/#person") },
+    isAccessibleForFree: true,
+  };
+}
+
 export function homePageJsonLdGraph(): JsonLd[] {
   return [
     { "@context": "https://schema.org", ...personEntity() },
