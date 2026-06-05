@@ -70,6 +70,18 @@ export const pageSeo = {
       "Chat with the portfolio's AI guide. Answers are grounded in indexed projects, case studies, architecture notes, and articles.",
     path: "/assistant",
   },
+  aiLab: {
+    title: "AI Lab",
+    description:
+      "Explore interactive tools that explain Retrieval-Augmented Generation (RAG), embeddings, vector search, semantic retrieval, and modern AI system architecture.",
+    path: "/ai-lab",
+  },
+  aiLabRagExplorer: {
+    title: "RAG Explorer",
+    description:
+      "Interactive visualization of chunking, embeddings, vector search, retrieval, prompt construction, and answer generation. Learn how modern RAG systems work internally.",
+    path: "/ai-lab/rag-explorer",
+  },
 } as const;
 
 export type PageSeoKey = keyof typeof pageSeo;
