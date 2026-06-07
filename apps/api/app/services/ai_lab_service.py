@@ -15,14 +15,21 @@ The final answer reuses the existing Groq LLM provider.
 
 from __future__ import annotations
 
+import asyncio
+import hashlib
+import json
 import logging
 import time
+from collections import OrderedDict
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 from app.ai.embeddings.factory import (
     get_embedding_provider,
     get_local_embedding_provider,
 )
-from app.ai.ingestion.chunking import chunk_markdown
+from app.ai.ingestion.chunking import Chunk, chunk_markdown
 from app.ai.llm.base import ChatMessage
 from app.ai.llm.factory import get_llm_provider
 from app.core.config import get_settings
@@ -39,6 +46,22 @@ from app.schemas.ai_lab import (
 )
 
 logger = logging.getLogger(__name__)
+
+_DOC_EMBEDDING_CACHE_MAX_ITEMS = 32
+_DEMO_EMBEDDINGS_FILENAME = "rag_demo_embeddings_v1.json"
+
+
+@dataclass
+class _CachedDocEmbeddings:
+    raw_chunks: list[Chunk]
+    chunk_views: list[ChunkView]
+    chunk_vectors: list[list[float]]
+    is_fallback: bool
+    demo_query_vectors: dict[str, list[float]]
+
+
+_doc_embedding_cache: OrderedDict[str, _CachedDocEmbeddings] = OrderedDict()
+_doc_embedding_cache_lock = asyncio.Lock()
 
 RAG_EXPLORER_SYSTEM_PROMPT = """\
 You are a retrieval-augmented assistant inside an educational "RAG Explorer".
@@ -63,6 +86,147 @@ def _round_vector(vector: list[float], count: int) -> list[float]:
     return [round(value, 4) for value in vector[:count]]
 
 
+def _hash_text(value: str) -> str:
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def _doc_cache_key(
+    *,
+    content: str,
+    chunk_size: int,
+    chunk_overlap: int,
+    max_chunks: int,
+    provider: str,
+    model: str,
+    dimensions: int,
+    is_fallback: bool,
+) -> str:
+    fingerprint = "|".join(
+        [
+            provider,
+            model,
+            str(dimensions),
+            str(is_fallback),
+            str(chunk_size),
+            str(chunk_overlap),
+            str(max_chunks),
+            _hash_text(content),
+        ]
+    )
+    return _hash_text(fingerprint)
+
+
+def _question_cache_key(question: str) -> str:
+    return _hash_text(question.strip())
+
+
+async def _get_cached_doc_embeddings(key: str) -> _CachedDocEmbeddings | None:
+    async with _doc_embedding_cache_lock:
+        cached = _doc_embedding_cache.get(key)
+        if cached is not None:
+            _doc_embedding_cache.move_to_end(key)
+        return cached
+
+
+async def _set_cached_doc_embeddings(
+    key: str,
+    cached: _CachedDocEmbeddings,
+) -> None:
+    async with _doc_embedding_cache_lock:
+        _doc_embedding_cache[key] = cached
+        _doc_embedding_cache.move_to_end(key)
+        while len(_doc_embedding_cache) > _DOC_EMBEDDING_CACHE_MAX_ITEMS:
+            _doc_embedding_cache.popitem(last=False)
+
+
+def _demo_embeddings_cache_file() -> Path:
+    settings = get_settings()
+    media_path = Path(settings.media_storage_path)
+    storage_root = media_path.parent
+    return storage_root / "ai_lab_cache" / _DEMO_EMBEDDINGS_FILENAME
+
+
+def _serialize_cached_doc(cached: _CachedDocEmbeddings) -> dict[str, Any]:
+    return {
+        "raw_chunks": [
+            {
+                "index": chunk.index,
+                "content": chunk.content,
+                "heading_path": chunk.heading_path,
+            }
+            for chunk in cached.raw_chunks
+        ],
+        "chunk_views": [view.model_dump() for view in cached.chunk_views],
+        "chunk_vectors": cached.chunk_vectors,
+        "is_fallback": cached.is_fallback,
+        "demo_query_vectors": cached.demo_query_vectors,
+    }
+
+
+def _deserialize_cached_doc(data: dict[str, Any]) -> _CachedDocEmbeddings:
+    raw_chunks = [
+        Chunk(
+            index=int(item["index"]),
+            content=str(item["content"]),
+            heading_path=item.get("heading_path"),
+        )
+        for item in data["raw_chunks"]
+    ]
+    chunk_views = [ChunkView(**item) for item in data["chunk_views"]]
+    chunk_vectors = [
+        [float(value) for value in vector] for vector in data["chunk_vectors"]
+    ]
+    is_fallback = bool(data.get("is_fallback", False))
+    demo_query_vectors_data = data.get("demo_query_vectors", {})
+    if not isinstance(demo_query_vectors_data, dict):
+        demo_query_vectors_data = {}
+    demo_query_vectors = {
+        str(key): [float(value) for value in vector]
+        for key, vector in demo_query_vectors_data.items()
+        if isinstance(vector, list)
+    }
+    return _CachedDocEmbeddings(
+        raw_chunks=raw_chunks,
+        chunk_views=chunk_views,
+        chunk_vectors=chunk_vectors,
+        is_fallback=is_fallback,
+        demo_query_vectors=demo_query_vectors,
+    )
+
+
+def _load_demo_cached_doc(key: str) -> _CachedDocEmbeddings | None:
+    cache_file = _demo_embeddings_cache_file()
+    if not cache_file.exists():
+        return None
+    try:
+        payload = json.loads(cache_file.read_text(encoding="utf-8"))
+        if not isinstance(payload, dict):
+            return None
+        entry = payload.get(key)
+        if not isinstance(entry, dict):
+            return None
+        return _deserialize_cached_doc(entry)
+    except Exception:
+        logger.exception("Failed to load AI Lab demo embedding cache")
+        return None
+
+
+def _persist_demo_cached_doc(key: str, cached: _CachedDocEmbeddings) -> None:
+    cache_file = _demo_embeddings_cache_file()
+    try:
+        cache_file.parent.mkdir(parents=True, exist_ok=True)
+        if cache_file.exists():
+            payload = json.loads(cache_file.read_text(encoding="utf-8"))
+            if not isinstance(payload, dict):
+                payload = {}
+        else:
+            payload = {}
+        payload[key] = _serialize_cached_doc(cached)
+        cache_file.write_text(json.dumps(payload), encoding="utf-8")
+    except Exception:
+        logger.exception("Failed to persist AI Lab demo embedding cache")
+
+
 async def run_rag_explorer(
     payload: RagExplorerRequest,
     *,
@@ -84,29 +248,6 @@ async def run_rag_explorer(
     )
     chunk_overlap = min(chunk_overlap, chunk_size - 1)
 
-    # --- Step 2: Chunking ---------------------------------------------------
-    raw_chunks = chunk_markdown(
-        content,
-        target_chars=chunk_size,
-        overlap_chars=chunk_overlap,
-    )[: settings.ai_lab_max_chunks]
-
-    # Pasted text without markdown structure can yield a single chunk; that is
-    # still a valid teaching case. Guard against the empty-input edge.
-    if not raw_chunks:
-        raw_chunks = []
-
-    chunk_views = [
-        ChunkView(
-            index=chunk.index,
-            content=chunk.content,
-            char_count=len(chunk.content),
-            token_estimate=chunk.token_estimate,
-            heading_path=chunk.heading_path,
-        )
-        for chunk in raw_chunks
-    ]
-
     # --- Step 3: Embeddings -------------------------------------------------
     # Switch between hosted OpenAI embeddings and the local open-source model
     # based on the USE_OPENAI_EMBEDDINGS_FOR_LAB environment variable.
@@ -127,24 +268,108 @@ async def run_rag_explorer(
     embeddings = (
         get_embedding_provider() if use_openai else get_local_embedding_provider()
     )
-    embed_start = time.perf_counter()
-    chunk_vectors = await embeddings.embed_many(
-        [chunk.content for chunk in raw_chunks]
+
+    provider_name = "openai" if use_openai else "local"
+    fallback_before = bool(getattr(embeddings, "is_fallback", False))
+    cache_key = _doc_cache_key(
+        content=content,
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        max_chunks=settings.ai_lab_max_chunks,
+        provider=provider_name,
+        model=embeddings.model,
+        dimensions=embeddings.dimensions,
+        is_fallback=fallback_before,
     )
+    cached_doc = await _get_cached_doc_embeddings(cache_key)
+    if cached_doc is None and payload.is_demo_content:
+        cached_doc = _load_demo_cached_doc(cache_key)
+        if cached_doc is not None:
+            await _set_cached_doc_embeddings(cache_key, cached_doc)
+
+    if cached_doc is None:
+        # --- Step 2: Chunking ------------------------------------------------
+        raw_chunks = chunk_markdown(
+            content,
+            target_chars=chunk_size,
+            overlap_chars=chunk_overlap,
+        )[: settings.ai_lab_max_chunks]
+
+        # Pasted text without markdown structure can yield a single chunk; that
+        # is still a valid teaching case. Guard against empty-input edge.
+        if not raw_chunks:
+            raw_chunks = []
+
+        chunk_views = [
+            ChunkView(
+                index=chunk.index,
+                content=chunk.content,
+                char_count=len(chunk.content),
+                token_estimate=chunk.token_estimate,
+                heading_path=chunk.heading_path,
+            )
+            for chunk in raw_chunks
+        ]
+    else:
+        raw_chunks = cached_doc.raw_chunks
+        chunk_views = cached_doc.chunk_views
+
+    embed_start = time.perf_counter()
+    if cached_doc is None:
+        chunk_vectors = await embeddings.embed_many(
+            [chunk.content for chunk in raw_chunks]
+        )
+        fallback_after = bool(getattr(embeddings, "is_fallback", False))
+        cache_key = _doc_cache_key(
+            content=content,
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap,
+            max_chunks=settings.ai_lab_max_chunks,
+            provider=provider_name,
+            model=embeddings.model,
+            dimensions=embeddings.dimensions,
+            is_fallback=fallback_after,
+        )
+        cached_doc = _CachedDocEmbeddings(
+            raw_chunks=raw_chunks,
+            chunk_views=chunk_views,
+            chunk_vectors=chunk_vectors,
+            is_fallback=fallback_after,
+            demo_query_vectors={},
+        )
+        await _set_cached_doc_embeddings(cache_key, cached_doc)
+        if payload.is_demo_content:
+            _persist_demo_cached_doc(cache_key, cached_doc)
+        embedding_fallback = fallback_after
+    else:
+        chunk_vectors = cached_doc.chunk_vectors
+        embedding_fallback = cached_doc.is_fallback
+
     # Local BGE models benefit from the is_query prefix for better retrieval.
     # OpenAI provider does not support that parameter.
-    if use_openai:
-        query_vector = await embeddings.embed_one(question)
-    else:
-        query_vector = await get_local_embedding_provider().embed_one(
-            question, is_query=True
-        )
+    demo_question_key = _question_cache_key(question)
+    query_vector = (
+        cached_doc.demo_query_vectors.get(demo_question_key)
+        if payload.is_demo_content and cached_doc is not None
+        else None
+    )
+    if query_vector is None:
+        if use_openai:
+            query_vector = await embeddings.embed_one(question)
+        else:
+            query_vector = await get_local_embedding_provider().embed_one(
+                question, is_query=True
+            )
+        if payload.is_demo_content and cached_doc is not None:
+            cached_doc.demo_query_vectors[demo_question_key] = query_vector
+            await _set_cached_doc_embeddings(cache_key, cached_doc)
+            _persist_demo_cached_doc(cache_key, cached_doc)
     embed_ms = (time.perf_counter() - embed_start) * 1000
 
     embedding_info = EmbeddingInfo(
         model=embeddings.model,
         dimensions=embeddings.dimensions,
-        is_fallback=getattr(embeddings, "is_fallback", False),
+        is_fallback=embedding_fallback,
         generation_ms=round(embed_ms, 2),
         chunk_count=len(chunk_vectors),
         query_vector_preview=_round_vector(query_vector, preview_dims),

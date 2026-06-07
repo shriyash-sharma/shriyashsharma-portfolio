@@ -20,6 +20,7 @@ class RagExplorerRequest(BaseModel):
     content: str = Field(min_length=20, max_length=9_000)
     question: str = Field(min_length=3, max_length=500)
     top_k: int | None = Field(default=None, ge=1, le=10)
+    is_demo_content: bool = False
     # User-tunable chunking. Defaults come from settings when omitted. Overlap
     # is clamped to chunk_size in the service so it can never exceed it.
     chunk_size: int | None = Field(default=None, ge=100, le=2_000)

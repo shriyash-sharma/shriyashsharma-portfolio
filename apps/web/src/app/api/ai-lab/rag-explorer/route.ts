@@ -69,6 +69,7 @@ export async function POST(request: Request) {
         content,
         question,
         top_k: payload.top_k ?? null,
+        is_demo_content: payload.is_demo_content ?? false,
         chunk_size: payload.chunk_size ?? null,
         chunk_overlap: payload.chunk_overlap ?? null,
       }),

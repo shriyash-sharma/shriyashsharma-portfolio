@@ -11,6 +11,7 @@ export type RagExplorerRequest = {
   content: string;
   question: string;
   top_k?: number;
+  is_demo_content?: boolean;
   chunk_size?: number;
   chunk_overlap?: number;
 };

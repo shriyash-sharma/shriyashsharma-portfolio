@@ -49,6 +49,8 @@ export function RagExplorer() {
         body: JSON.stringify({
           content: content.trim(),
           question: question.trim(),
+          is_demo_content:
+            content.trim() === RAG_EXPLORER_SAMPLE_CONTENT.trim(),
           chunk_size: chunkSize,
         }),
       });
