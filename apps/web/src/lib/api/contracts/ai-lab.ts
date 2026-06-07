@@ -30,6 +30,7 @@ export type RagEmbeddingInfo = {
   generation_ms: number;
   chunk_count: number;
   query_vector_preview: number[];
+  query_vector_full?: number[];
 };
 
 export type RagVectorSearchInfo = {

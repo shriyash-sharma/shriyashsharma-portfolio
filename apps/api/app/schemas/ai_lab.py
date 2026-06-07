@@ -41,6 +41,7 @@ class EmbeddingInfo(BaseModel):
     generation_ms: float
     chunk_count: int
     query_vector_preview: list[float]
+    query_vector_full: list[float]
 
 
 class VectorSearchInfo(BaseModel):

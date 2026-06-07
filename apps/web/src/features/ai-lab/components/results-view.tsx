@@ -16,14 +16,18 @@ import { StepCard, StepConnector } from "./step-card";
 import { MetricsBar } from "./metrics-bar";
 import { highlightTerms, questionTerms } from "./highlight";
 
-function formatVector(values: number[]): string {
+function formatVector(values: number[], withEllipsis = true): string {
   if (!values.length) return "[ ]";
-  return `[${values.map((value) => value.toFixed(2)).join(", ")} …]`;
+  return `[${values.map((value) => value.toFixed(2)).join(", ")}${
+    withEllipsis ? " …" : ""
+  }]`;
 }
 
 export function ResultsView({ result }: { result: RagExplorerResponse }) {
   const terms = questionTerms(result.query);
   const topScore = result.retrieved[0]?.score ?? 0;
+  const fullVector =
+    result.embedding.query_vector_full ?? result.embedding.query_vector_preview;
 
   return (
     <div className="flex flex-col gap-4">
@@ -149,21 +153,32 @@ export function ResultsView({ result }: { result: RagExplorerResponse }) {
           />
         </div>
 
-        <div className="mt-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] p-3.5">
-          <div className="flex items-center justify-between">
+        <details className="group mt-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)]">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3.5 py-3">
             <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-[var(--color-muted)]">
               Vector preview
             </span>
             <span className="text-[11px] text-[var(--color-muted)]">
-              first {result.embedding.query_vector_preview.length} of{" "}
-              {result.embedding.dimensions} dimensions
+              {result.embedding.query_vector_preview.length} preview / {fullVector.length} full dims
             </span>
+          </summary>
+
+          <div className="border-t border-[var(--color-border)] px-3.5 py-3">
+            <code className="block overflow-x-auto font-mono text-[12.5px] text-[var(--color-foreground)]">
+              {formatVector(result.embedding.query_vector_preview)}
+            </code>
+            <VectorBars values={result.embedding.query_vector_preview} />
+
+            <div className="mt-3 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] p-2.5">
+              <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-[var(--color-muted)]">
+                Full preview values
+              </p>
+              <code className="mt-1.5 block overflow-x-auto whitespace-pre-wrap font-mono text-[11.5px] leading-relaxed text-[var(--color-secondary)]">
+                {formatVector(fullVector, false)}
+              </code>
+            </div>
           </div>
-          <code className="mt-2 block overflow-x-auto font-mono text-[12.5px] text-[var(--color-foreground)]">
-            {formatVector(result.embedding.query_vector_preview)}
-          </code>
-          <VectorBars values={result.embedding.query_vector_preview} />
-        </div>
+        </details>
 
         {/* Conceptual question-vs-chunk comparison */}
         <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
