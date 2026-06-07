@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir uv
 COPY pyproject.toml uv.lock README.md alembic.ini ./
 COPY app ./app
 
-RUN uv sync --frozen --no-dev
+RUN uv sync --frozen --no-dev --group local-embeddings
 
 EXPOSE 8000
 
