@@ -37,8 +37,11 @@ class Settings(BaseSettings):
     # Local open-source embeddings — used only by the AI Lab RAG Explorer to
     # demonstrate open-source AI infrastructure (never calls OpenAI). Loaded
     # lazily via sentence-transformers with a deterministic offline fallback.
-    local_embedding_model: str = "BAAI/bge-large-en-v1.5"
-    local_embedding_dimensions: int = 1024
+    # Lightweight free local model for constrained deployments.
+    # This keeps semantic quality while avoiding the memory footprint of
+    # bge-large, and still falls back deterministically if unavailable.
+    local_embedding_model: str = "BAAI/bge-small-en-v1.5"
+    local_embedding_dimensions: int = 384
 
     # LLM (Groq preferred; OpenAI fallback)
     llm_provider: Literal["groq", "openai"] = "groq"
