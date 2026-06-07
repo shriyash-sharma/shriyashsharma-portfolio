@@ -43,6 +43,12 @@ class Settings(BaseSettings):
     local_embedding_model: str = "BAAI/bge-small-en-v1.5"
     local_embedding_dimensions: int = 384
 
+    # When true, the AI Lab RAG Explorer uses the hosted OpenAI embedding model
+    # instead of the local sentence-transformers model. Set
+    # USE_OPENAI_EMBEDDINGS_FOR_LAB=true in the Render dashboard (or any env)
+    # to activate this. Requires OPENAI_API_KEY to be set.
+    use_openai_embeddings_for_lab: bool = False
+
     # LLM (Groq preferred; OpenAI fallback)
     llm_provider: Literal["groq", "openai"] = "groq"
     llm_model: str = "llama-3.3-70b-versatile"
