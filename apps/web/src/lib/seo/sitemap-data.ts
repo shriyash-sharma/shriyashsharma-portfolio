@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { isProductionBuildPhase } from "@/lib/build/static-generation";
 import {
   defaultLocale,
-  locales,
+  getPublicLocales,
   localeLanguageTags,
   localizePath,
 } from "@/lib/i18n/config";
@@ -36,10 +36,11 @@ const staticRoutes: StaticRoute[] = [
     })),
 ];
 
-/** Build the hreflang map for a canonical path across all supported locales. */
+/** Build the hreflang map for a canonical path across indexable locales. */
 function buildLanguageAlternates(path: string): Record<string, string> {
+  const publicLocales = getPublicLocales();
   const languages: Record<string, string> = {};
-  for (const locale of locales) {
+  for (const locale of publicLocales) {
     languages[localeLanguageTags[locale]] = absoluteUrl(localizePath(path, locale));
   }
   languages["x-default"] = absoluteUrl(localizePath(path, defaultLocale));
@@ -52,8 +53,13 @@ function localizedEntries(
   changeFrequency: StaticRoute["changeFrequency"],
   priority: number
 ): MetadataRoute.Sitemap {
-  const alternates = { languages: buildLanguageAlternates(path) };
-  return locales.map((locale) => {
+  const publicLocales = getPublicLocales();
+  const alternates =
+    publicLocales.length > 1
+      ? { languages: buildLanguageAlternates(path) }
+      : undefined;
+
+  return publicLocales.map((locale) => {
     const rawPriority =
       locale === defaultLocale ? priority : Math.max(priority - 0.05, 0.5);
     // Round to 2 decimals to avoid IEEE-754 artifacts like 0.7999999999999999.
@@ -63,7 +69,7 @@ function localizedEntries(
       ...(lastModified ? { lastModified } : {}),
       changeFrequency,
       priority: cleanPriority,
-      alternates,
+      ...(alternates ? { alternates } : {}),
     };
   });
 }

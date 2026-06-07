@@ -72,6 +72,11 @@ export function HeroSection() {
                     </span>
                   </div>
 
+                  {/* Entity byline — reinforces Person entity for SEO without altering H1 focus */}
+                  <p className="mb-4 text-[12.5px] font-medium tracking-[0.02em] text-[var(--color-secondary)] sm:mb-5 sm:text-[13px]">
+                    {home.byline}
+                  </p>
+
                   {/* Heading */}
                   <h1
                     id="hero-heading"

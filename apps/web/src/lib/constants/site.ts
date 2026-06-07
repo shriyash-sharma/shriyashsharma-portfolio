@@ -1,8 +1,8 @@
 export const siteConfig = {
   name: "Shriyash Sharma",
-  title: "Shriyash Sharma — Senior Software Engineer",
+  title: "Shriyash Sharma — Senior Software Engineer & AI Engineer",
   description:
-    "Senior Software Engineer building scalable web applications and evolving AI-powered engineering systems.",
+    "Shriyash Sharma — Senior Software Engineer and AI Engineer building RAG systems, semantic search, FastAPI backends, and scalable Next.js applications.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://shriyashsharma.com",
   ogImage: "/ShriyashLogo.png",
   brand: {

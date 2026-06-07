@@ -47,12 +47,12 @@ export default function AiLabPage() {
                 AI Lab
               </span>
               <h1 className="text-[30px] font-medium leading-[1.1] tracking-[-0.02em] text-[var(--color-foreground)] sm:text-[40px]">
-                Interactive AI engineering experiments
+                Learn RAG, embeddings, and vector search — interactively
               </h1>
               <p className="text-[15px] leading-relaxed text-[var(--color-secondary)] sm:text-[16px]">
-                Interactive tools and visualizations that explain how modern AI
-                systems work — from retrieval pipelines and embeddings to
-                search, reasoning, and system design.
+                Interactive AI engineering experiments by Shriyash Sharma — from
+                retrieval pipelines and embeddings to semantic search, reasoning,
+                and system design.
               </p>
               <p className="text-[13.5px] leading-relaxed text-[var(--color-muted)]">
                 This space contains hands-on AI engineering experiments built to

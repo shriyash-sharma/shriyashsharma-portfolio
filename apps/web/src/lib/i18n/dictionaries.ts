@@ -26,6 +26,7 @@ type Dictionary = {
   };
   home: {
     status: string;
+    byline: string;
     heading: string;
     headingAccent: string;
     intro: string;
@@ -42,9 +43,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
   en: {
     meta: {
       title:
-        "Shriyash Sharma | Senior Software Engineer | Next.js, FastAPI & AI Systems",
+        "Shriyash Sharma | AI Engineering Portfolio | RAG, FastAPI & Next.js",
       description:
-        "Senior Software Engineer specializing in Next.js, FastAPI, AI-powered systems, semantic search, PostgreSQL, and Retrieval-Augmented Generation (RAG).",
+        "Shriyash Sharma — Senior Software Engineer and AI Engineer. Personal portfolio covering RAG systems, semantic search, FastAPI, PostgreSQL, pgvector, Next.js, and production system design.",
     },
     nav: {
       projects: "Projects",
@@ -67,11 +68,12 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     home: {
       status: "Open to engineering roles, platform-focused product work, and selected consulting collaborations",
+      byline: "Shriyash Sharma · Senior Software Engineer · AI Engineering",
       heading:
         "Building scalable systems with modern web architecture, AI-assisted workflows, and practical backend infrastructure.",
       headingAccent: "",
       intro:
-        "I build scalable frontend and full-stack systems focused on modern web architecture, operational platforms, and practical AI integration. My recent work includes Next.js applications, FastAPI backend services, semantic search systems, PostgreSQL infrastructure, and AI-powered workflows for real-world use cases.",
+        "I'm Shriyash Sharma, a Senior Software Engineer building scalable frontend and full-stack systems focused on modern web architecture, operational platforms, and practical AI integration. My recent work includes Next.js applications, FastAPI backend services, semantic search, PostgreSQL with pgvector, RAG pipelines, and AI-powered workflows for real-world use cases.",
       primaryCta: "View work",
       secondaryCta: "About me",
       meta: [
@@ -112,6 +114,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     home: {
       status: "Disponible para nuevos roles",
+      byline: "Shriyash Sharma · Ingeniero de software senior · Ingeniería de IA",
       heading: "Ingeniero senior de software",
       headingAccent: "construyendo sistemas duraderos",
       intro:
@@ -156,6 +159,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     home: {
       status: "متاح لأدوار جديدة",
+      byline: "Shriyash Sharma · مهندس برمجيات أول · هندسة الذكاء الاصطناعي",
       heading: "مهندس برمجيات أول",
       headingAccent: "يبني أنظمة تدوم",
       intro:
@@ -200,6 +204,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     home: {
       status: "नए roles के लिए उपलब्ध",
+      byline: "Shriyash Sharma · सीनियर सॉफ्टवेयर इंजीनियर · AI Engineering",
       heading: "सीनियर सॉफ्टवेयर इंजीनियर",
       headingAccent: "लंबे समय तक चलने वाले सिस्टम बनाता हूँ",
       intro:
@@ -244,6 +249,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     home: {
       status: "Disponível para novos papéis",
+      byline: "Shriyash Sharma · Engenheiro sênior de software · Engenharia de IA",
       heading: "Engenheiro sênior de software",
       headingAccent: "construindo sistemas duráveis",
       intro:
@@ -288,6 +294,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     home: {
       status: "Offen für neue Rollen",
+      byline: "Shriyash Sharma · Senior Software Engineer · AI Engineering",
       heading: "Senior Software Engineer",
       headingAccent: "für langlebige Systeme",
       intro:
@@ -332,6 +339,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     home: {
       status: "Disponible pour de nouveaux rôles",
+      byline: "Shriyash Sharma · Ingénieur logiciel senior · Ingénierie IA",
       heading: "Ingénieur logiciel senior",
       headingAccent: "construire des systèmes durables",
       intro:

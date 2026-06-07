@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Project } from "@/lib/services/project-service";
+import { ContentCrossLinks } from "@/components/content/content-cross-links";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(
@@ -77,6 +78,23 @@ export function PublicProjectList({
           )}
         </div>
       )}
+
+      <ContentCrossLinks
+        links={[
+          {
+            href: "/case-studies",
+            label: "Case studies",
+            description:
+              "Architecture decisions, delivery tradeoffs, and outcomes behind the systems in these projects.",
+          },
+          {
+            href: "/ai-lab/rag-explorer",
+            label: "RAG Explorer",
+            description:
+              "Interactive tutorial on chunking, embeddings, vector search, and grounded retrieval.",
+          },
+        ]}
+      />
     </div>
   );
 }

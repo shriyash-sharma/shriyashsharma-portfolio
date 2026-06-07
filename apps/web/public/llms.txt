@@ -1,24 +1,32 @@
 # Shriyash Sharma
 
-> Senior Software Engineer specializing in Next.js, FastAPI, AI-powered systems, semantic search, PostgreSQL, and Retrieval-Augmented Generation (RAG). This site is a personal engineering portfolio covering production projects, technical case studies, writing, and interactive AI engineering tools.
+> Shriyash Sharma is a Senior Software Engineer and AI Engineer specializing in Retrieval-Augmented Generation (RAG), semantic search, FastAPI, PostgreSQL, pgvector, Next.js, and production system design. Website: https://shriyashsharma.com
 
-Shriyash Sharma is a full-stack software engineer with a focus on modern web architecture (Next.js, React, TypeScript), backend systems (FastAPI, Python, PostgreSQL), and applied AI engineering (RAG pipelines, embeddings, vector search, and semantic retrieval).
+Shriyash Sharma builds full-stack engineering systems with a focus on applied AI: RAG pipelines, embeddings, vector search, FastAPI backends, PostgreSQL with pgvector, and Next.js frontends. This site is his personal AI engineering portfolio — projects, case studies, technical writing, and interactive AI Lab tools.
+
+## Person
+- Name: Shriyash Sharma
+- Role: Senior Software Engineer, AI Engineer
+- Website: https://shriyashsharma.com
+- Location: Pune, India
+- Specializations: AI Engineering, RAG, FastAPI, Next.js, PostgreSQL, pgvector, Semantic Search, System Design, SaaS Architecture
+- Products: TeamShastra (field workforce operations platform)
 
 ## Projects
-- [Projects](https://shriyashsharma.com/projects): Independent products and engineering systems built with Next.js, FastAPI, PostgreSQL, and semantic retrieval, with production system design.
+- [Projects](https://shriyashsharma.com/projects): Independent products and engineering systems built with Next.js, FastAPI, PostgreSQL, pgvector, and semantic retrieval.
 
 ## Case Studies
-- [Case Studies](https://shriyashsharma.com/case-studies): In-depth engineering case studies covering architecture decisions, delivery, and measurable outcomes.
+- [Case Studies](https://shriyashsharma.com/case-studies): In-depth engineering case studies covering architecture decisions, RAG pipelines, delivery, and measurable outcomes.
 
 ## Blog
-- [Blog](https://shriyashsharma.com/blog): Technical writing on modern web development, AI integration, and platform engineering.
+- [Blog](https://shriyashsharma.com/blog): Technical writing on AI engineering, RAG, embeddings, vector search, FastAPI, PostgreSQL, and platform architecture.
 
 ## AI Lab
-- [AI Lab](https://shriyashsharma.com/ai-lab): Interactive tools and visualizations that explain how modern AI systems work, from retrieval pipelines and embeddings to search and system design.
-- [RAG Explorer](https://shriyashsharma.com/ai-lab/rag-explorer): Step-by-step visualization of a full Retrieval-Augmented Generation pipeline — chunking, embeddings, vector search, retrieval, prompt construction, and grounded answer generation.
+- [AI Lab](https://shriyashsharma.com/ai-lab): Interactive tools to learn RAG, embeddings, vector search, and semantic retrieval. Educational visualizations for modern AI system architecture.
+- [RAG Explorer](https://shriyashsharma.com/ai-lab/rag-explorer): Interactive RAG tutorial — step-by-step visualization of chunking, embeddings, vector search, retrieval, prompt construction, and grounded answer generation. Covers: what is RAG, RAG explained, embeddings explained, vector search explained, chunking in RAG.
 
 ## About
-- [About](https://shriyashsharma.com/about): Background on Shriyash Sharma — Senior Software Engineer building React, Next.js, TypeScript, FastAPI, and practical AI-assisted systems.
+- [About Shriyash Sharma](https://shriyashsharma.com/about): Background, professional experience, TeamShastra, AI portfolio platform, and AI engineering focus areas.
 
 ## Contact
-- [Contact](https://shriyashsharma.com/contact): Reach out for engineering roles, speaking, and collaboration.
+- [Contact](https://shriyashsharma.com/contact): Reach Shriyash Sharma for engineering roles, speaking, and collaboration.

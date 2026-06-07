@@ -1,5 +1,5 @@
 import { siteConfig } from "@/lib/constants/site";
-import { localeLanguageTags, locales } from "@/lib/i18n/config";
+import { localeLanguageTags, getPublicLocales } from "@/lib/i18n/config";
 import { seoConfig } from "@/lib/seo/config";
 import { absoluteUrl } from "@/lib/seo/urls";
 
@@ -10,10 +10,18 @@ function personEntity(): JsonLd {
     "@type": "Person",
     "@id": absoluteUrl("/#person"),
     name: siteConfig.author.name,
-    url: absoluteUrl("/"),
+    alternateName: "Shriyash",
+    url: absoluteUrl("/about"),
+    mainEntityOfPage: absoluteUrl("/"),
     email: siteConfig.author.email,
     image: absoluteUrl(siteConfig.brand.logo),
     jobTitle: "Senior Software Engineer",
+    hasOccupation: {
+      "@type": "Occupation",
+      name: "Senior Software Engineer",
+      occupationalCategory: "Software Engineering",
+      skills: [...seoConfig.knowsAbout],
+    },
     worksFor: {
       "@type": "Organization",
       name: seoConfig.employer.name,
@@ -36,7 +44,7 @@ export function websiteJsonLd(): JsonLd {
     name: siteConfig.name,
     url: absoluteUrl("/"),
     description: siteConfig.description,
-    inLanguage: locales.map((locale) => localeLanguageTags[locale]),
+    inLanguage: getPublicLocales().map((locale) => localeLanguageTags[locale]),
     publisher: { "@id": absoluteUrl("/#person") },
   };
 }

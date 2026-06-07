@@ -56,6 +56,13 @@ export function AiLabConcepts() {
           >
             RAG Explorer
           </Link>
+          . Deep-dive articles are in the{" "}
+          <Link
+            href="/blog"
+            className="font-medium text-[var(--color-foreground)] underline decoration-[var(--color-border-strong)] underline-offset-4 transition-colors hover:decoration-current"
+          >
+            blog
+          </Link>
           .
         </p>
       </header>

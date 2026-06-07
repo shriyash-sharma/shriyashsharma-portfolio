@@ -36,6 +36,10 @@ export function Footer({ reserveLauncherSpace = false }: FooterProps) {
             />
             <p className="max-w-none text-[12px] text-[var(--color-muted)]">
               &copy; {year} {siteConfig.author.name}
+              <span className="hidden sm:inline">
+                {" "}
+                · AI Engineering, RAG &amp; Full-Stack Systems
+              </span>
             </p>
           </div>
 
