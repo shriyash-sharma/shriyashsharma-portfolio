@@ -82,6 +82,12 @@ export const pageSeo = {
       "Interactive RAG tutorial — visualize chunking, embeddings, vector search, retrieval, and grounded answer generation. Learn what RAG is and how modern retrieval systems work.",
     path: "/ai-lab/rag-explorer",
   },
+  aiLabContextWindowVisualizer: {
+    title: "Context Window Visualizer",
+    description:
+      "Interactive context window visualizer to estimate tokens, compare LLM limits, simulate truncation, and understand why RAG is needed for large documents.",
+    path: "/ai-lab/context-window-visualizer",
+  },
 } as const;
 
 export type PageSeoKey = keyof typeof pageSeo;

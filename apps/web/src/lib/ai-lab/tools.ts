@@ -100,8 +100,9 @@ export const aiLabTools: AiLabTool[] = [
     title: "Context Window Visualizer",
     tagline: "Budget tokens across a prompt",
     description:
-      "Visualize how system prompts, retrieved context, and history compete for a finite context window.",
-    status: "coming-soon",
+      "Understand token limits, context windows, truncation, and how modern LLMs process large documents.",
+    href: "/ai-lab/context-window-visualizer",
+    status: "available",
     icon: Layers,
     tags: ["Context Window", "Tokens", "LLM"],
   },
@@ -118,6 +119,19 @@ export const RAG_EXPLORER_KEYWORDS = [
   "AI Architecture",
   "RAG Tutorial",
   "RAG Explained",
+];
+
+export const CONTEXT_WINDOW_VISUALIZER_KEYWORDS = [
+  "Context Window Explained",
+  "What is a Context Window",
+  "LLM Context Window",
+  "Token Limits Explained",
+  "Why AI Forgets Information",
+  "How RAG Solves Context Limits",
+  "Context Window Visualizer",
+  "LLM Token Budget",
+  "Prompt Token Usage",
+  "Context Truncation",
 ];
 
 export function getAiLabTool(slug: string): AiLabTool | undefined {

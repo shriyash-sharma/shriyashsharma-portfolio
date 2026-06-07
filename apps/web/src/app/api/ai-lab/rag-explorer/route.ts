@@ -19,9 +19,7 @@ export const dynamic = "force-dynamic";
 // Local embedding + LLM generation can take longer than a chat turn.
 const REQUEST_TIMEOUT_MS = 60_000;
 const parsedMaxContentChars = Number.parseInt(
-  process.env.AI_LAB_MAX_CONTENT_CHARS
-    ?? process.env.NEXT_PUBLIC_AI_LAB_MAX_CONTENT_CHARS
-    ?? "9000",
+  process.env.AI_LAB_MAX_CONTENT_CHARS ?? "9000",
   10
 );
 const MAX_CONTENT_CHARS = Number.isFinite(parsedMaxContentChars)

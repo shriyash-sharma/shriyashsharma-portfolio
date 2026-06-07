@@ -6,6 +6,7 @@ import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
 import { RagExplorer, RagSeoContent } from "@/features/ai-lab";
 import { RAG_EXPLORER_FAQ } from "@/lib/ai-lab/faq";
+import { getAiLabMaxContentChars } from "@/lib/ai-lab/limits";
 import { RAG_EXPLORER_KEYWORDS } from "@/lib/ai-lab/tools";
 import {
   breadcrumbJsonLd,
@@ -22,6 +23,8 @@ export const metadata: Metadata = pageMetadata("aiLabRagExplorer", {
 const PUBLISHED_AT = "2026-06-05";
 
 export default function RagExplorerPage() {
+  const maxContentChars = getAiLabMaxContentChars();
+
   return (
     <>
       <JsonLdScript
@@ -76,7 +79,7 @@ export default function RagExplorerPage() {
               </p>
             </header>
 
-            <RagExplorer />
+            <RagExplorer maxContentChars={maxContentChars} />
           </div>
         </Section>
         <RagSeoContent />

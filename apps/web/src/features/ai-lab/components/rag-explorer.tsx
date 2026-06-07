@@ -21,10 +21,14 @@ import { ResultsView } from "./results-view";
 type Status = "idle" | "loading" | "done" | "error";
 type Toast = { id: number; message: string };
 
-export function RagExplorer() {
+export function RagExplorer({
+  maxContentChars = RAG_EXPLORER_MAX_CONTENT_CHARS,
+}: {
+  maxContentChars?: number;
+}) {
   const sampleContent = React.useMemo(
-    () => RAG_EXPLORER_SAMPLE_CONTENT.trim().slice(0, RAG_EXPLORER_MAX_CONTENT_CHARS),
-    []
+    () => RAG_EXPLORER_SAMPLE_CONTENT.trim().slice(0, maxContentChars),
+    [maxContentChars]
   );
 
   // Pre-populate with a high-quality sample so the tool is useful immediately.
@@ -51,7 +55,7 @@ export function RagExplorer() {
 
   const canSubmit =
     content.trim().length >= 20 &&
-    content.trim().length <= RAG_EXPLORER_MAX_CONTENT_CHARS &&
+    content.trim().length <= maxContentChars &&
     question.trim().length >= 3 &&
     status !== "loading";
 
@@ -61,13 +65,13 @@ export function RagExplorer() {
       const target = event.currentTarget;
       const selectionLength = target.selectionEnd - target.selectionStart;
       const projectedLength = target.value.length - selectionLength + pasted.length;
-      if (projectedLength > RAG_EXPLORER_MAX_CONTENT_CHARS) {
+      if (projectedLength > maxContentChars) {
         showToast(
-          `Content limit is ${RAG_EXPLORER_MAX_CONTENT_CHARS} characters.`
+          `Content limit is ${maxContentChars} characters.`
         );
       }
     },
-    [showToast]
+    [maxContentChars, showToast]
   );
 
   async function handleRun(event: React.FormEvent) {
@@ -79,7 +83,7 @@ export function RagExplorer() {
 
     const normalizedContent = content
       .trim()
-      .slice(0, RAG_EXPLORER_MAX_CONTENT_CHARS);
+      .slice(0, maxContentChars);
     const normalizedQuestion = question.trim();
 
     try {
@@ -148,19 +152,19 @@ export function RagExplorer() {
               onPaste={handleContentPaste}
               onChange={(event) => {
                 const nextValue = event.target.value;
-                const isOverLimit = nextValue.length > RAG_EXPLORER_MAX_CONTENT_CHARS;
+                const isOverLimit = nextValue.length > maxContentChars;
                 if (isOverLimit && !contentLimitToastShownRef.current) {
                   showToast(
-                    `Content limit is ${RAG_EXPLORER_MAX_CONTENT_CHARS} characters.`
+                    `Content limit is ${maxContentChars} characters.`
                   );
                   contentLimitToastShownRef.current = true;
                 }
                 if (!isOverLimit) {
                   contentLimitToastShownRef.current = false;
                 }
-                setContent(nextValue.slice(0, RAG_EXPLORER_MAX_CONTENT_CHARS));
+                setContent(nextValue.slice(0, maxContentChars));
               }}
-              maxLength={RAG_EXPLORER_MAX_CONTENT_CHARS}
+              maxLength={maxContentChars}
               placeholder="Paste the text you want to ask questions about…"
               spellCheck={false}
               className={cn(
@@ -175,12 +179,12 @@ export function RagExplorer() {
                 {content.trim().split(/\s+/).filter(Boolean).length} words
               </span>
               <span>
-                {content.trim().length}/{RAG_EXPLORER_MAX_CONTENT_CHARS} characters
+                {content.trim().length}/{maxContentChars} characters
               </span>
             </div>
-            {content.trim().length > RAG_EXPLORER_MAX_CONTENT_CHARS ? (
+            {content.trim().length > maxContentChars ? (
               <p className="mt-1 text-[11.5px] text-[#d96b5f]">
-                Content exceeds {RAG_EXPLORER_MAX_CONTENT_CHARS} characters.
+                Content exceeds {maxContentChars} characters.
                 Please shorten it before running.
               </p>
             ) : null}
