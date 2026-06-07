@@ -18,7 +18,10 @@ from __future__ import annotations
 import logging
 import time
 
-from app.ai.embeddings.factory import get_local_embedding_provider
+from app.ai.embeddings.factory import (
+    get_embedding_provider,
+    get_local_embedding_provider,
+)
 from app.ai.ingestion.chunking import chunk_markdown
 from app.ai.llm.base import ChatMessage
 from app.ai.llm.factory import get_llm_provider
@@ -99,8 +102,13 @@ async def run_rag_explorer(payload: RagExplorerRequest) -> RagExplorerResponse:
         for chunk in raw_chunks
     ]
 
-    # --- Step 3: Embeddings (local, open-source) ----------------------------
-    embeddings = get_local_embedding_provider()
+    # --- Step 3: Embeddings -------------------------------------------------
+    # Switch between hosted OpenAI embeddings and the local open-source model
+    # based on the USE_OPENAI_EMBEDDINGS_FOR_LAB environment variable.
+    use_openai = settings.use_openai_embeddings_for_lab
+    embeddings = (
+        get_embedding_provider() if use_openai else get_local_embedding_provider()
+    )
     embed_start = time.perf_counter()
     chunk_vectors = await embeddings.embed_many(
         [chunk.content for chunk in raw_chunks]
@@ -111,7 +119,7 @@ async def run_rag_explorer(payload: RagExplorerRequest) -> RagExplorerResponse:
     embedding_info = EmbeddingInfo(
         model=embeddings.model,
         dimensions=embeddings.dimensions,
-        is_fallback=embeddings.is_fallback,
+        is_fallback=getattr(embeddings, "is_fallback", False),
         generation_ms=round(embed_ms, 2),
         chunk_count=len(chunk_vectors),
         query_vector_preview=_round_vector(query_vector, preview_dims),

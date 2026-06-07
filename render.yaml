@@ -30,3 +30,7 @@ services:
         sync: false
       - key: ADMIN_BOOTSTRAP_NAME
         value: Platform Admin
+      # Set to true to use OpenAI embeddings in the AI Lab RAG Explorer
+      # instead of the local sentence-transformers model. Requires OPENAI_API_KEY.
+      - key: USE_OPENAI_EMBEDDINGS_FOR_LAB
+        value: "false"
