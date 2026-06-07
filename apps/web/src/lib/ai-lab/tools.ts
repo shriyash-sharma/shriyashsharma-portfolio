@@ -60,8 +60,9 @@ export const aiLabTools: AiLabTool[] = [
     title: "Embedding Visualizer",
     tagline: "See text projected into vector space",
     description:
-      "Project sentences into a 2D map to build intuition for how embeddings cluster semantically similar text.",
-    status: "coming-soon",
+      "Visualize how AI converts text into vectors and groups semantically similar concepts together.",
+    href: "/ai-lab/embedding-visualizer",
+    status: "available",
     icon: Boxes,
     tags: ["Embeddings", "Dimensionality Reduction"],
   },
@@ -80,8 +81,9 @@ export const aiLabTools: AiLabTool[] = [
     title: "Semantic Search Playground",
     tagline: "Keyword vs. semantic retrieval",
     description:
-      "Compare lexical and semantic search side by side to see where each one wins on real queries.",
-    status: "coming-soon",
+      "Compare traditional keyword search and AI-powered semantic search using the same dataset.",
+    href: "/ai-lab/semantic-search-playground",
+    status: "available",
     icon: Network,
     tags: ["Semantic Search", "Hybrid Retrieval"],
   },
@@ -132,6 +134,32 @@ export const CONTEXT_WINDOW_VISUALIZER_KEYWORDS = [
   "LLM Token Budget",
   "Prompt Token Usage",
   "Context Truncation",
+];
+
+export const EMBEDDING_VISUALIZER_KEYWORDS = [
+  "What Are Embeddings",
+  "Embeddings Explained",
+  "Vector Embeddings",
+  "Embedding Visualization",
+  "Semantic Similarity",
+  "How Embeddings Work",
+  "Embeddings in RAG",
+  "Vector Search Explained",
+  "Embedding Visualizer",
+  "Semantic Search",
+];
+
+export const SEMANTIC_SEARCH_KEYWORDS = [
+  "Semantic Search Explained",
+  "What Is Semantic Search",
+  "Vector Search Explained",
+  "Keyword Search vs Semantic Search",
+  "Embeddings Explained",
+  "How RAG Retrieval Works",
+  "Cosine Similarity Explained",
+  "Semantic Retrieval",
+  "AI Search Architecture",
+  "RAG Retrieval",
 ];
 
 export function getAiLabTool(slug: string): AiLabTool | undefined {

@@ -5,4 +5,8 @@ export { RagExplorer } from "./components/rag-explorer";
 export { RagSeoContent } from "./components/rag-seo-content";
 export { ContextWindowVisualizer } from "./components/context-window-visualizer";
 export { ContextWindowSeoContent } from "./components/context-window-seo-content";
+export { SemanticSearchPlayground } from "./components/semantic-search-playground";
+export { SemanticSearchSeoContent } from "./components/semantic-search-seo-content";
+export { EmbeddingVisualizer } from "./components/embedding-visualizer";
+export { EmbeddingSeoContent } from "./components/embedding-seo-content";
 export { StepCard, StepConnector } from "./components/step-card";

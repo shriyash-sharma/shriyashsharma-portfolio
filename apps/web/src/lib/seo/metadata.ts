@@ -88,6 +88,18 @@ export const pageSeo = {
       "Interactive context window visualizer to estimate tokens, compare LLM limits, simulate truncation, and understand why RAG is needed for large documents.",
     path: "/ai-lab/context-window-visualizer",
   },
+  aiLabSemanticSearchPlayground: {
+    title: "Semantic Search Playground",
+    description:
+      "Interactive semantic search playground to compare keyword matching with embeddings and cosine similarity, and understand retrieval in modern RAG systems.",
+    path: "/ai-lab/semantic-search-playground",
+  },
+  aiLabEmbeddingVisualizer: {
+    title: "Embedding Visualizer",
+    description:
+      "Interactive embedding visualizer to explore vector space, semantic similarity clusters, nearest neighbors, and how embeddings power RAG and vector search.",
+    path: "/ai-lab/embedding-visualizer",
+  },
 } as const;
 
 export type PageSeoKey = keyof typeof pageSeo;
