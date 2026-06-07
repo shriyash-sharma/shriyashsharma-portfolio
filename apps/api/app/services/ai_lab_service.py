@@ -115,6 +115,7 @@ async def run_rag_explorer(payload: RagExplorerRequest) -> RagExplorerResponse:
         generation_ms=round(embed_ms, 2),
         chunk_count=len(chunk_vectors),
         query_vector_preview=_round_vector(query_vector, preview_dims),
+        query_vector_full=_round_vector(query_vector, len(query_vector)),
     )
 
     # --- Step 4 & 5: Vector search + retrieved chunks -----------------------
