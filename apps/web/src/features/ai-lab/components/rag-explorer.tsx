@@ -10,6 +10,7 @@ import {
   RAG_EXPLORER_CHUNK_SIZE_STEP,
   RAG_EXPLORER_DEFAULT_CHUNK_SIZE,
   RAG_EXPLORER_EXAMPLE_QUESTIONS,
+  RAG_EXPLORER_MAX_CONTENT_CHARS,
   RAG_EXPLORER_MAX_CHUNK_SIZE,
   RAG_EXPLORER_MIN_CHUNK_SIZE,
   RAG_EXPLORER_SAMPLE_CONTENT,
@@ -20,8 +21,13 @@ import { ResultsView } from "./results-view";
 type Status = "idle" | "loading" | "done" | "error";
 
 export function RagExplorer() {
+  const sampleContent = React.useMemo(
+    () => RAG_EXPLORER_SAMPLE_CONTENT.trim().slice(0, RAG_EXPLORER_MAX_CONTENT_CHARS),
+    []
+  );
+
   // Pre-populate with a high-quality sample so the tool is useful immediately.
-  const [content, setContent] = React.useState(RAG_EXPLORER_SAMPLE_CONTENT);
+  const [content, setContent] = React.useState(sampleContent);
   const [question, setQuestion] = React.useState("");
   const [chunkSize, setChunkSize] = React.useState(
     RAG_EXPLORER_DEFAULT_CHUNK_SIZE
@@ -32,6 +38,7 @@ export function RagExplorer() {
 
   const canSubmit =
     content.trim().length >= 20 &&
+    content.trim().length <= RAG_EXPLORER_MAX_CONTENT_CHARS &&
     question.trim().length >= 3 &&
     status !== "loading";
 
@@ -42,15 +49,19 @@ export function RagExplorer() {
     setStatus("loading");
     setError(null);
 
+    const normalizedContent = content
+      .trim()
+      .slice(0, RAG_EXPLORER_MAX_CONTENT_CHARS);
+    const normalizedQuestion = question.trim();
+
     try {
       const response = await fetch("/api/ai-lab/rag-explorer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          content: content.trim(),
-          question: question.trim(),
-          is_demo_content:
-            content.trim() === RAG_EXPLORER_SAMPLE_CONTENT.trim(),
+          content: normalizedContent,
+          question: normalizedQuestion,
+          is_demo_content: normalizedContent === sampleContent,
           chunk_size: chunkSize,
         }),
       });
@@ -86,7 +97,7 @@ export function RagExplorer() {
             hint="Paste documentation, a blog article, an architecture note, or any technical text. A sample is loaded for you."
             action={
               <div className="flex items-center gap-2">
-                <MiniButton onClick={() => setContent(RAG_EXPLORER_SAMPLE_CONTENT)}>
+                <MiniButton onClick={() => setContent(sampleContent)}>
                   Load sample
                 </MiniButton>
                 <MiniButton onClick={() => setContent("")}>
@@ -98,7 +109,12 @@ export function RagExplorer() {
           >
             <textarea
               value={content}
-              onChange={(event) => setContent(event.target.value)}
+              onChange={(event) =>
+                setContent(
+                  event.target.value.slice(0, RAG_EXPLORER_MAX_CONTENT_CHARS)
+                )
+              }
+              maxLength={RAG_EXPLORER_MAX_CONTENT_CHARS}
               placeholder="Paste the text you want to ask questions about…"
               spellCheck={false}
               className={cn(
@@ -112,8 +128,16 @@ export function RagExplorer() {
               <span>
                 {content.trim().split(/\s+/).filter(Boolean).length} words
               </span>
-              <span>{content.trim().length} characters</span>
+              <span>
+                {content.trim().length}/{RAG_EXPLORER_MAX_CONTENT_CHARS} characters
+              </span>
             </div>
+            {content.trim().length > RAG_EXPLORER_MAX_CONTENT_CHARS ? (
+              <p className="mt-1 text-[11.5px] text-[#d96b5f]">
+                Content exceeds {RAG_EXPLORER_MAX_CONTENT_CHARS} characters.
+                Please shorten it before running.
+              </p>
+            ) : null}
           </Panel>
 
           <Panel

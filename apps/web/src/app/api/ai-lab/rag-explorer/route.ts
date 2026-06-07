@@ -18,6 +18,15 @@ export const dynamic = "force-dynamic";
 
 // Local embedding + LLM generation can take longer than a chat turn.
 const REQUEST_TIMEOUT_MS = 60_000;
+const parsedMaxContentChars = Number.parseInt(
+  process.env.AI_LAB_MAX_CONTENT_CHARS
+    ?? process.env.NEXT_PUBLIC_AI_LAB_MAX_CONTENT_CHARS
+    ?? "9000",
+  10
+);
+const MAX_CONTENT_CHARS = Number.isFinite(parsedMaxContentChars)
+  ? Math.max(20, parsedMaxContentChars)
+  : 9000;
 
 export async function POST(request: Request) {
   let payload: RagExplorerRequest;
@@ -33,6 +42,14 @@ export async function POST(request: Request) {
   if (content.length < 20) {
     return Response.json(
       { error: "`content` must be at least 20 characters." },
+      { status: 400 }
+    );
+  }
+  if (content.length > MAX_CONTENT_CHARS) {
+    return Response.json(
+      {
+        error: `\`content\` must be at most ${MAX_CONTENT_CHARS} characters.`,
+      },
       { status: 400 }
     );
   }

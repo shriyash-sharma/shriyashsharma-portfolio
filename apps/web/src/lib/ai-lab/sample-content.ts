@@ -17,6 +17,15 @@ export const RAG_EXPLORER_DEFAULT_CHUNK_SIZE = 800;
 export const RAG_EXPLORER_MIN_CHUNK_SIZE = 200;
 export const RAG_EXPLORER_MAX_CHUNK_SIZE = 1600;
 export const RAG_EXPLORER_CHUNK_SIZE_STEP = 100;
+const parsedMaxContentChars = Number.parseInt(
+  process.env.NEXT_PUBLIC_AI_LAB_MAX_CONTENT_CHARS ?? "9000",
+  10
+);
+export const RAG_EXPLORER_MAX_CONTENT_CHARS = Number.isFinite(
+  parsedMaxContentChars
+)
+  ? Math.max(20, parsedMaxContentChars)
+  : 9000;
 
 /**
  * ~1,900-word primer covering every concept the pipeline visualizes. Written in

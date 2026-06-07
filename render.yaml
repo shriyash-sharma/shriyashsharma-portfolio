@@ -36,3 +36,5 @@ services:
         value: "false"
       - key: AI_LAB_OPENAI_MAX_REQUESTS_PER_IP_PER_DAY
         value: "50"
+      - key: AI_LAB_MAX_CONTENT_CHARS
+        value: "9000"
