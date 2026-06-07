@@ -34,3 +34,5 @@ services:
       # instead of the local sentence-transformers model. Requires OPENAI_API_KEY.
       - key: USE_OPENAI_EMBEDDINGS_FOR_LAB
         value: "false"
+      - key: AI_LAB_OPENAI_MAX_REQUESTS_PER_IP_PER_DAY
+        value: "50"

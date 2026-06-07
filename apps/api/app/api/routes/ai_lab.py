@@ -5,9 +5,12 @@ separate from the production assistant: the RAG Explorer operates over
 user-supplied text and returns every intermediate step for visualization.
 """
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 
-from app.api.dependencies.rate_limit import enforce_assistant_rate_limit
+from app.api.dependencies.rate_limit import (
+    enforce_assistant_rate_limit,
+    get_client_ip,
+)
 from app.schemas.ai_lab import RagExplorerRequest, RagExplorerResponse
 from app.services.ai_lab_service import run_rag_explorer
 
@@ -17,6 +20,7 @@ router = APIRouter(prefix="/ai-lab", tags=["ai-lab"])
 @router.post("/rag-explorer", response_model=RagExplorerResponse)
 async def rag_explorer(
     payload: RagExplorerRequest,
+    request: Request,
     _: None = Depends(enforce_assistant_rate_limit),
 ) -> RagExplorerResponse:
-    return await run_rag_explorer(payload)
+    return await run_rag_explorer(payload, client_ip=get_client_ip(request))

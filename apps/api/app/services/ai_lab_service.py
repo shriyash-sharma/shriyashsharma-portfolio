@@ -26,6 +26,7 @@ from app.ai.ingestion.chunking import chunk_markdown
 from app.ai.llm.base import ChatMessage
 from app.ai.llm.factory import get_llm_provider
 from app.core.config import get_settings
+from app.core.rate_limit import get_assistant_rate_limiter
 from app.schemas.ai_lab import (
     AnswerView,
     ChunkView,
@@ -62,7 +63,11 @@ def _round_vector(vector: list[float], count: int) -> list[float]:
     return [round(value, 4) for value in vector[:count]]
 
 
-async def run_rag_explorer(payload: RagExplorerRequest) -> RagExplorerResponse:
+async def run_rag_explorer(
+    payload: RagExplorerRequest,
+    *,
+    client_ip: str | None = None,
+) -> RagExplorerResponse:
     settings = get_settings()
     question = payload.question.strip()
     content = payload.content.strip()[: settings.ai_lab_max_content_chars]
@@ -106,6 +111,19 @@ async def run_rag_explorer(payload: RagExplorerRequest) -> RagExplorerResponse:
     # Switch between hosted OpenAI embeddings and the local open-source model
     # based on the USE_OPENAI_EMBEDDINGS_FOR_LAB environment variable.
     use_openai = settings.use_openai_embeddings_for_lab
+    if (
+        use_openai
+        and client_ip
+        and settings.ai_lab_openai_max_requests_per_ip_per_day > 0
+    ):
+        allowed, _ = await get_assistant_rate_limiter().allow(
+            f"ai-lab-openai:{client_ip}",
+            limit=settings.ai_lab_openai_max_requests_per_ip_per_day,
+            window_seconds=24 * 60 * 60,
+        )
+        if not allowed:
+            use_openai = False
+
     embeddings = (
         get_embedding_provider() if use_openai else get_local_embedding_provider()
     )

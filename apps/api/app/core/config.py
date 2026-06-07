@@ -58,10 +58,13 @@ class Settings(BaseSettings):
     groq_base_url: str = "https://api.groq.com/openai/v1"
 
     # --- AI Lab / RAG Explorer (educational tool over user-supplied text) ----
-    ai_lab_max_content_chars: int = 12000
+    ai_lab_max_content_chars: int = 9000
     ai_lab_max_chunks: int = 40
     ai_lab_default_top_k: int = 4
     ai_lab_vector_preview_dims: int = 8
+    # Per-IP OpenAI embedding budget for AI Lab. Once exhausted in a 24h
+    # window, requests automatically switch to local embeddings.
+    ai_lab_openai_max_requests_per_ip_per_day: int = 50
 
     # Retrieval / prompting
     rag_top_k: int = 6
