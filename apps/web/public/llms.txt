@@ -24,6 +24,9 @@ Shriyash Sharma builds full-stack engineering systems with a focus on applied AI
 ## AI Lab
 - [AI Lab](https://shriyashsharma.com/ai-lab): Interactive tools to learn RAG, embeddings, vector search, and semantic retrieval. Educational visualizations for modern AI system architecture.
 - [RAG Explorer](https://shriyashsharma.com/ai-lab/rag-explorer): Interactive RAG tutorial — step-by-step visualization of chunking, embeddings, vector search, retrieval, prompt construction, and grounded answer generation. Covers: what is RAG, RAG explained, embeddings explained, vector search explained, chunking in RAG.
+- [Embedding Visualizer](https://shriyashsharma.com/ai-lab/embedding-visualizer): Interactive embedding visualizer — explore vector embeddings, semantic similarity clusters, nearest neighbors, and how embeddings power RAG and vector search. Covers: what are embeddings, embeddings explained, embedding visualization, semantic similarity, how embeddings work, embeddings in RAG, vector search explained.
+- [Semantic Search Playground](https://shriyashsharma.com/ai-lab/semantic-search-playground): Compare keyword search vs semantic search side by side using embeddings and cosine similarity. Covers: semantic search explained, keyword vs semantic retrieval, cosine similarity, vector search explained.
+- [Context Window Visualizer](https://shriyashsharma.com/ai-lab/context-window-visualizer): Estimate token usage, compare LLM context limits, simulate truncation, and learn why RAG is needed for large documents. Covers: context window explained, token limits, LLM context window, why RAG solves context limits.
 
 ## About
 - [About Shriyash Sharma](https://shriyashsharma.com/about): Background, professional experience, TeamShastra, AI portfolio platform, and AI engineering focus areas.

@@ -97,7 +97,7 @@ export const pageSeo = {
   aiLabEmbeddingVisualizer: {
     title: "Embedding Visualizer",
     description:
-      "Interactive embedding visualizer to explore vector space, semantic similarity clusters, nearest neighbors, and how embeddings power RAG and vector search.",
+      "Learn what embeddings are and how semantic similarity works. Interactive embedding visualizer with vector space clusters, nearest-neighbor comparison, and how embeddings power RAG and vector search.",
     path: "/ai-lab/embedding-visualizer",
   },
 } as const;

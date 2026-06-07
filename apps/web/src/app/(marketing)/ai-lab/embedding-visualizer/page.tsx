@@ -20,6 +20,9 @@ import { pageMetadata } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = pageMetadata("aiLabEmbeddingVisualizer", {
   title: "Embedding Visualizer | Learn Vector Embeddings and Semantic Similarity",
+  description:
+    "Embeddings explained interactively: visualize vector embeddings, explore semantic similarity clusters, compare nearest neighbors, and learn how embeddings power RAG and vector search.",
+  openGraphType: "article",
 });
 
 const PUBLISHED_AT = "2026-06-08";
@@ -72,13 +75,21 @@ export default function EmbeddingVisualizerPage() {
                 Embedding Visualizer
               </span>
               <h1 className="max-w-3xl text-[28px] font-medium leading-[1.12] tracking-[-0.02em] text-[var(--color-foreground)] sm:text-[36px]">
-                Visualize How AI Converts Text Into Vectors and Groups Meaning
+                Embedding Visualizer: Explore Vector Embeddings and Semantic
+                Similarity
               </h1>
               <p className="max-w-3xl text-[14.5px] leading-relaxed text-[var(--color-secondary)] sm:text-[15.5px]">
-                Explore a curated embedding space where animals, vehicles,
-                technology, AI concepts, and business terms form distinct
-                clusters. Compare semantic similarity, inspect nearest neighbors,
-                and learn why vector search powers modern RAG systems.
+                Learn what embeddings are through a curated vector space where
+                animals, vehicles, technology, AI concepts, and business terms
+                form distinct clusters. Compare semantic similarity, inspect
+                nearest neighbors, and see how vector search retrieves meaning
+                instead of keywords.
+              </p>
+              <p className="max-w-3xl text-[13.5px] leading-relaxed text-[var(--color-muted)]">
+                This page includes an interactive scatter plot plus a full
+                educational guide on embeddings explained, semantic similarity,
+                embedding visualization, and embeddings in RAG—written for
+                search engines and readers alike.
               </p>
             </header>
 

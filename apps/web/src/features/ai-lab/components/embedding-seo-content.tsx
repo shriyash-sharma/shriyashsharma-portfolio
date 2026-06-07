@@ -332,8 +332,70 @@ export function EmbeddingSeoContent() {
             </li>
           </ul>
         </section>
+
+        <section className="flex flex-col gap-3" aria-label="Related AI Lab tools">
+          <h3 className="text-[18px] font-medium tracking-[-0.01em] text-[var(--color-foreground)]">
+            Related AI Lab tools and reading
+          </h3>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <RelatedLink
+              href="/ai-lab"
+              title="AI Lab"
+              description="Browse all interactive experiments for RAG, embeddings, and vector search."
+            />
+            <RelatedLink
+              href="/ai-lab/semantic-search-playground"
+              title="Semantic Search Playground"
+              description="Use embeddings in a keyword-vs-semantic retrieval comparison."
+            />
+            <RelatedLink
+              href="/ai-lab/rag-explorer"
+              title="RAG Explorer"
+              description="See how embedding retrieval feeds grounded generation."
+            />
+            <RelatedLink
+              href="/ai-lab/context-window-visualizer"
+              title="Context Window Visualizer"
+              description="Learn why retrieved chunks must fit into finite model context."
+            />
+            <RelatedLink
+              href="/blog"
+              title="AI engineering articles"
+              description="Continue with related writing on search, RAG, and production systems."
+            />
+            <RelatedLink
+              href="/architecture"
+              title="Architecture notes"
+              description="Read system design notes on APIs, retrieval pipelines, and AI platforms."
+            />
+          </div>
+        </section>
       </div>
     </Section>
+  );
+}
+
+function RelatedLink({
+  href,
+  title,
+  description,
+}: {
+  href: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3 transition-colors hover:border-[var(--color-border-strong)]"
+    >
+      <span className="block text-[13px] font-medium text-[var(--color-foreground)]">
+        {title}
+      </span>
+      <span className="mt-1 block text-[12px] leading-relaxed text-[var(--color-secondary)]">
+        {description}
+      </span>
+    </Link>
   );
 }
 

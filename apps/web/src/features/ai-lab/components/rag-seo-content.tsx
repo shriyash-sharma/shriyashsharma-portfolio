@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Section } from "@/components/layout/section";
 import { RAG_EXPLORER_FAQ } from "@/lib/ai-lab/faq";
 
@@ -149,6 +150,34 @@ export function RagSeoContent() {
           </p>
         </Topic>
 
+        <section className="flex flex-col gap-3" aria-label="Related AI Lab tools">
+          <h3 className="text-[18px] font-medium tracking-[-0.01em] text-[var(--color-foreground)]">
+            Related AI Lab tools and reading
+          </h3>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <RelatedLink
+              href="/ai-lab/semantic-search-playground"
+              title="Semantic Search Playground"
+              description="Compare keyword search with semantic retrieval, the core ranking step inside RAG."
+            />
+            <RelatedLink
+              href="/ai-lab/embedding-visualizer"
+              title="Embedding Visualizer"
+              description="See how text becomes vectors before chunks can be searched semantically."
+            />
+            <RelatedLink
+              href="/ai-lab/context-window-visualizer"
+              title="Context Window Visualizer"
+              description="Understand why RAG keeps prompts compact and avoids context overflow."
+            />
+            <RelatedLink
+              href="/blog"
+              title="AI engineering articles"
+              description="Read related writing on RAG, search architecture, FastAPI, and production AI systems."
+            />
+          </div>
+        </section>
+
         <section className="flex flex-col gap-5" aria-label="Frequently asked questions">
           <h3 className="text-[18px] font-medium tracking-[-0.01em] text-[var(--color-foreground)]">
             Frequently asked questions
@@ -168,6 +197,30 @@ export function RagSeoContent() {
         </section>
       </div>
     </Section>
+  );
+}
+
+function RelatedLink({
+  href,
+  title,
+  description,
+}: {
+  href: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3 transition-colors hover:border-[var(--color-border-strong)]"
+    >
+      <span className="block text-[13px] font-medium text-[var(--color-foreground)]">
+        {title}
+      </span>
+      <span className="mt-1 block text-[12px] leading-relaxed text-[var(--color-secondary)]">
+        {description}
+      </span>
+    </Link>
   );
 }
 

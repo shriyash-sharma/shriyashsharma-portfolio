@@ -204,8 +204,60 @@ export function ContextWindowSeoContent() {
             <li>Reliable AI systems measure and visualize token budgets continuously.</li>
           </ul>
         </section>
+
+        <section className="flex flex-col gap-3" aria-label="Related AI Lab tools">
+          <h3 className="text-[18px] font-medium tracking-[-0.01em] text-[var(--color-foreground)]">
+            Related AI Lab tools and reading
+          </h3>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <RelatedLink
+              href="/ai-lab/rag-explorer"
+              title="RAG Explorer"
+              description="See how retrieval keeps prompts compact by selecting only relevant chunks."
+            />
+            <RelatedLink
+              href="/ai-lab/semantic-search-playground"
+              title="Semantic Search Playground"
+              description="Compare exact matching with semantic retrieval before context assembly."
+            />
+            <RelatedLink
+              href="/ai-lab/embedding-visualizer"
+              title="Embedding Visualizer"
+              description="Learn how embedding vectors make high-signal retrieval possible."
+            />
+            <RelatedLink
+              href="/architecture"
+              title="Architecture notes"
+              description="Read deeper system design notes on AI, APIs, and content pipelines."
+            />
+          </div>
+        </section>
       </div>
     </Section>
+  );
+}
+
+function RelatedLink({
+  href,
+  title,
+  description,
+}: {
+  href: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3 transition-colors hover:border-[var(--color-border-strong)]"
+    >
+      <span className="block text-[13px] font-medium text-[var(--color-foreground)]">
+        {title}
+      </span>
+      <span className="mt-1 block text-[12px] leading-relaxed text-[var(--color-secondary)]">
+        {description}
+      </span>
+    </Link>
   );
 }
 
