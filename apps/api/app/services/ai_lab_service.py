@@ -113,7 +113,14 @@ async def run_rag_explorer(payload: RagExplorerRequest) -> RagExplorerResponse:
     chunk_vectors = await embeddings.embed_many(
         [chunk.content for chunk in raw_chunks]
     )
-    query_vector = await embeddings.embed_one(question, is_query=True)
+    # Local BGE models benefit from the is_query prefix for better retrieval.
+    # OpenAI provider does not support that parameter.
+    if use_openai:
+        query_vector = await embeddings.embed_one(question)
+    else:
+        query_vector = await get_local_embedding_provider().embed_one(
+            question, is_query=True
+        )
     embed_ms = (time.perf_counter() - embed_start) * 1000
 
     embedding_info = EmbeddingInfo(
