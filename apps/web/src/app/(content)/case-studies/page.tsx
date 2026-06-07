@@ -3,6 +3,7 @@ import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { breadcrumbJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { PublicContentList } from "@/components/content/public-content-list";
+import { ContentCrossLinks } from "@/components/content/content-cross-links";
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
 import { getCaseStudies } from "@/lib/services/content-service";
@@ -30,6 +31,22 @@ export default async function CaseStudiesPage() {
             entries={caseStudies}
             hrefBase="/case-studies"
             emptyLabel="No published case studies yet."
+          />
+          <ContentCrossLinks
+            links={[
+              {
+                href: "/projects",
+                label: "Projects",
+                description:
+                  "Independent products and engineering systems linked to these case studies.",
+              },
+              {
+                href: "/ai-lab",
+                label: "AI Lab",
+                description:
+                  "Interactive tools to learn RAG, embeddings, and semantic search.",
+              },
+            ]}
           />
         </Section>
       </PageShell>

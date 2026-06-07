@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { siteConfig } from "@/lib/constants/site";
 import {
   defaultLocale,
+  getPublicLocales,
   localeLanguageTags,
-  locales,
   localizePath,
   type Locale,
 } from "@/lib/i18n/config";
@@ -26,31 +26,31 @@ export const pageSeo = {
   projects: {
     title: "Projects",
     description:
-      "Independent products and engineering systems — Next.js, FastAPI, PostgreSQL, semantic retrieval, and production system design.",
+      "Engineering projects by Shriyash Sharma — Next.js, FastAPI, PostgreSQL, pgvector, semantic retrieval, RAG systems, and production system design.",
     path: "/projects",
   },
   caseStudies: {
     title: "Case Studies",
     description:
-      "Engineering case studies on architecture decisions, delivery, and measurable outcomes.",
+      "Engineering case studies by Shriyash Sharma on architecture decisions, RAG pipelines, delivery tradeoffs, and measurable outcomes.",
     path: "/case-studies",
   },
   blog: {
     title: "Blog",
     description:
-      "Technical writing on modern web development, AI integration, and platform engineering.",
+      "Technical writing by Shriyash Sharma on AI engineering, RAG, FastAPI, PostgreSQL, and platform architecture.",
     path: "/blog",
   },
   architecture: {
     title: "Architecture",
     description:
-      "Architecture notes on APIs, content systems, and platform design.",
+      "Architecture notes on APIs, RAG systems, content pipelines, and platform design by Shriyash Sharma.",
     path: "/architecture",
   },
   about: {
-    title: "About",
+    title: "About Shriyash Sharma",
     description:
-      "About Shriyash Sharma — Senior Software Engineer at Globant building React, Next.js, TypeScript, FastAPI, and practical AI-assisted systems.",
+      "Shriyash Sharma is a Senior Software Engineer and AI Engineer specializing in Next.js, FastAPI, PostgreSQL, RAG, semantic search, and SaaS architecture. Background, experience, TeamShastra, and AI Lab.",
     path: "/about",
   },
   speaking: {
@@ -73,13 +73,13 @@ export const pageSeo = {
   aiLab: {
     title: "AI Lab",
     description:
-      "Explore interactive tools that explain Retrieval-Augmented Generation (RAG), embeddings, vector search, semantic retrieval, and modern AI system architecture.",
+      "Learn RAG, embeddings, and vector search interactively. Shriyash Sharma's AI Lab explains Retrieval-Augmented Generation, semantic retrieval, and modern AI system architecture.",
     path: "/ai-lab",
   },
   aiLabRagExplorer: {
     title: "RAG Explorer",
     description:
-      "Interactive visualization of chunking, embeddings, vector search, retrieval, prompt construction, and answer generation. Learn how modern RAG systems work internally.",
+      "Interactive RAG tutorial — visualize chunking, embeddings, vector search, retrieval, and grounded answer generation. Learn what RAG is and how modern retrieval systems work.",
     path: "/ai-lab/rag-explorer",
   },
 } as const;
@@ -97,12 +97,16 @@ export function buildMetadata(overrides: MetadataOverrides = {}): Metadata {
   const path = overrides.path ?? "/";
   const canonical = overrides.canonicalUrl ?? absoluteUrl(path);
 
-  const languageAlternates = Object.fromEntries(
-    locales.map((item) => [
-      localeLanguageTags[item],
-      absoluteUrl(localizePath(path, item)),
-    ])
-  );
+  const publicLocales = getPublicLocales();
+  const languageAlternates =
+    publicLocales.length > 1
+      ? Object.fromEntries(
+          publicLocales.map((item) => [
+            localeLanguageTags[item],
+            absoluteUrl(localizePath(path, item)),
+          ])
+        )
+      : undefined;
 
   return {
     title: {
@@ -119,10 +123,14 @@ export function buildMetadata(overrides: MetadataOverrides = {}): Metadata {
     metadataBase: resolveMetadataBase(),
     alternates: {
       canonical,
-      languages: {
-        ...languageAlternates,
-        "x-default": absoluteUrl(localizePath(path, defaultLocale)),
-      },
+      ...(languageAlternates
+        ? {
+            languages: {
+              ...languageAlternates,
+              "x-default": absoluteUrl(localizePath(path, defaultLocale)),
+            },
+          }
+        : {}),
     },
     openGraph: {
       type: overrides.openGraphType ?? "website",

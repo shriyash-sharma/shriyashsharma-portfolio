@@ -9,9 +9,22 @@
 
 export const defaultLocale = "en";
 
+/** All locales with dictionary entries — used for future full translation rollout. */
 export const locales = ["en", "es", "ar", "hi", "pt", "de", "fr"] as const;
 
 export type Locale = (typeof locales)[number];
+
+/**
+ * When false, locale-prefixed public URLs are not served or advertised.
+ * English-only routes (/about, /projects, …) remain canonical.
+ * Set to true once CMS content and page copy are translated per locale.
+ */
+export const localeRoutingEnabled = false;
+
+/** Locales exposed in sitemap, hreflang, and public URL prefixes. */
+export function getPublicLocales(): readonly Locale[] {
+  return localeRoutingEnabled ? locales : [defaultLocale];
+}
 
 export type TextDirection = "ltr" | "rtl";
 
@@ -146,7 +159,7 @@ export function stripLocaleFromPath(pathname: string): string {
 export function localizePath(pathname: string, locale: Locale): string {
   const basePath = stripLocaleFromPath(pathname);
 
-  if (locale === defaultLocale) {
+  if (!localeRoutingEnabled || locale === defaultLocale) {
     return basePath;
   }
 

@@ -18,6 +18,7 @@ import {
   defaultLocale,
   getPathLocale,
   isLocale,
+  localeRoutingEnabled,
   localizePath,
   stripLocaleFromPath,
 } from "@/lib/i18n/config";
@@ -53,6 +54,15 @@ export function proxy(request: NextRequest) {
   // Stale tokens are validated on the login page via /auth/session.
 
   const pathLocale = getPathLocale(pathname);
+
+  // Locale-prefixed URLs are not publicly served until full translations ship.
+  // Permanent redirect consolidates signals on unprefixed English canonicals.
+  if (!localeRoutingEnabled && pathLocale !== defaultLocale) {
+    const url = request.nextUrl.clone();
+    url.pathname = stripLocaleFromPath(pathname);
+    return NextResponse.redirect(url, 308);
+  }
+
   const preferredLocale = getPreferredLocale(
     request.headers.get("accept-language")
   );
@@ -75,7 +85,12 @@ export function proxy(request: NextRequest) {
 
   const detectedLocale = isLocale(cookieLocale) ? cookieLocale : preferredLocale;
 
-  if (!cookieLocale && pathname === "/" && detectedLocale !== defaultLocale) {
+  if (
+    localeRoutingEnabled &&
+    !cookieLocale &&
+    pathname === "/" &&
+    detectedLocale !== defaultLocale
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = localizePath(pathname, detectedLocale);
 
@@ -91,7 +106,7 @@ export function proxy(request: NextRequest) {
 
   const response = NextResponse.next();
 
-  response.cookies.set(localeCookieName, detectedLocale, {
+  response.cookies.set(localeCookieName, defaultLocale, {
     path: "/",
     sameSite: "lax",
     maxAge: 60 * 60 * 24 * 365,

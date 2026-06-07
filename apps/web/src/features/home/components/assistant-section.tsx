@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Sparkles } from "lucide-react";
 
 import { Section } from "@/components/layout/section";
@@ -52,7 +53,14 @@ export function AssistantSection() {
             <p className="text-[13px] leading-[1.7] text-[var(--color-secondary)] sm:text-[14px]">
               A retrieval-augmented assistant grounded in indexed projects,
               case studies, architecture notes, and articles. Powered by
-              FastAPI, pgvector, OpenAI embeddings, and Groq inference.
+              FastAPI, pgvector, OpenAI embeddings, and Groq inference.{" "}
+              <Link
+                href="/ai-lab/rag-explorer"
+                className="font-medium text-[var(--color-foreground)] underline decoration-[var(--color-border-strong)] underline-offset-4 transition-colors hover:decoration-current"
+              >
+                Explore the RAG pipeline interactively
+              </Link>
+              .
             </p>
             <div className="flex flex-col gap-2 pt-1">
               <span className="text-[11px] uppercase tracking-[0.08em] text-[var(--color-muted)]">

@@ -11,7 +11,7 @@ import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { navItems } from "@/lib/constants/nav";
 import { siteConfig } from "@/lib/constants/site";
 import { getDictionary } from "@/lib/i18n/dictionaries";
-import { getPathLocale, localizePath, stripLocaleFromPath } from "@/lib/i18n/config";
+import { getPathLocale, localizePath, localeRoutingEnabled, stripLocaleFromPath } from "@/lib/i18n/config";
 import { useScrollPosition } from "@/hooks/use-scroll-position";
 import { transitions, drawerVariants } from "@/styles/motion";
 
@@ -102,7 +102,7 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <LanguageSwitcher />
+          {localeRoutingEnabled ? <LanguageSwitcher /> : null}
 
           {/* Mobile toggle */}
           <button
