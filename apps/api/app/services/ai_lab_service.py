@@ -252,8 +252,65 @@ async def run_rag_explorer(
     # Switch between hosted OpenAI embeddings and the local open-source model
     # based on the USE_OPENAI_EMBEDDINGS_FOR_LAB environment variable.
     use_openai = settings.use_openai_embeddings_for_lab
+
+    async def _resolve_embedding_state(
+        should_use_openai: bool,
+    ) -> tuple[object, str, str, _CachedDocEmbeddings | None, list[float] | None]:
+        embeddings_provider = (
+            get_embedding_provider()
+            if should_use_openai
+            else get_local_embedding_provider()
+        )
+        provider = "openai" if should_use_openai else "local"
+        fallback = bool(getattr(embeddings_provider, "is_fallback", False))
+        resolved_cache_key = _doc_cache_key(
+            content=content,
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap,
+            max_chunks=settings.ai_lab_max_chunks,
+            provider=provider,
+            model=embeddings_provider.model,
+            dimensions=embeddings_provider.dimensions,
+            is_fallback=fallback,
+        )
+        resolved_cached_doc = await _get_cached_doc_embeddings(resolved_cache_key)
+        if resolved_cached_doc is None and payload.is_demo_content:
+            resolved_cached_doc = _load_demo_cached_doc(resolved_cache_key)
+            if resolved_cached_doc is not None:
+                await _set_cached_doc_embeddings(
+                    resolved_cache_key,
+                    resolved_cached_doc,
+                )
+
+        demo_query_key = _question_cache_key(question)
+        resolved_query_cache = (
+            resolved_cached_doc.demo_query_vectors.get(demo_query_key)
+            if payload.is_demo_content and resolved_cached_doc is not None
+            else None
+        )
+        return (
+            embeddings_provider,
+            provider,
+            resolved_cache_key,
+            resolved_cached_doc,
+            resolved_query_cache,
+        )
+
+    (
+        embeddings,
+        provider_name,
+        cache_key,
+        cached_doc,
+        cached_query_vector,
+    ) = await _resolve_embedding_state(use_openai)
+
+    # Only spend per-IP OpenAI quota when we are about to call OpenAI
+    # embeddings. Pure cache hits should not consume this limit.
+    needs_openai_embedding_call = use_openai and (
+        cached_doc is None or cached_query_vector is None
+    )
     if (
-        use_openai
+        needs_openai_embedding_call
         and client_ip
         and settings.ai_lab_openai_max_requests_per_ip_per_day > 0
     ):
@@ -264,28 +321,13 @@ async def run_rag_explorer(
         )
         if not allowed:
             use_openai = False
-
-    embeddings = (
-        get_embedding_provider() if use_openai else get_local_embedding_provider()
-    )
-
-    provider_name = "openai" if use_openai else "local"
-    fallback_before = bool(getattr(embeddings, "is_fallback", False))
-    cache_key = _doc_cache_key(
-        content=content,
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap,
-        max_chunks=settings.ai_lab_max_chunks,
-        provider=provider_name,
-        model=embeddings.model,
-        dimensions=embeddings.dimensions,
-        is_fallback=fallback_before,
-    )
-    cached_doc = await _get_cached_doc_embeddings(cache_key)
-    if cached_doc is None and payload.is_demo_content:
-        cached_doc = _load_demo_cached_doc(cache_key)
-        if cached_doc is not None:
-            await _set_cached_doc_embeddings(cache_key, cached_doc)
+            (
+                embeddings,
+                provider_name,
+                cache_key,
+                cached_doc,
+                cached_query_vector,
+            ) = await _resolve_embedding_state(use_openai)
 
     if cached_doc is None:
         # --- Step 2: Chunking ------------------------------------------------
@@ -348,11 +390,7 @@ async def run_rag_explorer(
     # Local BGE models benefit from the is_query prefix for better retrieval.
     # OpenAI provider does not support that parameter.
     demo_question_key = _question_cache_key(question)
-    query_vector = (
-        cached_doc.demo_query_vectors.get(demo_question_key)
-        if payload.is_demo_content and cached_doc is not None
-        else None
-    )
+    query_vector = cached_query_vector
     if query_vector is None:
         if use_openai:
             query_vector = await embeddings.embed_one(question)

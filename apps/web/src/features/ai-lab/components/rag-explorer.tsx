@@ -19,6 +19,7 @@ import { PipelineOverview } from "./pipeline-overview";
 import { ResultsView } from "./results-view";
 
 type Status = "idle" | "loading" | "done" | "error";
+type Toast = { id: number; message: string };
 
 export function RagExplorer() {
   const sampleContent = React.useMemo(
@@ -35,12 +36,39 @@ export function RagExplorer() {
   const [status, setStatus] = React.useState<Status>("idle");
   const [error, setError] = React.useState<string | null>(null);
   const [result, setResult] = React.useState<RagExplorerResponse | null>(null);
+  const [toasts, setToasts] = React.useState<Toast[]>([]);
+  const toastIdRef = React.useRef(0);
+  const contentLimitToastShownRef = React.useRef(false);
+
+  const showToast = React.useCallback((message: string) => {
+    const id = toastIdRef.current + 1;
+    toastIdRef.current = id;
+    setToasts((previous) => [...previous, { id, message }]);
+    window.setTimeout(() => {
+      setToasts((previous) => previous.filter((toast) => toast.id !== id));
+    }, 3200);
+  }, []);
 
   const canSubmit =
     content.trim().length >= 20 &&
     content.trim().length <= RAG_EXPLORER_MAX_CONTENT_CHARS &&
     question.trim().length >= 3 &&
     status !== "loading";
+
+  const handleContentPaste = React.useCallback(
+    (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+      const pasted = event.clipboardData.getData("text");
+      const target = event.currentTarget;
+      const selectionLength = target.selectionEnd - target.selectionStart;
+      const projectedLength = target.value.length - selectionLength + pasted.length;
+      if (projectedLength > RAG_EXPLORER_MAX_CONTENT_CHARS) {
+        showToast(
+          `Content limit is ${RAG_EXPLORER_MAX_CONTENT_CHARS} characters.`
+        );
+      }
+    },
+    [showToast]
+  );
 
   async function handleRun(event: React.FormEvent) {
     event.preventDefault();
@@ -68,10 +96,18 @@ export function RagExplorer() {
 
       if (!response.ok) {
         const payload = (await response.json().catch(() => null)) as
-          | { error?: string }
+          | { error?: string; detail?: string }
           | null;
+        const message = payload?.error ?? payload?.detail;
+        const limitMessage =
+          response.status === 429
+            ? `429 Too Many Requests. ${message ?? "Please try again later."}`
+            : message;
+        if (limitMessage) {
+          showToast(limitMessage);
+        }
         throw new Error(
-          payload?.error ?? `Request failed with HTTP ${response.status}.`
+          message ?? `Request failed with HTTP ${response.status}.`
         );
       }
 
@@ -109,11 +145,21 @@ export function RagExplorer() {
           >
             <textarea
               value={content}
-              onChange={(event) =>
-                setContent(
-                  event.target.value.slice(0, RAG_EXPLORER_MAX_CONTENT_CHARS)
-                )
-              }
+              onPaste={handleContentPaste}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+                const isOverLimit = nextValue.length > RAG_EXPLORER_MAX_CONTENT_CHARS;
+                if (isOverLimit && !contentLimitToastShownRef.current) {
+                  showToast(
+                    `Content limit is ${RAG_EXPLORER_MAX_CONTENT_CHARS} characters.`
+                  );
+                  contentLimitToastShownRef.current = true;
+                }
+                if (!isOverLimit) {
+                  contentLimitToastShownRef.current = false;
+                }
+                setContent(nextValue.slice(0, RAG_EXPLORER_MAX_CONTENT_CHARS));
+              }}
               maxLength={RAG_EXPLORER_MAX_CONTENT_CHARS}
               placeholder="Paste the text you want to ask questions about…"
               spellCheck={false}
@@ -233,6 +279,19 @@ export function RagExplorer() {
             </p>
           </Panel>
         </form>
+      </div>
+
+      {/* Toasts */}
+      <div className="pointer-events-none fixed right-4 top-4 z-50 flex w-[min(360px,calc(100vw-2rem))] flex-col gap-2">
+        {toasts.map((toast) => (
+          <div
+            key={toast.id}
+            role="status"
+            className="rounded-md border border-[var(--color-border-strong)] bg-[var(--color-surface)] px-3 py-2 text-[12.5px] text-[var(--color-foreground)] shadow-lg"
+          >
+            {toast.message}
+          </div>
+        ))}
       </div>
 
       {/* Right: results */}
