@@ -9,7 +9,7 @@ services:
     rootDir: apps/api
     plan: free
     healthCheckPath: /health/ready
-    buildCommand: pip install uv && uv sync --frozen --no-dev
+    buildCommand: pip install uv && uv sync --frozen --no-dev --group local-embeddings
     preDeployCommand: uv run alembic upgrade head
     startCommand: uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
