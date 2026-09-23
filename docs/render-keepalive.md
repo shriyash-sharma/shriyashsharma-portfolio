@@ -1,10 +1,17 @@
-# Render API keep-alive (GitHub Actions)
+# Render API keep-alive (GitHub Actions + in-app pinger)
 
 The portfolio FastAPI backend on [Render](https://render.com) free tier spins down after inactivity. The first request after idle time pays a **cold start** latency cost.
 
-A lightweight GitHub Actions workflow pings the public **liveness** endpoint on a fixed schedule so the service stays warm and first-page loads feel snappier.
+Two layers keep it (and related services) warm:
 
-This does **not** change application code paths, SEO, CMS workflows, or the AI assistant. It only issues an outbound `GET` from GitHub-hosted runners.
+1. **GitHub Actions** (external, described below) — pings this API's own `/health` on a fixed schedule. This is the mechanism that can actually wake this process back up from a full stop, since nothing running *inside* a stopped process can restart it.
+2. **In-app pinger** (`app/services/keepalive_ping.py`) — a background loop started from this process's own lifespan, active only while the process is already running. Since GitHub Actions already guarantees regular wake-ups, this loop piggybacks extra ping duty onto that: it also pings the **FieldFlow staging** and **FieldFlow production** health endpoints (and this API's own `/health` again, redundantly with #1) every `KEEPALIVE_PING_INTERVAL_SECONDS` (default 720s / 12 min). See `KEEPALIVE_PING_ENABLED` / `KEEPALIVE_PING_URLS` in `render.yaml` and `.env.example`.
+
+Neither layer changes application code paths, SEO, CMS workflows, or the AI assistant — both only issue outbound `GET` requests.
+
+## Why not just an in-app self-ping?
+
+A background task inside this process cannot rescue itself once the process has actually stopped — Render fully stops the container, so there is nothing left to run the loop. The in-app pinger only ever prevents future spin-downs while already alive; it relies on GitHub Actions (external, runs independently of this app) to guarantee the process gets a chance to be alive at all. That's also why this API pings itself in `KEEPALIVE_PING_URLS`: it's redundant with the GitHub Actions ping, not a replacement for it.
 
 ## Health endpoint
 
@@ -88,6 +95,22 @@ Change the **RENDER_HEALTH_URL** repository variable when the API moves (e.g. Or
 - The workflow has empty `permissions:` (no repo checkout or secrets beyond the public variable).
 - Keep-alive traffic is negligible compared to normal site usage.
 
+## In-app pinger: cross-project targets
+
+`KEEPALIVE_PING_URLS` in `render.yaml` currently also targets two services
+from the separate **FieldFlow** repo (`fieldflow-api-staging` and
+`api.teamshastra.com`, both on Render). This is a one-way dependency: this
+project pings FieldFlow, not the reverse. If FieldFlow's health path, host,
+or `TRUSTED_HOSTS` config changes, or that project is decommissioned, update
+or trim `KEEPALIVE_PING_URLS` here — a stale target only logs a warning
+(`keepalive_ping failed ...`) each cycle, it doesn't fail this service.
+
 ## When to remove
 
-Delete the workflow when the API runs on always-on infrastructure (paid Render plan, VPS, Kubernetes, etc.) where cold starts are no longer a concern.
+Delete the GitHub Actions workflow when this API runs on always-on
+infrastructure (paid Render plan, VPS, Kubernetes, etc.) where cold starts
+are no longer a concern. Also disable the in-app pinger at that point
+(`KEEPALIVE_PING_ENABLED=false`) — an always-on service pinging other
+free-tier services no longer needs the "wake itself first" workflow, but if
+FieldFlow (or another peer) still needs keep-alive, keep it enabled and
+targeted at just those peers.

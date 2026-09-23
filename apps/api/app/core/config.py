@@ -90,6 +90,16 @@ class Settings(BaseSettings):
     # Set to 0 to disable. Disabled automatically when app_env is "test".
     assistant_rate_limit_per_minute: int = 10
 
+    # --- Keep-alive pinger ---------------------------------------------------
+    # Background loop that GETs a comma-separated list of health URLs on an
+    # interval. This service is already woken on a schedule by the GitHub
+    # Actions workflow in docs/render-keepalive.md, so once running it can
+    # also carry ping duty for peer Render free-tier services (this API's own
+    # /health included) so none of them spin down from inactivity.
+    keepalive_ping_enabled: bool = False
+    keepalive_ping_urls: str = ""
+    keepalive_ping_interval_seconds: int = 720
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

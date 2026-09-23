@@ -38,3 +38,12 @@ services:
         value: "50"
       - key: AI_LAB_MAX_CONTENT_CHARS
         value: "9000"
+      # GitHub Actions (docs/render-keepalive.md) already wakes this service
+      # on a schedule; once running, it also pings itself + the FieldFlow
+      # staging/prod health endpoints every 12 min so none of them spin down.
+      - key: KEEPALIVE_PING_ENABLED
+        value: "true"
+      - key: KEEPALIVE_PING_URLS
+        value: https://portfolio-api-0pp2.onrender.com/health,https://fieldflow-api-staging.onrender.com/api/v1/health,https://api.teamshastra.com/api/v1/health
+      - key: KEEPALIVE_PING_INTERVAL_SECONDS
+        value: "720"

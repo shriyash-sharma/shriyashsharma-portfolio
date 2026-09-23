@@ -16,6 +16,10 @@ Design notes:
     hooks can reuse the same assembly path.
 """
 
+import asyncio
+import contextlib
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -23,9 +27,31 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.api.router import api_router
-from app.core.config import get_settings
+from app.core.config import Settings, get_settings
 from app.core.deployment import validate_deployment_settings
 from app.core.logging import configure_logging
+from app.services.keepalive_ping import parse_keepalive_urls, run_keepalive_ping_loop
+
+
+@asynccontextmanager
+async def _lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    settings: Settings = get_settings()
+
+    keepalive_task: asyncio.Task[None] | None = None
+    if settings.keepalive_ping_enabled:
+        keepalive_task = asyncio.create_task(
+            run_keepalive_ping_loop(
+                parse_keepalive_urls(settings.keepalive_ping_urls),
+                interval_seconds=settings.keepalive_ping_interval_seconds,
+            )
+        )
+
+    yield
+
+    if keepalive_task is not None:
+        keepalive_task.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await keepalive_task
 
 
 def create_app() -> FastAPI:
@@ -37,6 +63,7 @@ def create_app() -> FastAPI:
         title=settings.app_name,
         version=settings.api_version,
         description="Backend foundation for the engineering portfolio platform.",
+        lifespan=_lifespan,
     )
 
     cors_origins = [
