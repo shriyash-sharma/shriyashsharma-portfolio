@@ -191,7 +191,8 @@ export default function AboutPage() {
                   TeamShastra is a real ongoing product focused on field workforce operations. It
                   is being built around practical coordination needs such as task visibility,
                   attendance, team movement, and day-to-day execution in environments where
-                  reliability matters more than presentation.
+                  reliability matters more than presentation. Offline-first mobile app with a
+                  FastAPI + Postgres backend, delivered through agentic AI development.
                 </p>
                 <p className="text-[15px] leading-8 text-[var(--color-secondary)]">
                   The product direction is offline-first and operations-focused, with workflow

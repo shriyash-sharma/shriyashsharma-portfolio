@@ -6,6 +6,8 @@ import {
   localeLanguageTags,
   localizePath,
 } from "@/lib/i18n/config";
+import type { ApiContentItem } from "@/lib/api/contracts/content";
+import { metadataString } from "@/lib/content/metadata-helpers";
 import { pageSeo } from "@/lib/seo/metadata";
 import { absoluteUrl } from "@/lib/seo/urls";
 import { getArchitectureNotes, getBlogPosts, getCaseStudies } from "@/lib/services/content-service";
@@ -90,6 +92,31 @@ function latest(dates: Array<Date | undefined>): Date | undefined {
   return new Date(Math.max(...valid.map((date) => date.getTime())));
 }
 
+function validDate(value: string | undefined): Date | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date;
+}
+
+type ContentDates = { updatedAt: string; metadata: ApiContentItem["metadata"] };
+
+/**
+ * Last-modified date for a CMS entry: an explicit editorial `updated` date in
+ * its metadata (the CMS equivalent of frontmatter) wins, then the record's
+ * `updated_at`, then the build date.
+ */
+function contentLastModified(item: ContentDates): Date | undefined {
+  return (
+    validDate(
+      metadataString(item.metadata, "updated", "updated_date", "updatedDate", "last_modified", "lastModified")
+    ) ??
+    validDate(item.updatedAt) ??
+    buildDate()
+  );
+}
+
 export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   let projects: Awaited<ReturnType<typeof getProjects>> = [];
   let posts: Awaited<ReturnType<typeof getBlogPosts>> = [];
@@ -111,8 +138,7 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  const updated = (items: Array<{ updatedAt: string }>) =>
-    latest(items.map((item) => new Date(item.updatedAt)));
+  const updated = (items: ContentDates[]) => latest(items.map(contentLastModified));
   const built = buildDate();
 
   // Index pages change when their collection does; other static pages change on deploy.
@@ -147,22 +173,22 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   const dynamicRoutes = [
     ...projects.map((item) => ({
       path: `/projects/${item.slug}`,
-      lastModified: new Date(item.updatedAt),
+      lastModified: contentLastModified(item),
       priority: 0.85,
     })),
     ...posts.map((item) => ({
       path: `/blog/${item.slug}`,
-      lastModified: new Date(item.updatedAt),
+      lastModified: contentLastModified(item),
       priority: 0.8,
     })),
     ...caseStudies.map((item) => ({
       path: `/case-studies/${item.slug}`,
-      lastModified: new Date(item.updatedAt),
+      lastModified: contentLastModified(item),
       priority: 0.85,
     })),
     ...architectureNotes.map((item) => ({
       path: `/architecture/${item.slug}`,
-      lastModified: new Date(item.updatedAt),
+      lastModified: contentLastModified(item),
       priority: 0.8,
     })),
   ];

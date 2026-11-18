@@ -7,23 +7,25 @@ import { Sparkles } from "lucide-react";
 import { Section } from "@/components/layout/section";
 import { FadeIn } from "@/components/shared/motion/fade-in";
 import { AssistantPromptChip } from "@/features/assistant/components/assistant-prompt-chip";
+import { useIdle } from "@/hooks/use-idle";
 import { cn } from "@/lib/utils/cn";
 
-// Below-the-fold interactive chat; keep it out of the initial homepage bundle.
+function AssistantPanelPlaceholder() {
+  return (
+    <div
+      aria-hidden="true"
+      className="min-h-[260px] w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] sm:min-h-[380px]"
+    />
+  );
+}
+
+// Below-the-fold interactive chat; fetched after first paint, once the browser is idle.
 const AssistantPanel = dynamic(
   () =>
     import("@/features/assistant/components/assistant-panel").then(
       (mod) => mod.AssistantPanel
     ),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        aria-hidden="true"
-        className="min-h-[260px] w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] sm:min-h-[380px]"
-      />
-    ),
-  }
+  { ssr: false, loading: AssistantPanelPlaceholder }
 );
 
 const RECRUITER_PROMPTS = [
@@ -42,6 +44,8 @@ const RECRUITER_PROMPTS = [
  * low-friction entry point.
  */
 export function AssistantSection() {
+  const isIdle = useIdle();
+
   return (
     <Section
       aria-labelledby="home-assistant-heading"
@@ -89,7 +93,7 @@ export function AssistantSection() {
               </div>
             </div>
           </div>
-          <AssistantPanel />
+          {isIdle ? <AssistantPanel /> : <AssistantPanelPlaceholder />}
         </div>
       </FadeIn>
     </Section>

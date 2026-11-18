@@ -58,6 +58,7 @@ function contentSecurityPolicy(): string {
     ],
     "font-src": ["'self'", "data:", "https://vercel.live", "https://assets.vercel.com"],
     "connect-src": [
+      // 'self' covers same-origin fetches, incl. the contact form (POST /api/contact).
       "'self'",
       "https://*.google-analytics.com",
       "https://*.analytics.google.com",
@@ -72,6 +73,7 @@ function contentSecurityPolicy(): string {
     "frame-ancestors": ["'self'"],
     "object-src": ["'none'"],
     "base-uri": ["'self'"],
+    // Contact form posts to /api/contact (same origin); no third-party form targets.
     "form-action": ["'self'"],
   };
 

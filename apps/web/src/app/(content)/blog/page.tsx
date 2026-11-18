@@ -5,10 +5,18 @@ import { pageMetadata } from "@/lib/seo/metadata";
 import { PublicContentList } from "@/components/content/public-content-list";
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
-import { getBlogPosts } from "@/lib/services/content-service";
+import { getBlogPosts, hasPublishedBlogPosts } from "@/lib/services/content-service";
 
-export const metadata: Metadata = pageMetadata("blog");
 export const revalidate = 300;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const metadata = pageMetadata("blog");
+  // Keep the empty listing out of the index; it becomes indexable with the first post.
+  if (!(await hasPublishedBlogPosts())) {
+    metadata.robots = { index: false, follow: true };
+  }
+  return metadata;
+}
 
 export default async function BlogPage() {
   const posts = await getBlogPosts();
