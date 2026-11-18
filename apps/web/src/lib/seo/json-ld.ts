@@ -108,12 +108,15 @@ export function techArticleJsonLd({
   path,
   datePublished,
   dateModified,
+  about,
 }: {
   title: string;
   description: string;
   path: string;
   datePublished: string;
   dateModified?: string;
+  /** Software the article is about, emitted as a SoftwareApplication. */
+  about?: { name: string; url: string };
 }): JsonLd {
   return {
     "@context": "https://schema.org",
@@ -128,6 +131,15 @@ export function techArticleJsonLd({
     inLanguage: "en",
     author: { "@id": PERSON_ID },
     publisher: { "@id": PERSON_ID },
+    ...(about
+      ? {
+          about: {
+            "@type": "SoftwareApplication",
+            name: about.name,
+            url: about.url,
+          },
+        }
+      : {}),
   };
 }
 

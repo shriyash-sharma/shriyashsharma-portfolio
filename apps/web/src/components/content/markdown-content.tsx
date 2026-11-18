@@ -143,7 +143,7 @@ export function MarkdownContent({
                   className="text-[var(--color-foreground)] underline underline-offset-4 transition-colors hover:text-white"
                   href={linkHref}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   {children}
                 </a>

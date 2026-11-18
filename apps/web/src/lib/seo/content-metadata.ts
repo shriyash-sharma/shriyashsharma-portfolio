@@ -3,6 +3,8 @@ import { buildMetadata } from "@/lib/seo/metadata";
 
 type ContentMetadataInput = {
   title: string;
+  /** Full title rendered verbatim, without the brand suffix. */
+  absoluteTitle?: string;
   description: string;
   path: string;
   image?: string;
@@ -14,6 +16,7 @@ type ContentMetadataInput = {
 export function buildContentMetadata(input: ContentMetadataInput): Metadata {
   return buildMetadata({
     title: input.title,
+    absoluteTitle: input.absoluteTitle,
     description: input.description,
     path: input.path,
     image: input.image,

@@ -37,6 +37,7 @@ export type HomeProjectCard = {
   stack: string[];
   tags: string[];
   liveUrl: string | null;
+  caseStudyHref: string | null;
   href: string;
   label: string;
   visual: ProjectVisualKey;
@@ -108,6 +109,7 @@ export function projectToHomeCard(project: Project): HomeProjectCard {
     stack,
     tags: project.tags,
     liveUrl: project.links.live ?? null,
+    caseStudyHref: project.links.caseStudy ?? null,
     href: `/projects/${project.slug}`,
     label,
     visual,

@@ -5,7 +5,11 @@ import { PublicContentDetail } from "@/components/content/public-content-detail"
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
 import { ContextualAssistantCta } from "@/features/assistant";
-import { metadataAssistantQuestions } from "@/lib/content/metadata-helpers";
+import {
+  metadataAssistantQuestions,
+  metadataString,
+} from "@/lib/content/metadata-helpers";
+import { siteConfig } from "@/lib/constants/site";
 import { buildContentMetadata } from "@/lib/seo/content-metadata";
 import { breadcrumbJsonLd, techArticleJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -33,8 +37,12 @@ export async function generateMetadata(
     return pageMetadata("caseStudies");
   }
 
+  const title = caseStudy.seoTitle ?? caseStudy.title;
+
   return buildContentMetadata({
-    title: caseStudy.seoTitle ?? caseStudy.title,
+    title,
+    // An SEO title that already carries the brand is used as-is.
+    absoluteTitle: title.includes(siteConfig.name) ? title : undefined,
     description: caseStudy.seoDescription ?? caseStudy.description,
     path: `/case-studies/${caseStudy.slug}`,
     canonicalUrl: caseStudy.canonicalUrl ?? undefined,
@@ -52,6 +60,8 @@ export default async function CaseStudyPage({ params }: RouteContext) {
 
   const path = `/case-studies/${caseStudy.slug}`;
   const assistantQuestions = metadataAssistantQuestions(caseStudy.metadata);
+  const aboutName = metadataString(caseStudy.metadata, "about_name", "aboutName");
+  const aboutUrl = metadataString(caseStudy.metadata, "about_url", "aboutUrl");
 
   return (
     <>
@@ -63,6 +73,10 @@ export default async function CaseStudyPage({ params }: RouteContext) {
             path,
             datePublished: caseStudy.publishedAt,
             dateModified: caseStudy.updatedAt,
+            about:
+              aboutName && aboutUrl
+                ? { name: aboutName, url: aboutUrl }
+                : undefined,
           }),
           breadcrumbJsonLd([
             { name: "Case Studies", path: "/case-studies" },

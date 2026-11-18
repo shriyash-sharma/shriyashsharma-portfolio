@@ -365,24 +365,36 @@ export function FeaturedProjectsSection({
                     </div>
                   ) : null}
 
-                  {/* Footer: live link (if any) + read-more arrow */}
-                  <div className="mt-auto flex items-center justify-between pt-1">
-                    {project.liveUrl ? (
-                      <a
-                        href={project.liveUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className={cn(
-                          "inline-flex items-center gap-1.5 text-[12px] text-[var(--color-secondary)]",
-                          "transition-colors hover:text-white"
-                        )}
-                      >
-                        Live product
-                        <ArrowRight size={12} strokeWidth={1.75} />
-                      </a>
-                    ) : (
-                      <span />
-                    )}
+                  {/* Footer: live + case study links (if any) + read-more arrow */}
+                  <div className="mt-auto flex items-center justify-between gap-3 pt-1">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                      {project.liveUrl ? (
+                        <a
+                          href={project.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={cn(
+                            "inline-flex items-center gap-1.5 text-[12px] text-[var(--color-secondary)]",
+                            "transition-colors hover:text-white"
+                          )}
+                        >
+                          Live product
+                          <ArrowRight size={12} strokeWidth={1.75} />
+                        </a>
+                      ) : null}
+                      {project.caseStudyHref ? (
+                        <Link
+                          href={project.caseStudyHref}
+                          className={cn(
+                            "inline-flex items-center gap-1.5 text-[12px] text-[var(--color-secondary)]",
+                            "transition-colors hover:text-white"
+                          )}
+                        >
+                          Read case study
+                          <ArrowRight size={12} strokeWidth={1.75} />
+                        </Link>
+                      ) : null}
+                    </div>
                     <Link
                       href={project.href}
                       aria-label={`Read about ${project.title}`}

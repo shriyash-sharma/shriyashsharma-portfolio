@@ -178,6 +178,19 @@ export const caseStudyMetadataFieldSpecs: MetadataFieldSpec[] = [
     label: "AI assistant questions",
     description:
       "Suggested prompts for the Ask AI block on the case study page. Enter one question per line.",
+  },  {
+    key: "about_name",
+    aliases: ["aboutName"],
+    label: "About: product name",
+    description:
+      "Name of the product this case study is about. Used with About URL for structured data.",
+  },
+  {
+    key: "about_url",
+    aliases: ["aboutUrl"],
+    label: "About: product URL",
+    description:
+      "Public URL of the product this case study is about. Used with About name for structured data.",
   },
 ];
 

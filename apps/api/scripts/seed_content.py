@@ -387,6 +387,80 @@ That experience translates directly into later work on semantic retrieval and AI
         "published_at": "2026-05-19",
     },
     {
+        "type": ContentType.CASE_STUDY,
+        "slug": "teamshastra",
+        "title": "TeamShastra Case Study",
+        "description": (
+            "How I built TeamShastra, an offline-first field service app for Indian teams, using agentic AI development: features, challenges and results."
+        ),
+        "body": """
+*A portfolio case study by Shriyash Sharma*
+
+## Overview
+TeamShastra is field service software I built for small and mid-size companies in India. It's for owners, managers and technicians who do installation and maintenance work, such as CCTV installers, electricians and maintenance teams.
+
+Jobs, attendance, GST invoices, salary, purchases, expenses and reports all live in one Android and web workspace. A company admin sets up the workspace and invites the team, and one login can switch between more than one company.
+
+It's live on the [TeamShastra website](https://teamshastra.com) and as an [Android app on Google Play](https://play.google.com/store/apps/details?id=com.teamshastra.mobile). There's no iOS app yet, but iPhone users can add the web app to their Home Screen.
+
+## Why I built it
+I built TeamShastra for field service teams, like CCTV installers and electricians, who were managing jobs, attendance and billing on paper and WhatsApp. I wanted to give them one place to use on the job, instead of paper notes, chat threads and a separate billing tool.
+
+## What it does
+- **Jobs.** Create a job, assign it, and move it from unassigned to completed and closed, with comments, photos, service report PDFs and cash collected on site.
+- **Attendance and leave.** Check-in and check-out work offline and sync later. Location is taken only when someone checks in or out, optionally with a selfie or an office radius. The app doesn't track anyone all day.
+- **Customers and contracts.** A customer and supplier directory, job history, due visits, an optional customer portal, and annual maintenance contracts.
+- **Sales, payroll and money.** Catalog, quotations, GST invoices and payments, with PDFs you can share on WhatsApp and GST exports ready for a CA. Payroll can be monthly, daily or hourly. Purchase bills, expenses, staff cash and bank accounts sit alongside this.
+- **Reports, languages and import.** Reports for jobs, performance, revenue, expenses and attendance. Available in English, Hindi, Gujarati, Marathi and Bengali. Data can be imported from Vyapar or a spreadsheet, and companies can switch whole modules on or off.
+
+## How I built it
+The Android and web apps are built with Flutter. The backend is FastAPI on Python, with PostgreSQL as the database. Photos and files go to cloud storage, and push notifications use Firebase.
+
+It's offline-first. Most changes go into a queue on the phone and are sent to the server later, in order, through the same rules as an online request. If two people edit the same record, the server flags the conflict. New records get an ID on the device, so a retry doesn't create a duplicate.
+
+In my day job I hand-code React and Next.js. For TeamShastra's Flutter app and FastAPI backend, I used agentic AI development: AI coding agents built features from detailed prompts I wrote, AI QA agents ran tests on staging and logged bugs, and human testers checked every build. Production was never touched during testing.
+
+## Challenges I faced
+None of these were one-time fixes. We found problems, fixed them, retested, and often found more.
+
+**Offline sync under stress.** Technicians often work with no signal, so the offline queue is the heart of the app. In testing, many cases left someone blocked, seeing duplicates or losing work. One bad item could hold up every change after it. A job completed offline could get rejected, so the office still saw "Assigned". Logging out could delete unsent check-ins and photos. A retry after a dropped network could create a second money entry. The fix was a stricter queue: send items in order, return a clear result for each one, and don't let one failed item block unrelated work.
+
+**Keeping money records consistent.** In October testing, two people could change a paid document at the same time, and cash or bank balances drifted when a paid invoice or expense was edited. I wrote fixes for locking and for keeping balances in line, and we retested on staging the same day.
+
+**Attendance without tracking people all day.** I needed proof that a technician really checked in, without turning the app into a tracker. So it takes one location reading at check-in and check-out only, with an optional office radius and selfie. There's no background GPS.
+
+**The big testing loop.** We ran large test rounds on staging, logged a lot of bugs, and shipped fixes in a new build. Some came back still broken or only partly fixed, so we fixed them again, shipped another build and retested. Going live didn't mean every bug was closed. It meant the app was good enough to ship, and we kept improving it after.
+
+**Making it work for any field business.** I wanted it to work for field service companies in general, not just one type of business. Each company can switch modules on or off, and businesses already on a billing app can import their catalog and documents from Vyapar.
+
+**Google Play payment rules.** Getting a business app onto Play and staying within Google's payment rules was a real constraint. The app went live on 8 November 2026, and on 12 November I removed the in-app payment screen to follow Google Play's payments policy. Upgrades now go through email or phone support.
+
+**Building with AI agents.** The pace was fast. The first commit was on 23 May 2026, the app was live on Play in early November, and there were 937 commits by 12 November. That speed came from detailed prompts, AI coding and QA agents, and human testers. The cost of that speed showed up in testing: big batches of bugs, and gaps that turned up again after an earlier review had marked them closed.
+
+## Results so far
+- Went from first commit (23 May 2026) to live on Google Play (8 November 2026) in under 6 months.
+- About 937 commits by 12 November 2026.
+- 3 real companies use it today, with around 20 users.
+- Pricing: Starter is free. Growth is ₹99 per user per month plus GST, with a 30-day free trial.
+
+## What I learned
+In the field, the offline queue is where things break. Ordering, retries, conflicts and money records have to be core work, not something you tidy up at the end. "The fix is in" isn't the same as "it works". AI agents made the build much faster, but they didn't remove the need for clear prompts, human judgment and repeated testing.
+
+## What's next
+I want to make it useful for more kinds of field businesses, using the modules that already exist. A billing-only mode is plann for companies that mostly want invoicing. Right now my focus is reliability, smoother onboarding, and a clean path from job to payment.
+""".strip(),
+        "tags": ["Flutter", "FastAPI", "PostgreSQL", "Offline-first", "Agentic AI"],
+        "categories": ["case-study", "product", "mobile"],
+        "extra": {
+            "read_time": "6 min",
+            "about_name": "TeamShastra",
+            "about_url": "https://teamshastra.com",
+        },
+        "seo_title": "TeamShastra Case Study | Shriyash Sharma",
+        "seo_description": "How I built TeamShastra, an offline-first field service app for Indian teams, using agentic AI development: features, challenges and results.",
+        "published_at": "2026-11-18",
+    },
+    {
         "type": ContentType.ARTICLE,
         "slug": "heading-aware-embeddings-improve-rag-quality",
         "title": "A small RAG quality lever: embedding the heading, not just the paragraph",

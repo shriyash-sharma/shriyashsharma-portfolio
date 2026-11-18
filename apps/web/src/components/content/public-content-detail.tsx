@@ -230,6 +230,7 @@ export function PublicContentDetail({
                 <div className="mt-6">
                   <MarkdownContent
                     value={body}
+                    className="max-w-[70ch]"
                     emptyMessage="No long-form content has been published yet."
                   />
                 </div>
