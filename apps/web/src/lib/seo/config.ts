@@ -1,7 +1,8 @@
 /** Schema.org / positioning constants — keep factual and concise. */
 export const seoConfig = {
+  jobTitle: "AI Engineer / GenAI Full-Stack Engineer",
   positioning:
-    "Senior Software Engineer and AI Engineer building scalable web applications, RAG systems, semantic search, and production AI-powered engineering platforms.",
+    "AI Engineer and GenAI full-stack engineer building RAG systems, semantic search, and production React and Next.js platforms, with backend services delivered through agentic AI development.",
   employer: {
     name: "Globant",
     url: "https://www.globant.com",
@@ -19,7 +20,7 @@ export const seoConfig = {
     "TypeScript",
     "JavaScript",
     "FastAPI",
-    "Python",
+    "Agentic AI development",
     "PostgreSQL",
     "Gen AI",
     "AI-assisted systems",

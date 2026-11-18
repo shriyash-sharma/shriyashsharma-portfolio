@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
-import { breadcrumbJsonLd } from "@/lib/seo/json-ld";
+import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { PublicProjectList } from "@/components/content/public-project-list";
 import { PageShell } from "@/components/layout/page-shell";
@@ -18,10 +18,20 @@ export default async function ProjectsPage() {
   return (
     <>
       <JsonLdScript
-        data={breadcrumbJsonLd([
-          { name: "Home", path: "/" },
-          { name: "Projects", path: "/projects" },
-        ])}
+        data={[
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Projects", path: "/projects" },
+          ]),
+          itemListJsonLd({
+            name: "Projects by Shriyash Sharma",
+            path: "/projects",
+            items: projects.map((project) => ({
+              name: project.title,
+              path: `/projects/${project.slug}`,
+            })),
+          }),
+        ]}
       />
       <PageShell>
         <Section>

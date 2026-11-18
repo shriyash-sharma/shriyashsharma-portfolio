@@ -12,6 +12,7 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { getPathLocale, localizePath } from "@/lib/i18n/config";
 import { slideInRight, transitions } from "@/styles/motion";
 import { cn } from "@/lib/utils/cn";
+import { siteConfig } from "@/lib/constants/site";
 
 /**
  * Hero section — server component.
@@ -84,15 +85,19 @@ export function HeroSection() {
                       "font-semibold tracking-[-0.03em] text-[var(--color-foreground)]",
                       "text-[1.95rem] leading-[1.08]",
                       "sm:text-[2.45rem] sm:leading-[1.08]",
-                      "lg:text-[3.2rem]",
-                      "xl:text-[3.6rem]"
+                      "lg:text-[2.9rem]",
+                      "xl:text-[3.25rem]"
                     )}
                   >
                     {home.heading}
-                    <br />
-                    <span className="text-[var(--color-muted)]">
-                      {home.headingAccent}
-                    </span>
+                    {home.headingAccent ? (
+                      <>
+                        <br />
+                        <span className="text-[var(--color-muted)]">
+                          {home.headingAccent}
+                        </span>
+                      </>
+                    ) : null}
                   </h1>
 
                 </div>
@@ -197,10 +202,13 @@ function HeroPortraitCard({ compact = false }: { compact?: boolean }) {
       >
         <div className={cn("relative aspect-[5/6]", compact && "aspect-[4/5]") }>
           <Image
-            src="/ShriyashProfilePhotoV3.png"
+            src={siteConfig.brand.portrait}
             alt="Portrait of Shriyash Sharma"
             fill
-            priority
+            // Desktop portrait is the LCP candidate; the small mobile thumbnail
+            // (hidden on lg+) stays lazy so only one image gets a high-priority preload.
+            loading={compact ? undefined : "eager"}
+            fetchPriority={compact ? undefined : "high"}
             sizes={compact ? "(max-width: 639px) 92px, 118px" : "(max-width: 1279px) 340px, 360px"}
             className="object-cover object-center"
           />

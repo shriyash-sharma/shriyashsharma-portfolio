@@ -88,6 +88,19 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
   return sortByPublishedDesc(response.items.map(mapPublicContentEntry));
 }
 
+/**
+ * Whether the Blog section should be surfaced (nav, footer, sitemap).
+ * Hidden while there are zero published posts. Unlike the list loaders this
+ * swallows backend errors: a cold API must never break navigation or a build.
+ */
+export async function hasPublishedBlogPosts(): Promise<boolean> {
+  try {
+    return (await getBlogPosts()).length > 0;
+  } catch {
+    return false;
+  }
+}
+
 export async function getBlogPost(slug: string): Promise<BlogPost | null> {
   if (!hasBackendUrl()) {
     return null;

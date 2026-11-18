@@ -1,15 +1,30 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
 
 import { Section } from "@/components/layout/section";
 import { FadeIn } from "@/components/shared/motion/fade-in";
-import {
-  AssistantPanel,
-  AssistantPromptChip,
-} from "@/features/assistant";
+import { AssistantPromptChip } from "@/features/assistant/components/assistant-prompt-chip";
 import { cn } from "@/lib/utils/cn";
+
+// Below-the-fold interactive chat; keep it out of the initial homepage bundle.
+const AssistantPanel = dynamic(
+  () =>
+    import("@/features/assistant/components/assistant-panel").then(
+      (mod) => mod.AssistantPanel
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        aria-hidden="true"
+        className="min-h-[260px] w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-2)] sm:min-h-[380px]"
+      />
+    ),
+  }
+);
 
 const RECRUITER_PROMPTS = [
   "Explain the RAG architecture.",
@@ -53,7 +68,8 @@ export function AssistantSection() {
             <p className="text-[13px] leading-[1.7] text-[var(--color-secondary)] sm:text-[14px]">
               A retrieval-augmented assistant grounded in indexed projects,
               case studies, architecture notes, and articles. Powered by
-              FastAPI, pgvector, OpenAI embeddings, and Groq inference.{" "}
+              a FastAPI service (built through agentic development), pgvector,
+              OpenAI embeddings, and Groq inference.{" "}
               <Link
                 href="/ai-lab/rag-explorer"
                 className="font-medium text-[var(--color-foreground)] underline decoration-[var(--color-border-strong)] underline-offset-4 transition-colors hover:decoration-current"

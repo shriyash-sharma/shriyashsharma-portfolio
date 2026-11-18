@@ -29,8 +29,11 @@ export function resolveMetadataBase(): URL {
   return new URL(`${resolveSiteOrigin()}/`);
 }
 
-/** Absolute URL for a site path (e.g. `/projects`). */
+/**
+ * Absolute URL for a site path (e.g. `/projects`). The homepage resolves to the
+ * bare origin so canonical tags, sitemap, and JSON-LD all use the same URL.
+ */
 export function absoluteUrl(path: string): string {
   const normalized = path.startsWith("/") ? path : `/${path}`;
-  return `${resolveSiteOrigin()}${normalized}`;
+  return normalized === "/" ? resolveSiteOrigin() : `${resolveSiteOrigin()}${normalized}`;
 }

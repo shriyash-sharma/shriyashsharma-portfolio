@@ -15,7 +15,6 @@ type BrandMarkProps = {
   lightIcon?: boolean;
   /** Invert dark glyphs for dark UI (wordmark fills are charcoal). */
   lightWordmark?: boolean;
-  priority?: boolean;
 };
 
 export function BrandMark({
@@ -25,7 +24,6 @@ export function BrandMark({
   showWordmark = true,
   lightIcon = true,
   lightWordmark = true,
-  priority = false,
 }: BrandMarkProps) {
   return (
     <span
@@ -37,7 +35,6 @@ export function BrandMark({
         alt=""
         width={160}
         height={107}
-        priority={priority}
         className={cn(
           "h-11 w-auto max-h-[48px] shrink-0 object-contain object-left md:h-12 md:max-h-[52px]",
           lightIcon ? ["opacity-[0.96]", lightOnDarkFilter] : "opacity-[0.98] saturate-[0.92]",
@@ -50,7 +47,6 @@ export function BrandMark({
           alt=""
           width={1203}
           height={288}
-          priority={priority}
           unoptimized
           className={cn(
             // Tight viewBox in SVG crops excess canvas so type reads larger at a given CSS height.

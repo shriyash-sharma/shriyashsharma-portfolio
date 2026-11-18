@@ -42,10 +42,9 @@ type Dictionary = {
 export const dictionaries: Record<Locale, Dictionary> = {
   en: {
     meta: {
-      title:
-        "Shriyash Sharma | AI Engineering Portfolio | RAG, FastAPI & Next.js",
+      title: "Shriyash Sharma | AI Engineer | GenAI Full-Stack, RAG & Next.js",
       description:
-        "Shriyash Sharma — Senior Software Engineer and AI Engineer. Personal portfolio covering RAG systems, semantic search, FastAPI, PostgreSQL, pgvector, Next.js, and production system design.",
+        "Shriyash Sharma is an AI Engineer and GenAI full-stack engineer with 8+ years building RAG systems, semantic search, and production Next.js platforms.",
     },
     nav: {
       projects: "Projects",
@@ -67,21 +66,20 @@ export const dictionaries: Record<Locale, Dictionary> = {
       currentLanguage: "Current language",
     },
     home: {
-      status: "Open to engineering roles, platform-focused product work, and selected consulting collaborations",
-      byline: "Shriyash Sharma · Senior Software Engineer · AI Engineering",
-      heading:
-        "Building scalable systems with modern web architecture, AI-assisted workflows, and practical backend infrastructure.",
+      status: "Open to AI Engineer, GenAI Full-Stack, and senior engineering roles",
+      byline: "AI Engineer · GenAI Full-Stack · React, Next.js, RAG",
+      heading: "Shriyash Sharma — AI Engineer building RAG systems and production Next.js platforms.",
       headingAccent: "",
       intro:
-        "I'm Shriyash Sharma, a Senior Software Engineer building scalable frontend and full-stack systems focused on modern web architecture, operational platforms, and practical AI integration. My recent work includes Next.js applications, FastAPI backend services, semantic search, PostgreSQL with pgvector, RAG pipelines, and AI-powered workflows for real-world use cases.",
+        "I hand-code production React and Next.js applications and design AI-powered systems around them: RAG pipelines, semantic search with PostgreSQL and pgvector, and AI-assisted workflows. Backend services such as FastAPI are designed and delivered through agentic AI development, with me owning the architecture, reviews, and quality gates.",
       primaryCta: "View work",
       secondaryCta: "About me",
       meta: [
-        "7+ years building production software",
-        "React · Next.js · FastAPI · RAG",
+        "8+ years building production software",
+        "React · Next.js · RAG · Agentic AI",
         "Pune, India",
       ],
-      contactHeading: "Open to senior engineering roles and consulting collaborations.",
+      contactHeading: "Open to AI Engineer, GenAI Full-Stack, and senior engineering roles.",
       contactCopy:
         "I am most useful where product work and engineering depth meet: frontend architecture, platform-quality UI systems, full-stack coordination, and AI-assisted product workflows that need to stay grounded in real delivery constraints.",
       contactPrimary: "Get in touch",

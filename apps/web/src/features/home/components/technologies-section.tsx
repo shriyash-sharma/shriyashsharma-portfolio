@@ -28,8 +28,8 @@ const FOCUS_AREAS: FocusArea[] = [
   {
     title: "Backend & APIs",
     description:
-      "Reliable services and data layers using FastAPI and Python, backed by PostgreSQL and pragmatic system design.",
-    technologies: ["FastAPI", "Python", "PostgreSQL"],
+      "Services and data layers designed and delivered with FastAPI (agentic development), backed by PostgreSQL and pragmatic system design.",
+    technologies: ["FastAPI", "Agentic AI", "PostgreSQL"],
     href: "/case-studies",
     cta: "Read case studies",
   },
@@ -83,9 +83,10 @@ export function TechnologiesSection() {
             stack is <strong className="font-medium text-[var(--color-foreground)]">Next.js</strong>,{" "}
             <strong className="font-medium text-[var(--color-foreground)]">React</strong>, and{" "}
             <strong className="font-medium text-[var(--color-foreground)]">TypeScript</strong> on the
-            frontend, with <strong className="font-medium text-[var(--color-foreground)]">FastAPI</strong> and{" "}
-            <strong className="font-medium text-[var(--color-foreground)]">Python</strong> powering backend
-            services and APIs. I design data layers on{" "}
+            frontend, which I hand-code. Backend services and APIs are designed and delivered with{" "}
+            <strong className="font-medium text-[var(--color-foreground)]">FastAPI</strong> through{" "}
+            <strong className="font-medium text-[var(--color-foreground)]">agentic AI development</strong>, with me
+            owning the architecture and reviews. I design data layers on{" "}
             <strong className="font-medium text-[var(--color-foreground)]">PostgreSQL</strong>, build{" "}
             <strong className="font-medium text-[var(--color-foreground)]">semantic search</strong> and{" "}
             <strong className="font-medium text-[var(--color-foreground)]">Retrieval-Augmented Generation (RAG)</strong>{" "}

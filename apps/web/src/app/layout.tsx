@@ -1,12 +1,14 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
-import { GoogleAnalytics } from "@next/third-parties/google";
 import { AppChrome } from "@/components/layout/app-chrome";
 import { AnalyticsPageTracker } from "@/components/analytics/analytics-page-tracker";
 import { DocumentLocaleSync } from "@/components/layout/document-locale-sync";
 import { SkipLink } from "@/components/layout/skip-link";
 import { localeConfigs } from "@/lib/i18n/config";
+import { siteConfig } from "@/lib/constants/site";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { hasPublishedBlogPosts } from "@/lib/services/content-service";
 import "@/styles/globals.css";
 
 const geistSans = Geist({
@@ -23,12 +25,16 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = buildMetadata({ path: "/" });
 
-export const viewport = {
+export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  viewportFit: "cover" as const,
-  interactiveWidget: "resizes-content" as const,
+  viewportFit: "cover",
+  interactiveWidget: "resizes-content",
+  themeColor: siteConfig.themeColor,
 };
+
+/** Re-check whether Blog should appear in navigation as posts get published. */
+export const revalidate = 300;
 
 const localeRuntimeConfig = Object.fromEntries(
   Object.entries(localeConfigs).map(([locale, config]) => [
@@ -42,11 +48,13 @@ const localeRuntimeConfig = Object.fromEntries(
 
 const googleAnalyticsId = process.env.NEXT_PUBLIC_GA_ID;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const showBlog = await hasPublishedBlogPosts();
+
   return (
     <html
       lang="en"
@@ -62,9 +70,16 @@ export default function RootLayout({
         <AnalyticsPageTracker />
         <DocumentLocaleSync />
         <SkipLink />
-        <AppChrome>{children}</AppChrome>
+        <AppChrome showBlog={showBlog}>{children}</AppChrome>
+        {googleAnalyticsId ? (
+          // gtag/dataLayer is initialised in lib/analytics/ga.ts; the library itself
+          // loads during idle time so it never competes with first paint.
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
+            strategy="lazyOnload"
+          />
+        ) : null}
       </body>
-      {googleAnalyticsId ? <GoogleAnalytics gaId={googleAnalyticsId} /> : null}
     </html>
   );
 }

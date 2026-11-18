@@ -1,15 +1,15 @@
 # Shriyash Sharma
 
-> Shriyash Sharma is a Senior Software Engineer and AI Engineer specializing in Retrieval-Augmented Generation (RAG), semantic search, FastAPI, PostgreSQL, pgvector, Next.js, and production system design. Website: https://shriyashsharma.com
+> Shriyash Sharma is an AI Engineer and GenAI Full-Stack Engineer with 8+ years of experience, specializing in Retrieval-Augmented Generation (RAG), semantic search, and production React and Next.js platforms. Website: https://shriyashsharma.com
 
-Shriyash Sharma builds full-stack engineering systems with a focus on applied AI: RAG pipelines, embeddings, vector search, FastAPI backends, PostgreSQL with pgvector, and Next.js frontends. This site is his personal AI engineering portfolio — projects, case studies, technical writing, and interactive AI Lab tools.
+Shriyash Sharma builds full-stack engineering systems with a focus on applied AI: hand-coded React and Next.js frontends, RAG pipelines, embeddings, vector search with PostgreSQL and pgvector, and FastAPI backends designed and delivered through agentic AI development. This site is his personal AI engineering portfolio — projects, case studies, technical writing, and interactive AI Lab tools.
 
 ## Person
 - Name: Shriyash Sharma
-- Role: Senior Software Engineer, AI Engineer
+- Role: AI Engineer / GenAI Full-Stack Engineer
 - Website: https://shriyashsharma.com
 - Location: Pune, India
-- Specializations: AI Engineering, RAG, FastAPI, Next.js, PostgreSQL, pgvector, Semantic Search, System Design, SaaS Architecture
+- Specializations: AI Engineering, RAG, React, Next.js, Agentic AI development, PostgreSQL, pgvector, Semantic Search, System Design, SaaS Architecture
 - Products: TeamShastra (field workforce operations platform)
 
 ## Projects

@@ -6,8 +6,9 @@ import { EmailLink } from "@/components/shared/email-link";
 import { JsonLdScript } from "@/components/seo/json-ld-script";
 import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
-import { personJsonLd } from "@/lib/seo/json-ld";
-import { pageMetadata } from "@/lib/seo/metadata";
+import { ResumeLink } from "@/components/shared/resume-link";
+import { profilePageJsonLd } from "@/lib/seo/json-ld";
+import { pageMetadata, pageSeo } from "@/lib/seo/metadata";
 import { siteConfig } from "@/lib/constants/site";
 
 export const metadata: Metadata = pageMetadata("about");
@@ -15,7 +16,13 @@ export const metadata: Metadata = pageMetadata("about");
 export default function AboutPage() {
   return (
     <>
-      <JsonLdScript data={personJsonLd()} />
+      <JsonLdScript
+        data={profilePageJsonLd({
+          name: pageSeo.about.absoluteTitle,
+          description: pageSeo.about.description,
+          path: pageSeo.about.path,
+        })}
+      />
       <PageShell>
         <Section>
           <header className="max-w-4xl py-4 sm:py-5">
@@ -26,12 +33,19 @@ export default function AboutPage() {
               Shriyash Sharma
             </h1>
             <p className="mt-4 text-[15px] leading-8 text-[var(--color-secondary)]">
-              I am a Senior Software Engineer based in Pune, with 7+ years of experience building
-              web products. My background is strongest in frontend engineering with React,
-              Next.js, and TypeScript, and in the last few years I have been moving deeper into
-              backend work with FastAPI, PostgreSQL, and AI-assisted systems that solve practical
-              product problems.
+              I am an AI Engineer and GenAI full-stack engineer based in Pune, with 8+ years of
+              experience building web products. I hand-code production frontends with React,
+              Next.js, and TypeScript, and design RAG systems, semantic search, and AI-assisted
+              workflows around them. Backend services such as FastAPI APIs are designed and
+              delivered through agentic AI development, with me owning the architecture, reviews,
+              and quality gates.
             </p>
+            <div className="mt-6">
+              <ResumeLink
+                location="about"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-[var(--color-foreground)] px-4 text-[13.5px] font-medium !text-[#0a0a0a] transition-colors hover:bg-[var(--color-accent)]"
+              />
+            </div>
           </header>
 
           {/* Row padding prevents adjacent mt-12 grids from margin-collapsing and overlapping. */}
@@ -50,8 +64,8 @@ export default function AboutPage() {
                 Recent focus
               </p>
               <p className="mt-3 text-[15px] leading-7 text-[var(--color-secondary)]">
-                React, Next.js, TypeScript, FastAPI, PostgreSQL, semantic retrieval, RAG, and
-                AI-assisted systems for real product workflows.
+                React, Next.js, TypeScript, RAG, semantic retrieval, and agentic AI development
+                for real product workflows, with FastAPI and PostgreSQL on the backend.
               </p>
             </div>
             <div className="rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
@@ -59,8 +73,8 @@ export default function AboutPage() {
                 Location
               </p>
               <p className="mt-3 text-[15px] leading-7 text-[var(--color-secondary)]">
-                Pune, India. Open to senior frontend and full-stack product engineering roles, and
-                a small number of focused consulting conversations.
+                Pune, India. Open to AI Engineer, GenAI Full-Stack, and senior engineering roles,
+                and a small number of focused consulting conversations.
               </p>
             </div>
           </div>
@@ -101,7 +115,7 @@ export default function AboutPage() {
               <ul className="mt-5 grid gap-3 text-[14px] text-[var(--color-secondary)]">
                 <li>React and Next.js for production frontend systems</li>
                 <li>TypeScript for maintainable UI and shared application logic</li>
-                <li>FastAPI and Python for backend services and APIs</li>
+                <li>FastAPI backend services designed and delivered through agentic development</li>
                 <li>PostgreSQL, semantic retrieval, and practical RAG workflows</li>
                 <li>Scalable systems, operational platforms, and product-focused delivery</li>
               </ul>
@@ -126,6 +140,17 @@ export default function AboutPage() {
                   implementation, TypeScript-heavy codebases, architecture decisions, code reviews,
                   planning, and close collaboration with backend teams.
                 </p>
+                <ul className="mt-1 grid list-disc gap-2 pl-5 text-[15px] leading-7 text-[var(--color-secondary)] marker:text-[var(--color-muted)]">
+                  <li>
+                    Built and delivered the Academy Portal, used by ~15,000 Globant employees, and
+                    received appreciation for it.
+                  </li>
+                  <li>
+                    Worked in AI pods using agentic development and RAG, delivering ~10 projects in
+                    5 months.
+                  </li>
+                  <li>Reviewing architect at quality gates.</li>
+                </ul>
               </div>
 
               <div className="grid gap-2 border-l border-[var(--color-border)] pl-5">
@@ -136,8 +161,9 @@ export default function AboutPage() {
                   Contentserv Technologies Pvt. Ltd. · Associate Software Developer to Software Developer
                 </h2>
                 <p className="text-[15px] leading-8 text-[var(--color-secondary)]">
-                  I worked on enterprise product information management systems using React,
-                  JavaScript, Node.js, Express, Python, ElasticSearch, MySQL, and REST APIs. That
+                  I worked on enterprise product information management systems, building React and
+                  JavaScript frontends that integrated with Node.js, Express, Python, ElasticSearch,
+                  MySQL, and REST API backends. That
                   experience gave me a solid base in search-heavy interfaces, data workflows,
                   frontend and backend integration, and reusable product functionality.
                 </p>
@@ -200,7 +226,8 @@ export default function AboutPage() {
                   architecture notes in a way that stays structured, searchable, and useful.
                 </p>
                 <p className="text-[15px] leading-8 text-[var(--color-secondary)]">
-                  Technically, it brings together Next.js, FastAPI, PostgreSQL, CMS-backed
+                  Technically, it brings together a hand-coded Next.js frontend, a FastAPI and
+                  PostgreSQL backend delivered through agentic development, CMS-backed
                   content, multilingual architecture, semantic retrieval, RAG workflows, and
                   AI-assisted search. I use it as a practical system for exploring content
                   modeling, retrieval quality, and product-grade frontend and backend coordination.
@@ -246,7 +273,7 @@ export default function AboutPage() {
               </p>
               <ul className="mt-5 grid gap-3 text-[14px] text-[var(--color-secondary)]">
                 <li>Frontend systems with React, Next.js, and TypeScript</li>
-                <li>Backend services with FastAPI and PostgreSQL</li>
+                <li>Backend services with FastAPI and PostgreSQL, delivered via agentic development</li>
                 <li>AI-assisted systems with semantic retrieval and RAG</li>
                 <li>Operational platforms for real teams and field workflows</li>
                 <li>Full-stack product thinking across UX, APIs, and delivery</li>
@@ -286,7 +313,7 @@ export default function AboutPage() {
                 Collaboration and contact
               </p>
               <p className="mt-4 text-[15px] leading-8 text-[var(--color-secondary)]">
-                If you are hiring for frontend or full-stack engineering roles, or building
+                If you are hiring for AI Engineer, GenAI full-stack, or senior engineering roles, or building
                 products that need practical frontend, backend, or AI-assisted systems, feel free
                 to reach out at{" "}
                 <EmailLink className="inline-flex items-center whitespace-nowrap rounded-full border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-1 align-middle text-[14px] font-medium text-[var(--color-foreground)] shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface)] hover:text-[var(--color-foreground)]" />
@@ -310,6 +337,13 @@ export default function AboutPage() {
                   <span>LinkedIn</span>
                   <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
+                <ResumeLink
+                  location="about-contact"
+                  className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface-2)] px-4 py-2 text-[var(--color-foreground)] transition-colors hover:border-[var(--color-foreground)] hover:bg-[var(--color-surface)]"
+                >
+                  <span>Download Resume</span>
+                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                </ResumeLink>
               </div>
             </section>
           </div>

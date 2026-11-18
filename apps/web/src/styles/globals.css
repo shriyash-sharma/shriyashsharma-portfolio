@@ -16,11 +16,11 @@
   --color-border-strong: #303030;
 
   /* Text scale — calibrated for contrast on #080808 background:
-     foreground ~20:1, secondary ~14:1, muted ~6:1, muted-2 ~3.8:1 */
+     foreground ~20:1, secondary ~14:1, muted ~6:1, muted-2 ~5.7:1 (WCAG AA for normal text) */
   --color-foreground:    #ebebeb;
   --color-secondary:     #b8b8b8;
   --color-muted:         #909090;
-  --color-muted-2:       #696969;
+  --color-muted-2:       #8a8a8a;
   --color-placeholder:   #333333;
 
   /* Accent – reserved for future interactive states */

@@ -8,15 +8,17 @@ import { Menu, X } from "lucide-react";
 import { BrandMark } from "@/components/brand/brand-mark";
 import { cn } from "@/lib/utils/cn";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
-import { navItems } from "@/lib/constants/nav";
+import { getNavItems } from "@/lib/constants/nav";
+import { ResumeLink } from "@/components/shared/resume-link";
 import { siteConfig } from "@/lib/constants/site";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { getPathLocale, localizePath, localeRoutingEnabled, stripLocaleFromPath } from "@/lib/i18n/config";
 import { useScrollPosition } from "@/hooks/use-scroll-position";
 import { transitions, drawerVariants } from "@/styles/motion";
 
-export function Navbar() {
+export function Navbar({ showBlog = false }: { showBlog?: boolean }) {
   const pathname = usePathname();
+  const navItems = getNavItems(showBlog);
   const scrollY = useScrollPosition();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -64,7 +66,7 @@ export function Navbar() {
             "transition-opacity duration-150 hover:opacity-70"
           )}
         >
-          <BrandMark priority />
+          <BrandMark />
         </Link>
 
         {/* Desktop nav */}
@@ -103,6 +105,18 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           {localeRoutingEnabled ? <LanguageSwitcher /> : null}
+
+          <ResumeLink
+            location="header"
+            className={cn(
+              "hidden h-8 items-center rounded-md border border-[var(--color-border)] px-3 text-[12.5px] font-medium md:inline-flex",
+              "bg-[var(--color-surface-2)] text-[var(--color-secondary)]",
+              "transition-colors duration-[140ms] hover:border-[var(--color-border-strong)] hover:text-[var(--color-foreground)]"
+            )}
+          >
+            <span className="lg:hidden">Resume</span>
+            <span className="hidden lg:inline">Download Resume</span>
+          </ResumeLink>
 
           {/* Mobile toggle */}
           <button
@@ -179,6 +193,18 @@ export function Navbar() {
                   </li>
                 );
               })}
+              <li>
+                <ResumeLink
+                  location="header-mobile"
+                  onClick={() => setMobileOpen(false)}
+                  className={cn(
+                    "flex min-h-11 items-center rounded-md px-3 text-[13px]",
+                    "text-[var(--color-muted)] transition-colors duration-[140ms] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-secondary)]"
+                  )}
+                >
+                  Download Resume
+                </ResumeLink>
+              </li>
             </ul>
           </motion.nav>
         )}

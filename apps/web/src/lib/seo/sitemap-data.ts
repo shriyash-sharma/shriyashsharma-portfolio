@@ -74,12 +74,23 @@ function localizedEntries(
   });
 }
 
-export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
-  // Static routes: omit lastModified so crawlers don't see fake per-request churn.
-  const entries: MetadataRoute.Sitemap = staticRoutes.flatMap((route) =>
-    localizedEntries(route.path, undefined, route.changeFrequency, route.priority)
-  );
+/** Deploy timestamp inlined by next.config (`env.BUILD_TIME`); stable between requests. */
+function buildDate(): Date | undefined {
+  const value = process.env.BUILD_TIME;
+  return value ? new Date(value) : undefined;
+}
 
+function latest(dates: Array<Date | undefined>): Date | undefined {
+  const valid = dates.filter(
+    (date): date is Date => date instanceof Date && !Number.isNaN(date.getTime())
+  );
+  if (valid.length === 0) {
+    return undefined;
+  }
+  return new Date(Math.max(...valid.map((date) => date.getTime())));
+}
+
+export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   let projects: Awaited<ReturnType<typeof getProjects>> = [];
   let posts: Awaited<ReturnType<typeof getBlogPosts>> = [];
   let caseStudies: Awaited<ReturnType<typeof getCaseStudies>> = [];
@@ -99,6 +110,39 @@ export async function buildSitemapEntries(): Promise<MetadataRoute.Sitemap> {
       throw error;
     }
   }
+
+  const updated = (items: Array<{ updatedAt: string }>) =>
+    latest(items.map((item) => new Date(item.updatedAt)));
+  const built = buildDate();
+
+  // Index pages change when their collection does; other static pages change on deploy.
+  const collectionLastModified: Record<string, Date | undefined> = {
+    "/projects": latest([updated(projects), built]),
+    "/case-studies": latest([updated(caseStudies), built]),
+    "/architecture": latest([updated(architectureNotes), built]),
+    "/blog": latest([updated(posts), built]),
+  };
+  const siteLastModified = latest([
+    built,
+    updated(projects),
+    updated(caseStudies),
+    updated(architectureNotes),
+    updated(posts),
+  ]);
+
+  const entries: MetadataRoute.Sitemap = staticRoutes
+    // Blog is hidden from navigation and the sitemap until it has a post.
+    .filter((route) => route.path !== "/blog" || posts.length > 0)
+    .flatMap((route) =>
+      localizedEntries(
+        route.path,
+        route.path === "/"
+          ? siteLastModified
+          : (collectionLastModified[route.path] ?? built),
+        route.changeFrequency,
+        route.priority
+      )
+    );
 
   const dynamicRoutes = [
     ...projects.map((item) => ({

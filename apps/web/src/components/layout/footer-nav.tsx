@@ -2,17 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { navItems } from "@/lib/constants/nav";
+import { getNavItems } from "@/lib/constants/nav";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { getPathLocale, localizePath } from "@/lib/i18n/config";
 import { cn } from "@/lib/utils/cn";
 
 /**
  * Footer internal navigation — locale-aware crawlable links to the primary
- * sections (Projects, Case Studies, AI Lab, Blog, About, Contact). Strengthens
+ * sections (Projects, Case Studies, AI Lab, Blog when it has posts, About, Contact). Strengthens
  * site-wide internal linking for SEO.
  */
-export function FooterNav() {
+export function FooterNav({ showBlog = false }: { showBlog?: boolean }) {
   const pathname = usePathname();
   const locale = getPathLocale(pathname);
   const nav = getDictionary(locale).nav;
@@ -22,7 +22,7 @@ export function FooterNav() {
       aria-label="Footer"
       className="flex flex-wrap items-center gap-x-5 gap-y-2"
     >
-      {navItems.map((item) => (
+      {getNavItems(showBlog).map((item) => (
         <Link
           key={item.key}
           href={localizePath(item.href, locale)}

@@ -13,3 +13,8 @@ export const navItems: NavItem[] = [
   { key: "about", label: "About", href: "/about" },
   { key: "contact", label: "Contact", href: "/contact" },
 ];
+
+/** Primary nav items; Blog is hidden until at least one post is published. */
+export function getNavItems(showBlog: boolean): NavItem[] {
+  return showBlog ? navItems : navItems.filter((item) => item.key !== "blog");
+}

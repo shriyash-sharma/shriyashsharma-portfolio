@@ -12,6 +12,8 @@ import { absoluteUrl, resolveMetadataBase } from "@/lib/seo/urls";
 
 export type MetadataOverrides = {
   title?: string;
+  /** Full title rendered verbatim, without the brand suffix. */
+  absoluteTitle?: string;
   description?: string;
   image?: string;
   path?: string;
@@ -26,42 +28,45 @@ export const pageSeo = {
   projects: {
     title: "Projects",
     description:
-      "Engineering projects by Shriyash Sharma — Next.js, FastAPI, PostgreSQL, pgvector, semantic retrieval, RAG systems, and production system design.",
+      "Projects by Shriyash Sharma, AI Engineer: Next.js platforms, RAG pipelines, pgvector semantic search, and AI-assisted products built for real users.",
     path: "/projects",
   },
   caseStudies: {
     title: "Case Studies",
     description:
-      "Engineering case studies by Shriyash Sharma on architecture decisions, RAG pipelines, delivery tradeoffs, and measurable outcomes.",
+      "Engineering case studies by Shriyash Sharma on architecture decisions, RAG pipelines, delivery trade-offs, and measurable product outcomes.",
     path: "/case-studies",
   },
   blog: {
     title: "Blog",
     description:
-      "Technical writing by Shriyash Sharma on AI engineering, RAG, FastAPI, PostgreSQL, and platform architecture.",
+      "Technical writing by Shriyash Sharma on AI engineering, RAG, embeddings, vector search, and building production Next.js platforms.",
     path: "/blog",
   },
   architecture: {
     title: "Architecture",
     description:
-      "Architecture notes on APIs, RAG systems, content pipelines, and platform design by Shriyash Sharma.",
+      "Architecture notes on APIs, RAG systems, content pipelines, and platform design decisions behind Shriyash Sharma's AI portfolio platform.",
     path: "/architecture",
   },
   about: {
-    title: "About Shriyash Sharma",
+    title: "About",
+    // Rendered verbatim (no brand suffix) to avoid "About Shriyash Sharma — Shriyash Sharma".
+    absoluteTitle: "About | Shriyash Sharma, AI Engineer",
     description:
-      "Shriyash Sharma is a Senior Software Engineer and AI Engineer specializing in Next.js, FastAPI, PostgreSQL, RAG, semantic search, and SaaS architecture. Background, experience, TeamShastra, and AI Lab.",
+      "Shriyash Sharma is an AI Engineer and GenAI full-stack engineer in Pune with 8+ years building React and Next.js products, RAG systems, and AI pods.",
     path: "/about",
   },
   speaking: {
     title: "Speaking",
     description:
-      "Conference and team talks on React, Next.js, AI systems, and engineering leadership.",
+      "Internal tech talks and knowledge sessions by Shriyash Sharma on React, Next.js, RAG, AI-assisted engineering, and frontend architecture.",
     path: "/speaking",
   },
   contact: {
     title: "Contact",
-    description: "Contact Shriyash Sharma for engineering roles, speaking, and collaboration.",
+    description:
+      "Contact Shriyash Sharma about AI Engineer, GenAI full-stack, and senior engineering roles. Send a message, view the resume, or connect on LinkedIn.",
     path: "/contact",
   },
   assistant: {
@@ -73,31 +78,31 @@ export const pageSeo = {
   aiLab: {
     title: "AI Lab",
     description:
-      "Learn RAG, embeddings, and vector search interactively. Shriyash Sharma's AI Lab explains Retrieval-Augmented Generation, semantic retrieval, and modern AI system architecture.",
+      "Learn RAG, embeddings, and vector search interactively in Shriyash Sharma's AI Lab: hands-on tools that explain modern AI system architecture.",
     path: "/ai-lab",
   },
   aiLabRagExplorer: {
     title: "RAG Explorer",
     description:
-      "Interactive RAG tutorial — visualize chunking, embeddings, vector search, retrieval, and grounded answer generation. Learn what RAG is and how modern retrieval systems work.",
+      "Interactive RAG tutorial: visualize chunking, embeddings, vector search, retrieval, and grounded answer generation step by step.",
     path: "/ai-lab/rag-explorer",
   },
   aiLabContextWindowVisualizer: {
     title: "Context Window Visualizer",
     description:
-      "Interactive context window visualizer to estimate tokens, compare LLM limits, simulate truncation, and understand why RAG is needed for large documents.",
+      "Estimate tokens, compare LLM context limits, and simulate truncation to see why RAG is needed for large documents.",
     path: "/ai-lab/context-window-visualizer",
   },
   aiLabSemanticSearchPlayground: {
     title: "Semantic Search Playground",
     description:
-      "Interactive semantic search playground to compare keyword matching with embeddings and cosine similarity, and understand retrieval in modern RAG systems.",
+      "Compare keyword matching with embeddings and cosine similarity, and see how retrieval works in modern RAG systems.",
     path: "/ai-lab/semantic-search-playground",
   },
   aiLabEmbeddingVisualizer: {
     title: "Embedding Visualizer",
     description:
-      "Learn what embeddings are and how semantic similarity works. Interactive embedding visualizer with vector space clusters, nearest-neighbor comparison, and how embeddings power RAG and vector search.",
+      "Explore embeddings and semantic similarity with vector-space clusters and nearest-neighbor comparisons, and see how they power RAG.",
     path: "/ai-lab/embedding-visualizer",
   },
 } as const;
@@ -107,11 +112,13 @@ export type PageSeoKey = keyof typeof pageSeo;
 export function buildMetadata(overrides: MetadataOverrides = {}): Metadata {
   const locale = overrides.locale ?? defaultLocale;
   const dictionary = getDictionary(locale);
-  const title = overrides.title
-    ? `${overrides.title} — ${siteConfig.name}`
-    : dictionary.meta.title;
+  const title =
+    overrides.absoluteTitle ??
+    (overrides.title ? `${overrides.title} — ${siteConfig.name}` : dictionary.meta.title);
   const description = overrides.description ?? dictionary.meta.description;
-  const image = overrides.image ?? siteConfig.ogImage;
+  const image = overrides.image
+    ? { url: overrides.image, alt: title }
+    : siteConfig.ogImage;
   const path = overrides.path ?? "/";
   const canonical = overrides.canonicalUrl ?? absoluteUrl(path);
 
@@ -157,13 +164,14 @@ export function buildMetadata(overrides: MetadataOverrides = {}): Metadata {
       title,
       description,
       siteName: siteConfig.name,
-      images: [{ url: image, alt: title }],
+      images: [image],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
       images: [image],
+      site: siteConfig.author.twitter,
       creator: siteConfig.author.twitter,
     },
     robots: overrides.noIndex
@@ -180,6 +188,7 @@ export function pageMetadata(
   const page = pageSeo[key];
   return buildMetadata({
     title: page.title,
+    absoluteTitle: "absoluteTitle" in page ? page.absoluteTitle : undefined,
     description: page.description,
     path: page.path,
     ...overrides,

@@ -5,20 +5,22 @@ import { absoluteUrl } from "@/lib/seo/urls";
 
 type JsonLd = Record<string, unknown>;
 
+const PERSON_ID = "https://shriyashsharma.com/#person";
+
 function personEntity(): JsonLd {
   return {
     "@type": "Person",
-    "@id": absoluteUrl("/#person"),
+    "@id": PERSON_ID,
     name: siteConfig.author.name,
     alternateName: "Shriyash",
     url: absoluteUrl("/about"),
     mainEntityOfPage: absoluteUrl("/"),
-    email: siteConfig.author.email,
-    image: absoluteUrl(siteConfig.brand.logo),
-    jobTitle: "Senior Software Engineer",
+    email: `mailto:${siteConfig.author.email}`,
+    image: absoluteUrl(siteConfig.brand.portrait),
+    jobTitle: seoConfig.jobTitle,
     hasOccupation: {
       "@type": "Occupation",
-      name: "Senior Software Engineer",
+      name: seoConfig.jobTitle,
       occupationalCategory: "Software Engineering",
       skills: [...seoConfig.knowsAbout],
     },
@@ -27,7 +29,15 @@ function personEntity(): JsonLd {
       name: seoConfig.employer.name,
       url: seoConfig.employer.url,
     },
-    sameAs: [siteConfig.links.github, siteConfig.links.linkedin],
+    homeLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Pune",
+        addressCountry: "IN",
+      },
+    },
+    sameAs: [siteConfig.links.github, siteConfig.links.linkedin, siteConfig.links.x],
     knowsAbout: [...seoConfig.knowsAbout],
     description: seoConfig.positioning,
   };
@@ -45,7 +55,7 @@ export function websiteJsonLd(): JsonLd {
     url: absoluteUrl("/"),
     description: siteConfig.description,
     inLanguage: getPublicLocales().map((locale) => localeLanguageTags[locale]),
-    publisher: { "@id": absoluteUrl("/#person") },
+    publisher: { "@id": PERSON_ID },
   };
 }
 
@@ -85,9 +95,9 @@ export function blogPostingJsonLd({
     url: absoluteUrl(path),
     datePublished,
     dateModified: dateModified ?? datePublished,
-    author: { "@id": absoluteUrl("/#person") },
-    publisher: { "@id": absoluteUrl("/#person") },
-    image: absoluteUrl(siteConfig.brand.logo),
+    author: { "@id": PERSON_ID },
+    publisher: { "@id": PERSON_ID },
+    image: absoluteUrl(siteConfig.ogImage.url),
     inLanguage: "en",
   };
 }
@@ -111,10 +121,13 @@ export function techArticleJsonLd({
     headline: title,
     description,
     url: absoluteUrl(path),
+    mainEntityOfPage: absoluteUrl(path),
     datePublished,
     dateModified: dateModified ?? datePublished,
-    author: { "@id": absoluteUrl("/#person") },
-    publisher: { "@id": absoluteUrl("/#person") },
+    image: absoluteUrl(siteConfig.ogImage.url),
+    inLanguage: "en",
+    author: { "@id": PERSON_ID },
+    publisher: { "@id": PERSON_ID },
   };
 }
 
@@ -140,7 +153,7 @@ export function creativeWorkJsonLd({
     description,
     url: absoluteUrl(path),
     datePublished,
-    author: { "@id": absoluteUrl("/#person") },
+    author: { "@id": PERSON_ID },
     sameAs: [github, live].filter(Boolean),
   };
 }
@@ -177,8 +190,8 @@ export function projectJsonLd({
       dateModified: dateModified ?? datePublished,
       applicationCategory: applicationCategory ?? "WebApplication",
       operatingSystem: "Any",
-      author: { "@id": absoluteUrl("/#person") },
-      creator: { "@id": absoluteUrl("/#person") },
+      author: { "@id": PERSON_ID },
+      creator: { "@id": PERSON_ID },
       softwareRequirements: stack?.join(", "),
       sameAs: [github, live].filter(Boolean),
     };
@@ -217,8 +230,8 @@ export function learningResourceJsonLd({
     educationalLevel,
     inLanguage: "en",
     keywords: keywords?.join(", "),
-    author: { "@id": absoluteUrl("/#person") },
-    publisher: { "@id": absoluteUrl("/#person") },
+    author: { "@id": PERSON_ID },
+    publisher: { "@id": PERSON_ID },
     isAccessibleForFree: true,
   };
 }
@@ -236,6 +249,78 @@ export function faqPageJsonLd(
         "@type": "Answer",
         text: item.answer,
       },
+    })),
+  };
+}
+
+/** /about — ProfilePage (a schema.org AboutPage subtype for a single person). */
+export function profilePageJsonLd({
+  name,
+  description,
+  path,
+}: {
+  name: string;
+  description: string;
+  path: string;
+}): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": ["ProfilePage", "AboutPage"],
+    name,
+    description,
+    url: absoluteUrl(path),
+    inLanguage: "en",
+    mainEntity: personEntity(),
+  };
+}
+
+export function contactPageJsonLd({
+  name,
+  description,
+  path,
+}: {
+  name: string;
+  description: string;
+  path: string;
+}): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name,
+    description,
+    url: absoluteUrl(path),
+    inLanguage: "en",
+    about: { "@id": PERSON_ID },
+    mainEntity: {
+      "@type": "ContactPoint",
+      contactType: "professional inquiries",
+      email: siteConfig.author.email,
+      url: absoluteUrl(path),
+      availableLanguage: ["en"],
+    },
+  };
+}
+
+export function itemListJsonLd({
+  name,
+  path,
+  items,
+}: {
+  name: string;
+  path: string;
+  items: Array<{ name: string; path: string }>;
+}): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name,
+    url: absoluteUrl(path),
+    numberOfItems: items.length,
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      url: absoluteUrl(item.path),
     })),
   };
 }

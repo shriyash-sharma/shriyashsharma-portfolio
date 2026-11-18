@@ -10,9 +10,10 @@ import { cn } from "@/lib/utils/cn";
 type FooterProps = {
   /** Reserve space for the fixed Ask AI launcher (bottom-right). */
   reserveLauncherSpace?: boolean;
+  showBlog?: boolean;
 };
 
-export function Footer({ reserveLauncherSpace = false }: FooterProps) {
+export function Footer({ reserveLauncherSpace = false, showBlog = false }: FooterProps) {
   const year = new Date().getFullYear();
 
   return (
@@ -26,7 +27,7 @@ export function Footer({ reserveLauncherSpace = false }: FooterProps) {
     >
       <MaxWidthWrapper>
         <div className="flex flex-col gap-6">
-          <FooterNav />
+          <FooterNav showBlog={showBlog} />
           <div className="flex flex-col gap-4 border-t border-[var(--color-border)] pt-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
             <BrandMark

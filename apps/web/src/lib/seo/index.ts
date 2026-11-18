@@ -15,5 +15,8 @@ export {
   techArticleJsonLd,
   creativeWorkJsonLd,
   breadcrumbJsonLd,
+  profilePageJsonLd,
+  contactPageJsonLd,
+  itemListJsonLd,
 } from "@/lib/seo/json-ld";
 export { buildSitemapEntries } from "@/lib/seo/sitemap-data";

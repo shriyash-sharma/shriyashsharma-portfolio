@@ -24,6 +24,14 @@ import {
 } from "@/lib/i18n/config";
 import { getPreferredLocale, localeCookieName } from "@/lib/i18n/routing";
 
+const localeCookieOptions = {
+  path: "/",
+  sameSite: "lax",
+  // Browsers ignore Secure cookies on plain-http localhost, so only set it in production.
+  secure: process.env.NODE_ENV === "production",
+  maxAge: 60 * 60 * 24 * 365,
+} as const;
+
 const PUBLIC_FILE = /\.(.*)$/;
 
 export function proxy(request: NextRequest) {
@@ -74,11 +82,7 @@ export function proxy(request: NextRequest) {
 
     const response = NextResponse.rewrite(url);
 
-    response.cookies.set(localeCookieName, pathLocale, {
-      path: "/",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 365,
-    });
+    response.cookies.set(localeCookieName, pathLocale, localeCookieOptions);
 
     return response;
   }
@@ -95,22 +99,14 @@ export function proxy(request: NextRequest) {
     url.pathname = localizePath(pathname, detectedLocale);
 
     const response = NextResponse.redirect(url);
-    response.cookies.set(localeCookieName, detectedLocale, {
-      path: "/",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 365,
-    });
+    response.cookies.set(localeCookieName, detectedLocale, localeCookieOptions);
 
     return response;
   }
 
   const response = NextResponse.next();
 
-  response.cookies.set(localeCookieName, defaultLocale, {
-    path: "/",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 365,
-  });
+  response.cookies.set(localeCookieName, defaultLocale, localeCookieOptions);
 
   return response;
 }
